@@ -1,0 +1,6 @@
+{
+	"parent": "sluice:block/mesh",
+	"textures": {
+		"mesh": "sluice:item/cloth_mesh"
+	}
+}

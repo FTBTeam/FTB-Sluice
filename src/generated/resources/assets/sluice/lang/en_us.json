@@ -1,0 +1,8 @@
+{
+	"block.sluice.sluice": "Sluice",
+	"item.sluice.cloth_mesh": "Cloth Mesh",
+	"item.sluice.diamond_mesh": "Diamond Mesh",
+	"item.sluice.gold_mesh": "Gold Mesh",
+	"item.sluice.iron_mesh": "Iron Mesh",
+	"itemGroup.sluice": "Sluice"
+}

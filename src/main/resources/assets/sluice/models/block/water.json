@@ -1,0 +1,61 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"particle": "sluice:block/sluice_water",
+		"water": "sluice:block/sluice_water"
+	},
+	"elements": [
+		{
+			"name": "water",
+			"from": [
+				4,
+				0,
+				4
+			],
+			"to": [
+				12,
+				16,
+				12
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						4,
+						0,
+						12,
+						16
+					],
+					"texture": "#water"
+				},
+				"east": {
+					"uv": [
+						4,
+						0,
+						12,
+						16
+					],
+					"texture": "#water"
+				},
+				"south": {
+					"uv": [
+						4,
+						0,
+						12,
+						16
+					],
+					"texture": "#water"
+				},
+				"west": {
+					"uv": [
+						4,
+						0,
+						12,
+						16
+					],
+					"texture": "#water"
+				}
+			}
+		}
+	]
+}

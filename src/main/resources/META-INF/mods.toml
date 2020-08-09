@@ -1,0 +1,27 @@
+modLoader = "javafml"
+loaderVersion = "[30,)"
+issueTrackerURL = "https://github.com/LatvianModder/Sluice/issues"
+
+[[mods]]
+modId = "sluice"
+version = "${file.jarVersion}"
+displayName = "Sluice"
+authors = "LatvianModder"
+description = '''
+A simple mod that adds Sluice block which lets you wash different blocks to get items out of them
+'''
+license = "GNU LGPLv3"
+
+[[dependencies.sluice]]
+modId = "forge"
+mandatory = true
+versionRange = "[30,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.sluice]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.15,)"
+ordering = "NONE"
+side = "BOTH"

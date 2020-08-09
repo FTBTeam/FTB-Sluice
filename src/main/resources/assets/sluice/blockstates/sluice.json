@@ -1,0 +1,79 @@
+{
+	"multipart": [
+		{
+			"when": {
+				"facing": "north"
+			},
+			"apply": {
+				"model": "sluice:block/frame"
+			}
+		},
+		{
+			"when": {
+				"facing": "south"
+			},
+			"apply": {
+				"model": "sluice:block/frame",
+				"y": 180
+			}
+		},
+		{
+			"when": {
+				"facing": "west"
+			},
+			"apply": {
+				"model": "sluice:block/frame",
+				"y": 270
+			}
+		},
+		{
+			"when": {
+				"facing": "east"
+			},
+			"apply": {
+				"model": "sluice:block/frame",
+				"y": 90
+			}
+		},
+		{
+			"when": {
+				"mesh": "cloth"
+			},
+			"apply": {
+				"model": "sluice:block/cloth_mesh"
+			}
+		},
+		{
+			"when": {
+				"mesh": "iron"
+			},
+			"apply": {
+				"model": "sluice:block/iron_mesh"
+			}
+		},
+		{
+			"when": {
+				"mesh": "gold"
+			},
+			"apply": {
+				"model": "sluice:block/gold_mesh"
+			}
+		},
+		{
+			"when": {
+				"mesh": "diamond"
+			},
+			"apply": {
+				"model": "sluice:block/diamond_mesh"
+			}
+		},
+		{
+			"when": {
+				"water": true
+			},
+			"apply": {
+				"model": "sluice:block/water"
+			}
+		}
+	]
+}

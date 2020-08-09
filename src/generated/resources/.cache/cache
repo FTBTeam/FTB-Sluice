@@ -1,0 +1,11 @@
+1417eee9dfbb0124671b8b53d820617a81284d1e assets/sluice/lang/en_us.json
+ece53965d0e736ac8f5ecd357d9a10bcb4ee1e41 data/sluice/advancements/recipes/sluice/cloth_mesh.json
+c5954c8b1e7ee9608e4dda632c904e3c2caec444 data/sluice/advancements/recipes/sluice/diamond_mesh.json
+875afb5920e9d09dc7bf59ae112060f06beaa3bc data/sluice/advancements/recipes/sluice/gold_mesh.json
+55a17a21e3b865abbfa4afc0a2954f3bdc183f11 data/sluice/advancements/recipes/sluice/iron_mesh.json
+bfb208f5a903cfc11ba2f2960855cf9548443545 data/sluice/advancements/recipes/sluice/sluice.json
+85ff68a2a3eb118c41430acaff1a971a98aee264 data/sluice/recipes/cloth_mesh.json
+4e90e2bc0dd1350dd9e31f961db2c7fe4e97a46f data/sluice/recipes/diamond_mesh.json
+20988f7b6fe3480fbb0c129c6cfb54063cf19034 data/sluice/recipes/gold_mesh.json
+c2eb6f16f6be173aea10a79f76f052bb3244758d data/sluice/recipes/iron_mesh.json
+37a810d50dd02ab2f7b5966c8a55527bc034cf02 data/sluice/recipes/sluice.json
