@@ -1,19 +1,21 @@
 {
 	"type": "minecraft:crafting_shaped",
 	"pattern": [
-		"I I",
-		"N N",
-		"I I"
+		"IC",
+		"SI"
 	],
 	"key": {
+		"S": {
+			"item": "sluice:oak_sluice"
+		},
 		"I": {
 			"tag": "forge:ingots/iron"
 		},
-		"N": {
-			"tag": "forge:nuggets/iron"
+		"C": {
+			"item": "minecraft:chain"
 		}
 	},
 	"result": {
-		"item": "sluice:sluice"
+		"item": "sluice:iron_sluice"
 	}
 }

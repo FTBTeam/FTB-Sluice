@@ -2,11 +2,11 @@ package dev.latvian.mods.sluice.recipe;
 
 import dev.latvian.mods.sluice.SluiceMod;
 import dev.latvian.mods.sluice.block.MeshType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.world.World;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -21,34 +21,29 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class SluiceModRecipeSerializers
-{
-	public static final DeferredRegister<IRecipeSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, SluiceMod.MOD_ID);
+public class SluiceModRecipeSerializers {
+	public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, SluiceMod.MOD_ID);
 
-	public static final RegistryObject<IRecipeSerializer<?>> SLUICE = REGISTRY.register("sluice", SluiceRecipeSerializer::new);
-	public static final IRecipeType<SluiceRecipe> SLUICE_TYPE = IRecipeType.register(SluiceMod.MOD_ID + ":sluice");
+	public static final RegistryObject<RecipeSerializer<?>> SLUICE = REGISTRY.register("sluice", SluiceRecipeSerializer::new);
+	public static final RecipeType<SluiceRecipe> SLUICE_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":sluice");
 
-	public static final RegistryObject<IRecipeSerializer<?>> INGREDIENT_PROPERTIES = REGISTRY.register("ingredient_properties", IngredientPropertiesRecipeSerializer::new);
-	public static final IRecipeType<IngredientPropertiesRecipe> INGREDIENT_PROPERTIES_TYPE = IRecipeType.register(SluiceMod.MOD_ID + ":ingredient_properties");
+	public static final RegistryObject<RecipeSerializer<?>> INGREDIENT_PROPERTIES = REGISTRY.register("ingredient_properties", IngredientPropertiesRecipeSerializer::new);
+	public static final RecipeType<IngredientPropertiesRecipe> INGREDIENT_PROPERTIES_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":ingredient_properties");
 
 	private static final Map<Pair<Item, MeshType>, List<SluiceRecipe>> sluiceCache = new HashMap<>();
 	private static final Map<Pair<Item, MeshType>, IngredientPropertiesRecipe> ingredientPropertiesCache = new HashMap<>();
 
-	public static void clearCache()
-	{
+	public static void clearCache() {
 		sluiceCache.clear();
 		ingredientPropertiesCache.clear();
 	}
 
-	private static List<SluiceRecipe> getSluiceRecipes(World world, MeshType mesh, ItemStack input)
-	{
+	private static List<SluiceRecipe> getSluiceRecipes(Level world, MeshType mesh, ItemStack input) {
 		return sluiceCache.computeIfAbsent(Pair.of(input.getItem(), mesh), key -> {
 			List<SluiceRecipe> list = new ArrayList<>();
 
-			for (SluiceRecipe recipe : world.getRecipeManager().getRecipes(SLUICE_TYPE, NoInventory.INSTANCE, world))
-			{
-				if (recipe.meshes.contains(mesh) && recipe.ingredient.test(input))
-				{
+			for (SluiceRecipe recipe : world.getRecipeManager().getRecipesFor(SLUICE_TYPE, NoInventory.INSTANCE, world)) {
+				if (recipe.meshes.contains(mesh) && recipe.ingredient.test(input)) {
 					list.add(recipe);
 				}
 			}
@@ -58,25 +53,20 @@ public class SluiceModRecipeSerializers
 	}
 
 	@Nullable
-	public static IngredientPropertiesRecipe getProperties(World world, MeshType mesh, ItemStack input)
-	{
+	public static IngredientPropertiesRecipe getProperties(Level world, MeshType mesh, ItemStack input) {
 		return ingredientPropertiesCache.computeIfAbsent(Pair.of(input.getItem(), mesh), key -> {
-			for (IngredientPropertiesRecipe recipe : world.getRecipeManager().getRecipes(INGREDIENT_PROPERTIES_TYPE, NoInventory.INSTANCE, world))
-			{
-				if (recipe.meshes.contains(mesh) && recipe.ingredient.test(input))
-				{
-					recipe.recipes = getSluiceRecipes(world, mesh, input);
+			for (IngredientPropertiesRecipe recipe : world.getRecipeManager().getRecipesFor(INGREDIENT_PROPERTIES_TYPE, NoInventory.INSTANCE, world)) {
+				if (recipe.meshes.contains(mesh) && recipe.ingredient.test(input)) {
+					recipe.items = new ArrayList<>();
 
-					if (recipe.recipes.isEmpty())
-					{
-						return null;
+					for (SluiceRecipe r : getSluiceRecipes(world, mesh, input)) {
+						recipe.items.addAll(r.results);
 					}
 
 					recipe.totalWeight = recipe.noItemWeight;
 
-					for (SluiceRecipe r : recipe.recipes)
-					{
-						recipe.totalWeight += r.weight;
+					for (ItemWithWeight entry : recipe.items) {
+						recipe.totalWeight += entry.weight;
 					}
 
 					return recipe;
@@ -87,31 +77,29 @@ public class SluiceModRecipeSerializers
 		});
 	}
 
-	public static Pair<ItemStack, Integer> getRandomResult(World world, MeshType mesh, ItemStack input)
-	{
+	/**
+	 * Weight here is processing time
+	 */
+	public static ItemWithWeight getRandomResult(Level world, MeshType mesh, ItemStack input) {
 		IngredientPropertiesRecipe properties = getProperties(world, mesh, input);
 
-		if (properties == null)
-		{
-			return Pair.of(ItemStack.EMPTY, 0);
+		if (properties == null) {
+			return ItemWithWeight.NONE;
 		}
 
 		int number = world.getRandom().nextInt(properties.totalWeight) + 1;
 		int currentWeight = properties.noItemWeight;
 
-		if (currentWeight < number)
-		{
-			for (SluiceRecipe r : properties.recipes)
-			{
-				currentWeight += r.weight;
+		if (currentWeight < number) {
+			for (ItemWithWeight i : properties.items) {
+				currentWeight += i.weight;
 
-				if (currentWeight >= number)
-				{
-					return Pair.of(r.result, properties.time);
+				if (currentWeight >= number) {
+					return new ItemWithWeight(i.item, properties.time);
 				}
 			}
 		}
 
-		return Pair.of(ItemStack.EMPTY, properties.time);
+		return new ItemWithWeight(ItemStack.EMPTY, properties.time);
 	}
 }

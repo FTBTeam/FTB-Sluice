@@ -1,5 +1,8 @@
 {
-	"block.sluice.sluice": "Sluice",
+	"block.sluice.diamond_sluice": "Diamond Sluice",
+	"block.sluice.iron_sluice": "Iron Sluice",
+	"block.sluice.netherite_sluice": "Netherite Sluice",
+	"block.sluice.oak_sluice": "Oak Sluice",
 	"item.sluice.cloth_mesh": "Cloth Mesh",
 	"item.sluice.diamond_mesh": "Diamond Mesh",
 	"item.sluice.gold_mesh": "Gold Mesh",

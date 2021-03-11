@@ -1,108 +1,91 @@
 package dev.latvian.mods.sluice.recipe;
 
 import dev.latvian.mods.sluice.block.MeshType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author LatvianModder
  */
-public class SluiceRecipe implements IRecipe<NoInventory>
-{
+public class SluiceRecipe implements Recipe<NoInventory> {
 	private final ResourceLocation id;
 	public String group;
-	public int weight;
 	public Ingredient ingredient;
-	public ItemStack result;
+	public List<ItemWithWeight> results;
 	public HashSet<MeshType> meshes;
 
-	public SluiceRecipe(ResourceLocation i, String g)
-	{
+	public SluiceRecipe(ResourceLocation i, String g) {
 		id = i;
 		group = g;
-		weight = 1;
 		ingredient = Ingredient.EMPTY;
-		result = ItemStack.EMPTY;
+		results = new ArrayList<>();
 		meshes = new HashSet<>();
 	}
 
 	@Override
-	public boolean matches(NoInventory inv, World world)
-	{
+	public boolean matches(NoInventory inv, Level world) {
 		return true;
 	}
 
 	@Override
-	public ItemStack getCraftingResult(NoInventory inv)
-	{
-		return result.copy();
+	public ItemStack assemble(NoInventory inv) {
+		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public boolean canFit(int width, int height)
-	{
+	public boolean canCraftInDimensions(int width, int height) {
 		return true;
 	}
 
 	@Override
-	public ItemStack getRecipeOutput()
-	{
-		return result;
+	public ItemStack getResultItem() {
+		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public ResourceLocation getId()
-	{
+	public ResourceLocation getId() {
 		return id;
 	}
 
 	@Override
-	public String getGroup()
-	{
+	public String getGroup() {
 		return group;
 	}
 
 	@Override
-	public IRecipeSerializer<?> getSerializer()
-	{
+	public RecipeSerializer<?> getSerializer() {
 		return SluiceModRecipeSerializers.SLUICE.get();
 	}
 
 	@Override
-	public IRecipeType<?> getType()
-	{
+	public RecipeType<?> getType() {
 		return SluiceModRecipeSerializers.SLUICE_TYPE;
 	}
 
-	public String chanceString(int totalWeight)
-	{
-		if (totalWeight <= 0)
-		{
+	/*
+	public String chanceString(int totalWeight) {
+		if (totalWeight <= 0) {
 			return "??%";
-		}
-		else if (weight <= 0)
-		{
+		} else if (weight <= 0) {
 			return "0%";
-		}
-		else if (weight >= totalWeight)
-		{
+		} else if (weight >= totalWeight) {
 			return "100%";
 		}
 
 		int chance = weight * 100 / totalWeight;
 		double chanced = weight * 100D / (double) totalWeight;
 
-		if (chance != chanced)
-		{
-			if (chanced < 0.01D)
-			{
+		if (chance != chanced) {
+			if (chanced < 0.01D) {
 				return "<0.01%";
 			}
 
@@ -111,4 +94,5 @@ public class SluiceRecipe implements IRecipe<NoInventory>
 
 		return chance + "%";
 	}
+	*/
 }

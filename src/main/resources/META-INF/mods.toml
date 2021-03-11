@@ -1,10 +1,11 @@
 modLoader = "javafml"
 loaderVersion = "[30,)"
 issueTrackerURL = "https://github.com/LatvianModder/Sluice/issues"
+license = "GNU LGPLv3"
 
 [[mods]]
 modId = "sluice"
-version = "${file.jarVersion}"
+version = "${version}"
 displayName = "Sluice"
 authors = "LatvianModder"
 description = '''

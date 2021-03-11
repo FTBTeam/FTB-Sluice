@@ -1,0 +1,234 @@
+{
+	"multipart": [
+		{
+			"when": {
+				"facing": "north"
+			},
+			"apply": {
+				"model": "sluice:block/oak_frame"
+			}
+		},
+		{
+			"when": {
+				"water": "true",
+				"facing": "north"
+			},
+			"apply": {
+				"model": "sluice:block/water"
+			}
+		},
+		{
+			"when": {
+				"mesh": "cloth",
+				"facing": "north"
+			},
+			"apply": {
+				"model": "sluice:block/cloth_mesh"
+			}
+		},
+		{
+			"when": {
+				"mesh": "iron",
+				"facing": "north"
+			},
+			"apply": {
+				"model": "sluice:block/iron_mesh"
+			}
+		},
+		{
+			"when": {
+				"mesh": "gold",
+				"facing": "north"
+			},
+			"apply": {
+				"model": "sluice:block/gold_mesh"
+			}
+		},
+		{
+			"when": {
+				"mesh": "diamond",
+				"facing": "north"
+			},
+			"apply": {
+				"model": "sluice:block/diamond_mesh"
+			}
+		},
+		{
+			"when": {
+				"facing": "south"
+			},
+			"apply": {
+				"model": "sluice:block/oak_frame",
+				"y": 180
+			}
+		},
+		{
+			"when": {
+				"water": "true",
+				"facing": "south"
+			},
+			"apply": {
+				"model": "sluice:block/water",
+				"y": 180
+			}
+		},
+		{
+			"when": {
+				"mesh": "cloth",
+				"facing": "south"
+			},
+			"apply": {
+				"model": "sluice:block/cloth_mesh",
+				"y": 180
+			}
+		},
+		{
+			"when": {
+				"mesh": "iron",
+				"facing": "south"
+			},
+			"apply": {
+				"model": "sluice:block/iron_mesh",
+				"y": 180
+			}
+		},
+		{
+			"when": {
+				"mesh": "gold",
+				"facing": "south"
+			},
+			"apply": {
+				"model": "sluice:block/gold_mesh",
+				"y": 180
+			}
+		},
+		{
+			"when": {
+				"mesh": "diamond",
+				"facing": "south"
+			},
+			"apply": {
+				"model": "sluice:block/diamond_mesh",
+				"y": 180
+			}
+		},
+		{
+			"when": {
+				"facing": "west"
+			},
+			"apply": {
+				"model": "sluice:block/oak_frame",
+				"y": 270
+			}
+		},
+		{
+			"when": {
+				"water": "true",
+				"facing": "west"
+			},
+			"apply": {
+				"model": "sluice:block/water",
+				"y": 270
+			}
+		},
+		{
+			"when": {
+				"mesh": "cloth",
+				"facing": "west"
+			},
+			"apply": {
+				"model": "sluice:block/cloth_mesh",
+				"y": 270
+			}
+		},
+		{
+			"when": {
+				"mesh": "iron",
+				"facing": "west"
+			},
+			"apply": {
+				"model": "sluice:block/iron_mesh",
+				"y": 270
+			}
+		},
+		{
+			"when": {
+				"mesh": "gold",
+				"facing": "west"
+			},
+			"apply": {
+				"model": "sluice:block/gold_mesh",
+				"y": 270
+			}
+		},
+		{
+			"when": {
+				"mesh": "diamond",
+				"facing": "west"
+			},
+			"apply": {
+				"model": "sluice:block/diamond_mesh",
+				"y": 270
+			}
+		},
+		{
+			"when": {
+				"facing": "east"
+			},
+			"apply": {
+				"model": "sluice:block/oak_frame",
+				"y": 90
+			}
+		},
+		{
+			"when": {
+				"water": "true",
+				"facing": "east"
+			},
+			"apply": {
+				"model": "sluice:block/water",
+				"y": 90
+			}
+		},
+		{
+			"when": {
+				"mesh": "cloth",
+				"facing": "east"
+			},
+			"apply": {
+				"model": "sluice:block/cloth_mesh",
+				"y": 90
+			}
+		},
+		{
+			"when": {
+				"mesh": "iron",
+				"facing": "east"
+			},
+			"apply": {
+				"model": "sluice:block/iron_mesh",
+				"y": 90
+			}
+		},
+		{
+			"when": {
+				"mesh": "gold",
+				"facing": "east"
+			},
+			"apply": {
+				"model": "sluice:block/gold_mesh",
+				"y": 90
+			}
+		},
+		{
+			"when": {
+				"mesh": "diamond",
+				"facing": "east"
+			},
+			"apply": {
+				"model": "sluice:block/diamond_mesh",
+				"y": 90
+			}
+		}
+	]
+}

@@ -1,13 +1,13 @@
 package dev.latvian.mods.sluice.recipe;
 
 import dev.latvian.mods.sluice.block.MeshType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,8 +15,7 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class IngredientPropertiesRecipe implements IRecipe<NoInventory>
-{
+public class IngredientPropertiesRecipe implements Recipe<NoInventory> {
 	private final ResourceLocation id;
 	public String group;
 	public int noItemWeight;
@@ -24,11 +23,10 @@ public class IngredientPropertiesRecipe implements IRecipe<NoInventory>
 	public Ingredient ingredient;
 	public HashSet<MeshType> meshes;
 
-	public List<SluiceRecipe> recipes;
+	public List<ItemWithWeight> items;
 	public int totalWeight;
 
-	public IngredientPropertiesRecipe(ResourceLocation i, String g)
-	{
+	public IngredientPropertiesRecipe(ResourceLocation i, String g) {
 		id = i;
 		group = g;
 		noItemWeight = 0;
@@ -38,50 +36,42 @@ public class IngredientPropertiesRecipe implements IRecipe<NoInventory>
 	}
 
 	@Override
-	public boolean matches(NoInventory inv, World world)
-	{
+	public boolean matches(NoInventory inv, Level world) {
 		return true;
 	}
 
 	@Override
-	public ItemStack getCraftingResult(NoInventory inv)
-	{
+	public ItemStack assemble(NoInventory inv) {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public boolean canFit(int width, int height)
-	{
+	public boolean canCraftInDimensions(int width, int height) {
 		return true;
 	}
 
 	@Override
-	public ItemStack getRecipeOutput()
-	{
+	public ItemStack getResultItem() {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public ResourceLocation getId()
-	{
+	public ResourceLocation getId() {
 		return id;
 	}
 
 	@Override
-	public String getGroup()
-	{
+	public String getGroup() {
 		return group;
 	}
 
 	@Override
-	public IRecipeSerializer<?> getSerializer()
-	{
+	public RecipeSerializer<?> getSerializer() {
 		return SluiceModRecipeSerializers.INGREDIENT_PROPERTIES.get();
 	}
 
 	@Override
-	public IRecipeType<?> getType()
-	{
+	public RecipeType<?> getType() {
 		return SluiceModRecipeSerializers.INGREDIENT_PROPERTIES_TYPE;
 	}
 }

@@ -9,11 +9,9 @@ import net.minecraftforge.fml.common.Mod;
  * @author LatvianModder
  */
 @Mod.EventBusSubscriber(modid = SluiceMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class SluiceModEventHandler
-{
+public class SluiceModEventHandler {
 	@SubscribeEvent
-	public static void refreshRecipeCache(TagsUpdatedEvent event)
-	{
+	public static void refreshRecipeCache(TagsUpdatedEvent event) {
 		SluiceModRecipeSerializers.clearCache();
 	}
 }

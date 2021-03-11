@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"WS",
+		"WW"
+	],
+	"key": {
+		"S": {
+			"tag": "forge:rods/wooden"
+		},
+		"W": {
+			"item": "minecraft:oak_log"
+		}
+	},
+	"result": {
+		"item": "sluice:oak_sluice"
+	}
+}

@@ -2,29 +2,29 @@ package dev.latvian.mods.sluice.block;
 
 import dev.latvian.mods.sluice.item.MeshItem;
 import dev.latvian.mods.sluice.recipe.SluiceModRecipeSerializers;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -34,156 +34,131 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class SluiceBlock extends Block
-{
-	public static final VoxelShape SHAPE = makeCuboidShape(0, 0, 0, 16, 16, 16);
+public class SluiceBlock extends Block {
+	public static final VoxelShape SHAPE = box(0, 0, 0, 16, 10, 16);
 
 	public static final EnumProperty<MeshType> MESH = EnumProperty.create("mesh", MeshType.class);
 	public static final BooleanProperty WATER = BooleanProperty.create("water");
 
-	public SluiceBlock()
-	{
-		super(Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(0.9F).notSolid());
-		setDefaultState(stateContainer.getBaseState()
-				.with(MESH, MeshType.NONE)
-				.with(WATER, false)
-				.with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+	public SluiceBlock() {
+		super(Properties.of(Material.METAL).sound(SoundType.METAL).strength(0.9F).noOcclusion());
+		registerDefaultState(getStateDefinition().any()
+				.setValue(MESH, MeshType.NONE)
+				.setValue(WATER, false)
+				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
 	}
 
 	@Override
-	public boolean hasTileEntity(BlockState state)
-	{
+	public boolean hasTileEntity(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world)
-	{
+	public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
 		return new SluiceBlockEntity();
 	}
 
 	@Override
 	@Deprecated
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
-	{
+	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
 		return SHAPE;
 	}
 
 	@Override
 	@Deprecated
 	@OnlyIn(Dist.CLIENT)
-	public float getAmbientOcclusionLightValue(BlockState state, IBlockReader worldIn, BlockPos pos)
-	{
-		return 1.0F;
+	public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
+		return 1F;
 	}
 
 	@Override
-	public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos)
-	{
+	public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
 		return true;
 	}
 
 	@Override
 	@Deprecated
-	public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit)
-	{
-		ItemStack itemStack = player.getHeldItem(hand);
-		TileEntity tileEntity = world.getTileEntity(pos);
+	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		ItemStack itemStack = player.getItemInHand(hand);
+		BlockEntity tileEntity = world.getBlockEntity(pos);
 
-		if (!(tileEntity instanceof SluiceBlockEntity))
-		{
-			return ActionResultType.SUCCESS;
+		if (!(tileEntity instanceof SluiceBlockEntity)) {
+			return InteractionResult.SUCCESS;
 		}
 
 		SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
 
-		if (player.isSneaking())
-		{
-			if (state.get(MESH) != MeshType.NONE && itemStack.isEmpty())
-			{
-				ItemStack current = state.get(MESH).meshItem.get();
-				world.setBlockState(pos, state.with(MESH, MeshType.NONE), 3);
+		if (player.isCrouching()) {
+			if (state.getValue(MESH) != MeshType.NONE && itemStack.isEmpty()) {
+				ItemStack current = state.getValue(MESH).getItemStack();
+				world.setBlock(pos, state.setValue(MESH, MeshType.NONE), 3);
 
-				if (!world.isRemote())
-				{
+				if (!world.isClientSide()) {
 					ItemHandlerHelper.giveItemToPlayer(player, current);
 				}
 
-				sluice.updateContainingBlockInfo();
+				sluice.clearCache();
 			}
 
-			return ActionResultType.SUCCESS;
-		}
-		else if (itemStack.getItem() instanceof MeshItem)
-		{
-			if (state.get(MESH) != ((MeshItem) itemStack.getItem()).mesh)
-			{
-				ItemStack current = state.get(MESH).meshItem.get();
-				world.setBlockState(pos, state.with(MESH, ((MeshItem) itemStack.getItem()).mesh), 3);
+			return InteractionResult.SUCCESS;
+		} else if (itemStack.getItem() instanceof MeshItem) {
+			if (state.getValue(MESH) != ((MeshItem) itemStack.getItem()).mesh) {
+				ItemStack current = state.getValue(MESH).getItemStack();
+				world.setBlock(pos, state.setValue(MESH, ((MeshItem) itemStack.getItem()).mesh), 3);
 				itemStack.shrink(1);
 
-				if (!world.isRemote())
-				{
+				if (!world.isClientSide()) {
 					ItemHandlerHelper.giveItemToPlayer(player, current);
 				}
 
-				sluice.updateContainingBlockInfo();
+				sluice.clearCache();
 			}
 
-			return ActionResultType.SUCCESS;
-		}
-		else if (SluiceModRecipeSerializers.getProperties(world, state.get(MESH), itemStack) != null)
-		{
-			if (!world.isRemote())
-			{
-				sluice.updateContainingBlockInfo();
+			return InteractionResult.SUCCESS;
+		} else if (SluiceModRecipeSerializers.getProperties(world, state.getValue(MESH), itemStack) != null) {
+			if (!world.isClientSide()) {
+				sluice.clearCache();
 				itemStack.setCount(ItemHandlerHelper.insertItem(sluice.inventory, itemStack.copy(), false).getCount());
 			}
 
-			return ActionResultType.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 
-		return ActionResultType.SUCCESS;
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
-	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
-	{
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(MESH, WATER, BlockStateProperties.HORIZONTAL_FACING);
 	}
 
 	@Nullable
 	@Override
-	public BlockState getStateForPlacement(BlockItemUseContext context)
-	{
-		BlockState facingState = context.getWorld().getBlockState(context.getPos().up());
-		return getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, context.getPlacementHorizontalFacing()).with(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.get(WATER));
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
+		BlockState facingState = context.getLevel().getBlockState(context.getClickedPos().above());
+		return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection()).setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER));
 	}
 
 	@Override
 	@Deprecated
-	public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos)
-	{
-		return facing == Direction.UP ? state.with(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.get(WATER)) : state;
+	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
+		return facing == Direction.UP ? state.setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER)) : state;
 	}
 
 	@Override
 	@Deprecated
-	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
-	{
-		if (!state.isIn(newState.getBlock()))
-		{
-			TileEntity tileEntity = world.getTileEntity(pos);
+	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (!state.is(newState.getBlock())) {
+			BlockEntity tileEntity = world.getBlockEntity(pos);
 
-			if (tileEntity instanceof SluiceBlockEntity)
-			{
-				spawnAsEntity(world, pos, ((SluiceBlockEntity) tileEntity).inventory.getStackInSlot(0));
-				world.updateComparatorOutputLevel(pos, this);
+			if (tileEntity instanceof SluiceBlockEntity) {
+				popResource(world, pos, ((SluiceBlockEntity) tileEntity).inventory.getStackInSlot(0));
+				world.updateNeighbourForOutputSignal(pos, this);
 			}
 
-			spawnAsEntity(world, pos, state.get(MESH).meshItem.get());
+			popResource(world, pos, state.getValue(MESH).getItemStack());
 
-			super.onReplaced(state, world, pos, newState, isMoving);
+			super.onRemove(state, world, pos, newState, isMoving);
 		}
 	}
 }
