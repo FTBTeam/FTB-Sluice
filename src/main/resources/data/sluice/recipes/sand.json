@@ -1,0 +1,14 @@
+{
+  "type": "sluice:sluice",
+  "ingredient": "minecraft:sand",
+  "results": [
+    {
+      "name": "minecraft:gravel",
+      "count": 1,
+      "weight": 100
+    }
+  ],
+  "meshes": [
+    "cloth"
+  ]
+}

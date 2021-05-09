@@ -18,4 +18,6 @@ public class SluiceModBlockEntities {
 			SluiceModBlocks.DIAMOND_SLUICE.get(),
 			SluiceModBlocks.NETHERITE_SLUICE.get()
 	).build(null));
+
+	public static final RegistryObject<BlockEntityType<TankBlockEntity>> TANK = REGISTRY.register("tank", () -> BlockEntityType.Builder.of(TankBlockEntity::new, SluiceModBlocks.TANK.get()).build(null));
 }

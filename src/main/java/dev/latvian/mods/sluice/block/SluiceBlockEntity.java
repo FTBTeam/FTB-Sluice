@@ -80,7 +80,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		MeshType mesh = state.getValue(SluiceBlock.MESH);
 
 		ItemStack input = inventory.getStackInSlot(0);
-
 		if (input.isEmpty()) {
 			return;
 		}

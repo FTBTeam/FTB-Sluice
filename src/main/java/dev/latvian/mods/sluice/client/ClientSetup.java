@@ -13,7 +13,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
  * @author LatvianModder
  */
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SluiceMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class JarModClient {
+public class ClientSetup {
 	@SubscribeEvent
 	public static void setup(FMLClientSetupEvent event) {
 		ItemBlockRenderTypes.setRenderLayer(SluiceModBlocks.OAK_SLUICE.get(), RenderType.cutout());
