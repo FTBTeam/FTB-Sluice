@@ -19,5 +19,5 @@ public class SluiceModBlockEntities {
 			SluiceModBlocks.NETHERITE_SLUICE.get()
 	).build(null));
 
-	public static final RegistryObject<BlockEntityType<TankBlockEntity>> TANK = REGISTRY.register("tank", () -> BlockEntityType.Builder.of(TankBlockEntity::new, SluiceModBlocks.TANK.get()).build(null));
+	public static final RegistryObject<BlockEntityType<TapBlockEntity>> TAP = REGISTRY.register("tap", () -> BlockEntityType.Builder.of(TapBlockEntity::new, SluiceModBlocks.TAP.get()).build(null));
 }

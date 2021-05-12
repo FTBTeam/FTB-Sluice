@@ -35,130 +35,130 @@ import javax.annotation.Nullable;
  * @author LatvianModder
  */
 public class SluiceBlock extends Block {
-	public static final VoxelShape SHAPE = box(0, 0, 0, 16, 10, 16);
+    public static final VoxelShape SHAPE = box(0, 0, 0, 16, 10, 16);
 
-	public static final EnumProperty<MeshType> MESH = EnumProperty.create("mesh", MeshType.class);
-	public static final BooleanProperty WATER = BooleanProperty.create("water");
+    public static final EnumProperty<MeshType> MESH = EnumProperty.create("mesh", MeshType.class);
+    public static final BooleanProperty WATER = BooleanProperty.create("water");
 
-	public SluiceBlock() {
-		super(Properties.of(Material.METAL).sound(SoundType.METAL).strength(0.9F).noOcclusion());
-		registerDefaultState(getStateDefinition().any()
-				.setValue(MESH, MeshType.NONE)
-				.setValue(WATER, false)
-				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
-	}
+    public SluiceBlock() {
+        super(Properties.of(Material.METAL).sound(SoundType.METAL).strength(0.9F).noOcclusion());
+		this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(MESH, MeshType.NONE)
+                .setValue(WATER, false)
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+    }
 
-	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return true;
-	}
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
 
-	@Override
-	public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-		return new SluiceBlockEntity();
-	}
+    @Override
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
+        return new SluiceBlockEntity();
+    }
 
-	@Override
-	@Deprecated
-	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-		return SHAPE;
-	}
+    @Override
+    @Deprecated
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+        return SHAPE;
+    }
 
-	@Override
-	@Deprecated
-	@OnlyIn(Dist.CLIENT)
-	public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
-		return 1F;
-	}
+    @Override
+    @Deprecated
+    @OnlyIn(Dist.CLIENT)
+    public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
+        return 1F;
+    }
 
-	@Override
-	public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
-		return true;
-	}
+    @Override
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+        return true;
+    }
 
-	@Override
-	@Deprecated
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-		ItemStack itemStack = player.getItemInHand(hand);
-		BlockEntity tileEntity = world.getBlockEntity(pos);
+    @Override
+    @Deprecated
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        ItemStack itemStack = player.getItemInHand(hand);
+        BlockEntity tileEntity = world.getBlockEntity(pos);
 
-		if (!(tileEntity instanceof SluiceBlockEntity)) {
-			return InteractionResult.SUCCESS;
-		}
+        if (!(tileEntity instanceof SluiceBlockEntity)) {
+            return InteractionResult.SUCCESS;
+        }
 
-		SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
+        SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
 
-		if (player.isCrouching()) {
-			if (state.getValue(MESH) != MeshType.NONE && itemStack.isEmpty()) {
-				ItemStack current = state.getValue(MESH).getItemStack();
-				world.setBlock(pos, state.setValue(MESH, MeshType.NONE), 3);
+        if (player.isCrouching()) {
+            if (state.getValue(MESH) != MeshType.NONE && itemStack.isEmpty()) {
+                ItemStack current = state.getValue(MESH).getItemStack();
+                world.setBlock(pos, state.setValue(MESH, MeshType.NONE), 3);
 
-				if (!world.isClientSide()) {
-					ItemHandlerHelper.giveItemToPlayer(player, current);
-				}
+                if (!world.isClientSide()) {
+                    ItemHandlerHelper.giveItemToPlayer(player, current);
+                }
 
-				sluice.clearCache();
-			}
+                sluice.clearCache();
+            }
 
-			return InteractionResult.SUCCESS;
-		} else if (itemStack.getItem() instanceof MeshItem) {
-			if (state.getValue(MESH) != ((MeshItem) itemStack.getItem()).mesh) {
-				ItemStack current = state.getValue(MESH).getItemStack();
-				world.setBlock(pos, state.setValue(MESH, ((MeshItem) itemStack.getItem()).mesh), 3);
-				itemStack.shrink(1);
+            return InteractionResult.SUCCESS;
+        } else if (itemStack.getItem() instanceof MeshItem) {
+            if (state.getValue(MESH) != ((MeshItem) itemStack.getItem()).mesh) {
+                ItemStack current = state.getValue(MESH).getItemStack();
+                world.setBlock(pos, state.setValue(MESH, ((MeshItem) itemStack.getItem()).mesh), 3);
+                itemStack.shrink(1);
 
-				if (!world.isClientSide()) {
-					ItemHandlerHelper.giveItemToPlayer(player, current);
-				}
+                if (!world.isClientSide()) {
+                    ItemHandlerHelper.giveItemToPlayer(player, current);
+                }
 
-				sluice.clearCache();
-			}
+                sluice.clearCache();
+            }
 
-			return InteractionResult.SUCCESS;
-		} else if (SluiceModRecipeSerializers.getProperties(world, state.getValue(MESH), itemStack) != null) {
-			if (!world.isClientSide()) {
-				sluice.clearCache();
-				itemStack.setCount(ItemHandlerHelper.insertItem(sluice.inventory, itemStack.copy(), false).getCount());
-			}
+            return InteractionResult.SUCCESS;
+        } else if (SluiceModRecipeSerializers.getSluiceRecipes(world, state.getValue(MESH), itemStack) != null) {
+            if (!world.isClientSide()) {
+                sluice.clearCache();
+                itemStack.setCount(ItemHandlerHelper.insertItem(sluice.inventory, itemStack.copy(), false).getCount());
+            }
 
-			return InteractionResult.SUCCESS;
-		}
+            return InteractionResult.SUCCESS;
+        }
 
-		return InteractionResult.SUCCESS;
-	}
+        return InteractionResult.SUCCESS;
+    }
 
-	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(MESH, WATER, BlockStateProperties.HORIZONTAL_FACING);
-	}
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(MESH, WATER, BlockStateProperties.HORIZONTAL_FACING);
+    }
 
-	@Nullable
-	@Override
-	public BlockState getStateForPlacement(BlockPlaceContext context) {
-		BlockState facingState = context.getLevel().getBlockState(context.getClickedPos().above());
-		return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection()).setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER));
-	}
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockState facingState = context.getLevel().getBlockState(context.getClickedPos().above());
+        return this.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection()).setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER));
+    }
 
-	@Override
-	@Deprecated
-	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
-		return facing == Direction.UP ? state.setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER)) : state;
-	}
+    @Override
+    @Deprecated
+    public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
+        return facing == Direction.UP ? state.setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER)) : state;
+    }
 
-	@Override
-	@Deprecated
-	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (!state.is(newState.getBlock())) {
-			BlockEntity tileEntity = world.getBlockEntity(pos);
+    @Override
+    @Deprecated
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity tileEntity = world.getBlockEntity(pos);
 
-			if (tileEntity instanceof SluiceBlockEntity) {
-				popResource(world, pos, ((SluiceBlockEntity) tileEntity).inventory.getStackInSlot(0));
-				world.updateNeighbourForOutputSignal(pos, this);
-			}
+            if (tileEntity instanceof SluiceBlockEntity) {
+                popResource(world, pos, ((SluiceBlockEntity) tileEntity).inventory.getStackInSlot(0));
+                world.updateNeighbourForOutputSignal(pos, this);
+            }
 
-			popResource(world, pos, state.getValue(MESH).getItemStack());
+            popResource(world, pos, state.getValue(MESH).getItemStack());
 
-			super.onRemove(state, world, pos, newState, isMoving);
-		}
-	}
+            super.onRemove(state, world, pos, newState, isMoving);
+        }
+    }
 }

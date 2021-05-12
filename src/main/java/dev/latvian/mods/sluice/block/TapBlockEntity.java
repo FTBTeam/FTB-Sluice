@@ -1,19 +1,16 @@
 package dev.latvian.mods.sluice.block;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.network.protocol.game.ServerboundBlockEntityTagQuery;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
-public class TankBlockEntity extends BlockEntity {
+public class TapBlockEntity extends BlockEntity {
     private final LazyOptional<FluidTank> fluidTank = LazyOptional.of(() -> new FluidTank(5000, stack -> true));
 
-    public TankBlockEntity() {
-        super(SluiceModBlockEntities.TANK.get());
+    public TapBlockEntity() {
+        super(SluiceModBlockEntities.TAP.get());
     }
 
     @Override
@@ -34,8 +31,8 @@ public class TankBlockEntity extends BlockEntity {
         return this.save(new CompoundTag());
     }
 
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        return new ServerboundBlockEntityTagQuery(getBlockPos(), )
-    }
+//    @Override
+//    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+//        return new ServerboundBlockEntityTagQuery(getBlockPos(), )
+//    }
 }

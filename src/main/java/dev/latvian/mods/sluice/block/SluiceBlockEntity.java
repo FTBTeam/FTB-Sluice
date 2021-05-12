@@ -20,6 +20,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * @author LatvianModder
@@ -84,19 +85,19 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 			return;
 		}
 
-		ItemWithWeight out = SluiceModRecipeSerializers.getRandomResult(level, mesh, input);
-
-		if (out.weight == 0) {
-			ejectItem(level, direction, input);
-			inventory.setStackInSlot(0, ItemStack.EMPTY);
-			setChanged();
-			return;
-		}
-
-		ejectItem(level, direction, ItemHandlerHelper.copyStackWithSize(out.item, 1));
-		input.shrink(1);
-		cooldown = out.weight;
-		setChanged();
+		List<ItemStack> out = SluiceModRecipeSerializers.getRandomResult(level, mesh, input);
+		System.out.println(out);
+//		if (out.weight == 0) {
+//			ejectItem(level, direction, input);
+//			inventory.setStackInSlot(0, ItemStack.EMPTY);
+//			setChanged();
+//			return;
+//		}
+//
+//		ejectItem(level, direction, ItemHandlerHelper.copyStackWithSize(out.item, 1));
+//		input.shrink(1);
+//		cooldown = out.weight;
+//		setChanged();
 	}
 
 	private void ejectItem(Level w, Direction direction, ItemStack stack) {

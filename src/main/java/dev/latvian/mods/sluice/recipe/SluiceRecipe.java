@@ -17,59 +17,59 @@ import java.util.List;
  * @author LatvianModder
  */
 public class SluiceRecipe implements Recipe<NoInventory> {
-	private final ResourceLocation id;
-	public String group;
-	public Ingredient ingredient;
-	public List<ItemWithWeight> results;
-	public HashSet<MeshType> meshes;
+    private final ResourceLocation id;
+    public String group;
+    public Ingredient ingredient;
+    public List<ItemWithWeight> results;
+    public HashSet<MeshType> meshes;
 
-	public SluiceRecipe(ResourceLocation i, String g) {
-		id = i;
-		group = g;
-		ingredient = Ingredient.EMPTY;
-		results = new ArrayList<>();
-		meshes = new HashSet<>();
-	}
+    public SluiceRecipe(ResourceLocation i, String g) {
+        this.id = i;
+        this.group = g;
+        this.ingredient = Ingredient.EMPTY;
+        this.results = new ArrayList<>();
+        this.meshes = new HashSet<>();
+    }
 
-	@Override
-	public boolean matches(NoInventory inv, Level world) {
-		return true;
-	}
+    @Override
+    public boolean matches(NoInventory inv, Level world) {
+        return true;
+    }
 
-	@Override
-	public ItemStack assemble(NoInventory inv) {
-		return ItemStack.EMPTY;
-	}
+    @Override
+    public ItemStack assemble(NoInventory inv) {
+        return ItemStack.EMPTY;
+    }
 
-	@Override
-	public boolean canCraftInDimensions(int width, int height) {
-		return true;
-	}
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return true;
+    }
 
-	@Override
-	public ItemStack getResultItem() {
-		return ItemStack.EMPTY;
-	}
+    @Override
+    public ItemStack getResultItem() {
+        return ItemStack.EMPTY;
+    }
 
-	@Override
-	public ResourceLocation getId() {
-		return id;
-	}
+    @Override
+    public ResourceLocation getId() {
+        return this.id;
+    }
 
-	@Override
-	public String getGroup() {
-		return group;
-	}
+    @Override
+    public String getGroup() {
+        return this.group;
+    }
 
-	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return SluiceModRecipeSerializers.SLUICE.get();
-	}
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return SluiceModRecipeSerializers.SLUICE.get();
+    }
 
-	@Override
-	public RecipeType<?> getType() {
-		return SluiceModRecipeSerializers.SLUICE_TYPE;
-	}
+    @Override
+    public RecipeType<?> getType() {
+        return SluiceModRecipeSerializers.SLUICE_TYPE;
+    }
 
 	/*
 	public String chanceString(int totalWeight) {
