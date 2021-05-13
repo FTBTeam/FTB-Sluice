@@ -1,7 +1,0 @@
-{
-  "type": "sluice:ingredient_properties",
-  "material": "#minecraft:sand",
-  "materialId": "sand",
-  "noItemWeight": 400,
-  "processTime": 30
-}

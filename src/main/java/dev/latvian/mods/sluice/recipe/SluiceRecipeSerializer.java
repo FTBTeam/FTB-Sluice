@@ -27,7 +27,7 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
 
         for (JsonElement e : json.get("results").getAsJsonArray()) {
             JsonObject o = e.getAsJsonObject();
-            r.results.add(new ItemWithWeight(ShapedRecipe.itemFromJson(o), o.get("weight").getAsDouble()));
+            r.results.add(new ItemWithWeight(ShapedRecipe.itemFromJson(o), o.get("chance").getAsDouble()));
         }
 
         for (JsonElement e : json.get("meshes").getAsJsonArray()) {

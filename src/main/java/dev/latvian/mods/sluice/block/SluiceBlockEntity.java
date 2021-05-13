@@ -86,7 +86,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		}
 
 		List<ItemStack> out = SluiceModRecipeSerializers.getRandomResult(level, mesh, input);
-		System.out.println(out);
+//		System.out.println(out);
 //		if (out.weight == 0) {
 //			ejectItem(level, direction, input);
 //			inventory.setStackInSlot(0, ItemStack.EMPTY);

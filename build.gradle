@@ -34,6 +34,8 @@ loom {
 
 repositories {
 	maven { url "https://www.cursemaven.com" }
+	maven { url "https://maven.saps.dev/minecraft" }
+	maven { url "https://maven.shedaniel.me/" }
 }
 
 dependencies {
@@ -41,9 +43,9 @@ dependencies {
 	mappings minecraft.officialMojangMappings()
 	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 	modCompile "curse.maven:jei-238222:${jei_file}"
-	modCompile "curse.maven:kubejs-fabric-395864:${kubejs_file}"
-	modCompile "curse.maven:architectury-fabric-419697:${arch_file}"
-	modCompile "curse.maven:rhino-416294:${rhino_file}"
+	modCompile "me.shedaniel:architectury-forge:${arch_version}"
+	modCompile "dev.latvian.mods:kubejs-forge:${kubejs_version}"
+	modCompile "dev.latvian.mods:rhino:${rhino_version}"
 }
 
 processResources {
