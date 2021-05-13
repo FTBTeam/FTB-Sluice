@@ -117,8 +117,13 @@ public class SluiceBlock extends Block {
             return InteractionResult.SUCCESS;
         } else if (SluiceModRecipeSerializers.getSluiceRecipes(world, state.getValue(MESH), itemStack) != null) {
             if (!world.isClientSide()) {
-                sluice.clearCache();
-                itemStack.setCount(ItemHandlerHelper.insertItem(sluice.inventory, itemStack.copy(), false).getCount());
+                if (sluice.inventory.getStackInSlot(0).isEmpty()) {
+                    sluice.clearCache();
+                    ItemStack copy = itemStack.copy();
+                    copy.setCount(1);
+                    ItemHandlerHelper.insertItem(sluice.inventory, copy, false);
+                    itemStack.shrink(1);
+                }
             }
 
             return InteractionResult.SUCCESS;

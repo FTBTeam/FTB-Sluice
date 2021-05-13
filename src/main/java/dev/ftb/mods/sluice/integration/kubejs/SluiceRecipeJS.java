@@ -54,12 +54,7 @@ public class SluiceRecipeJS extends RecipeJS {
 			JsonArray array = new JsonArray();
 
 			for (ItemStackJS o : outputItems) {
-				int c = o.hasChance() ? (int) o.getChance() : 1;
-				o = o.getCopy();
-				o.removeChance();
-				JsonObject j = o.toResultJson().getAsJsonObject();
-				j.addProperty("chance", c);
-				array.add(j);
+				array.add(o.toResultJson());
 			}
 
 			json.add("results", array);

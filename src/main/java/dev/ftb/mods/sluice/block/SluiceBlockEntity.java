@@ -85,7 +85,15 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		}
 
 		List<ItemStack> out = SluiceModRecipeSerializers.getRandomResult(level, mesh, input);
-//		System.out.println(out);
+		out.forEach(e -> ejectItem(level, direction, e));
+		System.out.println("Processing item in stack: " + out.size());
+		if (out.size() > 0) {
+			out.forEach(System.out::println);
+		}
+
+		inventory.setStackInSlot(0, ItemStack.EMPTY);
+		cooldown = 100;
+		setChanged();
 //		if (out.weight == 0) {
 //			ejectItem(level, direction, input);
 //			inventory.setStackInSlot(0, ItemStack.EMPTY);
@@ -100,6 +108,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 	}
 
 	private void ejectItem(Level w, Direction direction, ItemStack stack) {
+		System.out.println("Dropping " + stack);
 		BlockEntity tileEntity = w.getBlockEntity(worldPosition.relative(direction));
 		IItemHandler handler = tileEntity == null ? null : tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
 

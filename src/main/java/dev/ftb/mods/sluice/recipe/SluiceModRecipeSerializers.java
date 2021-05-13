@@ -80,9 +80,10 @@ public class SluiceModRecipeSerializers {
 //        System.out.println(world.getRecipeManager().getRecipesFor(SLUICE_TYPE, NoInventory.INSTANCE, world));
 
         for (ItemWithWeight result : resultsWithWeights) {
-//            float number = world.getRandom().nextInt(result.weight);
-//            System.out.println(number);
-            System.out.println(result.weight);
+            float number = world.getRandom().nextInt(100);
+            if (number <= (int) (result.weight * 100)) {
+                outputResults.add(result.item);
+            }
         }
 
         return outputResults;
