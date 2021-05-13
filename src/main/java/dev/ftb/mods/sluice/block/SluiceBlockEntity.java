@@ -30,6 +30,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		protected void onContentsChanged(int slot) {
 			setChanged();
 		}
+
+		@Override
+		public int getSlotLimit(int slot) {
+			return 1;
+		}
 	};
 
 	public final LazyOptional<ItemStackHandler> inventoryOptional = LazyOptional.of(() -> inventory);

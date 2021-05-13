@@ -83,6 +83,7 @@ public class SluiceModRecipeSerializers {
             float number = world.getRandom().nextInt(100);
             if (number <= (int) (result.weight * 100)) {
                 outputResults.add(result.item);
+                System.out.println("RESULT: " + result.item);
             }
         }
 
