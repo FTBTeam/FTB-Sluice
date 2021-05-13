@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IC",
+    "SI"
+  ],
+  "key": {
+    "S": {
+      "item": "ftbsluice:oak_sluice"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "C": {
+      "item": "minecraft:chain"
+    }
+  },
+  "result": {
+    "item": "ftbsluice:iron_sluice"
+  }
+}

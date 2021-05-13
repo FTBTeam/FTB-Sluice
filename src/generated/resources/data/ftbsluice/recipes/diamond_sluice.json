@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DD",
+    "SD"
+  ],
+  "key": {
+    "S": {
+      "item": "ftbsluice:iron_sluice"
+    },
+    "D": {
+      "tag": "forge:gems/diamond"
+    }
+  },
+  "result": {
+    "item": "ftbsluice:diamond_sluice"
+  }
+}

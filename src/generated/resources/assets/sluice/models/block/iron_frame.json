@@ -1,8 +1,0 @@
-{
-	"parent": "sluice:block/frame",
-	"textures": {
-		"base": "sluice:block/iron_sluice_base",
-		"back": "sluice:block/iron_sluice_back",
-		"side": "sluice:block/iron_sluice_side"
-	}
-}

@@ -1,6 +1,0 @@
-{
-	"parent": "sluice:block/mesh",
-	"textures": {
-		"mesh": "sluice:item/diamond_mesh"
-	}
-}

@@ -1,0 +1,6 @@
+{
+  "parent": "ftbsluice:block/mesh",
+  "textures": {
+    "mesh": "ftbsluice:item/iron_mesh"
+  }
+}

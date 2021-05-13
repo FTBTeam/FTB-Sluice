@@ -1,0 +1,11 @@
+{
+  "block.ftbsluice.diamond_sluice": "Diamond Sluice",
+  "block.ftbsluice.iron_sluice": "Iron Sluice",
+  "block.ftbsluice.netherite_sluice": "Netherite Sluice",
+  "block.ftbsluice.oak_sluice": "Oak Sluice",
+  "item.ftbsluice.cloth_mesh": "Cloth Mesh",
+  "item.ftbsluice.diamond_mesh": "Diamond Mesh",
+  "item.ftbsluice.gold_mesh": "Gold Mesh",
+  "item.ftbsluice.iron_mesh": "Iron Mesh",
+  "itemGroup.ftbsluice": "Sluice"
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "ftbsluice:block/frame",
+  "textures": {
+    "base": "ftbsluice:block/diamond_sluice_base",
+    "back": "ftbsluice:block/diamond_sluice_back",
+    "side": "ftbsluice:block/diamond_sluice_side"
+  }
+}

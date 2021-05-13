@@ -1,28 +1,28 @@
 modLoader = "javafml"
-loaderVersion = "[30,)"
+loaderVersion = "[36,)"
 issueTrackerURL = "https://github.com/LatvianModder/Sluice/issues"
 license = "GNU LGPLv3"
 
 [[mods]]
-modId = "sluice"
+modId = "ftbsluice"
 version = "${version}"
-displayName = "Sluice"
-authors = "LatvianModder"
+displayName = "FTB Sluice"
+authors = "FTB Team, LatvianModder, ErrorMikey"
 description = '''
 A simple mod that adds Sluice block which lets you wash different blocks to get items out of them
 '''
 license = "GNU LGPLv3"
 
-[[dependencies.sluice]]
+[[dependencies.ftbsluice]]
 modId = "forge"
 mandatory = true
-versionRange = "[30,)"
+versionRange = "[36,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.sluice]]
+[[dependencies.ftbsluice]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.15,)"
+versionRange = "[1.16,)"
 ordering = "NONE"
 side = "BOTH"
