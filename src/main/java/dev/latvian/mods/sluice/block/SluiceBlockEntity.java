@@ -82,7 +82,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
 		ItemStack input = inventory.getStackInSlot(0);
 		if (input.isEmpty()) {
-			System.out.println("No output");
 			return;
 		}
 

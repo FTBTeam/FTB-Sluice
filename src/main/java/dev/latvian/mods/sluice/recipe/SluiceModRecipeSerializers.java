@@ -79,8 +79,8 @@ public class SluiceModRecipeSerializers {
         List<ItemWithWeight> resultsWithWeights = getSluiceRecipes(world, mesh, input);
 
         for (ItemWithWeight result : resultsWithWeights) {
-            float number = world.getRandom().nextInt(result.weight);
-            System.out.println(number);
+//            float number = world.getRandom().nextInt(result.weight);
+//            System.out.println(number);
             System.out.println(result.weight);
         }
 

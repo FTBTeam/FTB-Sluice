@@ -27,7 +27,7 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
 
         for (JsonElement e : json.get("results").getAsJsonArray()) {
             JsonObject o = e.getAsJsonObject();
-            r.results.add(new ItemWithWeight(ShapedRecipe.itemFromJson(o), o.get("weight").getAsInt()));
+            r.results.add(new ItemWithWeight(ShapedRecipe.itemFromJson(o), o.get("weight").getAsDouble()));
         }
 
         for (JsonElement e : json.get("meshes").getAsJsonArray()) {
@@ -49,7 +49,7 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
         int w = buffer.readVarInt();
 
         for (int i = 0; i < w; i++) {
-            r.results.add(new ItemWithWeight(buffer.readItem(), buffer.readVarInt()));
+            r.results.add(new ItemWithWeight(buffer.readItem(), buffer.readDouble()));
         }
 
         int i = buffer.readByte() & 0xFF;
@@ -71,7 +71,7 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
 
         for (ItemWithWeight i : r.results) {
             buffer.writeItem(i.item);
-            buffer.writeVarInt(i.weight);
+            buffer.writeDouble(i.weight);
         }
 
         int meshes = 0;

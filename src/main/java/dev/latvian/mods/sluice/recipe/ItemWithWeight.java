@@ -6,9 +6,9 @@ public class ItemWithWeight {
 	public static final ItemWithWeight NONE = new ItemWithWeight(ItemStack.EMPTY, 0);
 
 	public final ItemStack item;
-	public final int weight;
+	public final double weight;
 
-	public ItemWithWeight(ItemStack i, int w) {
+	public ItemWithWeight(ItemStack i, double w) {
 		item = i;
 		weight = w;
 	}
