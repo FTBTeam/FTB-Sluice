@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -21,12 +22,20 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
@@ -114,6 +123,14 @@ public class SluiceBlock extends Block {
             }
 
             return InteractionResult.SUCCESS;
+        } else if (itemStack.getItem() instanceof BucketItem && ((BucketItem) itemStack.getItem()).getFluid() == Fluids.WATER) {
+            if (!world.isClientSide()) {
+                boolean fluidInserted = FluidUtil.interactWithFluidHandler(player, hand, sluice.tank);
+                if (fluidInserted) {
+                    sluice.clearCache();
+                    world.setBlock(pos, state.setValue(WATER, true), Constants.BlockFlags.DEFAULT);
+                }
+            }
         } else if (SluiceModRecipeSerializers.itemHasSluiceResults(world, state.getValue(MESH), itemStack)) {
             if (!world.isClientSide()) {
                 if (sluice.inventory.getStackInSlot(0).isEmpty()) {

@@ -10,8 +10,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.WaterFluid;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -44,7 +49,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		}
 	};
 
+	public final FluidTank tank = new FluidTank(1000, e -> e.isEmpty() || e.getFluid().isSame(Fluids.WATER));
+
 	public final LazyOptional<ItemStackHandler> inventoryOptional = LazyOptional.of(() -> inventory);
+	public final LazyOptional<FluidTank> fluidOptional = LazyOptional.of(() -> tank);
 	public int cooldown;
 
 	public SluiceBlockEntity() {
@@ -53,7 +61,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
 	@Override
 	public CompoundTag save(CompoundTag compound) {
+		CompoundTag fluidTag = new CompoundTag();
+		tank.writeToNBT(fluidTag);
+
 		compound.put("Inventory", inventory.serializeNBT());
+		compound.put("Fluid", fluidTag);
 		compound.putInt("Cooldown", cooldown);
 		return super.save(compound);
 	}
@@ -62,13 +74,24 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 	public void load(BlockState state, CompoundTag compound) {
 		inventory.deserializeNBT(compound.getCompound("Inventory"));
 		cooldown = compound.getInt("Cooldown");
+		if (compound.contains("Fluid")) {
+			tank.readFromNBT(compound.getCompound("Fluid"));
+		}
 		super.load(state, compound);
 	}
 
 	@Nonnull
 	@Override
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-		return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? inventoryOptional.cast() : super.getCapability(cap, side);
+		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+			return inventoryOptional.cast();
+		}
+
+		if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+			return fluidOptional.cast();
+		}
+
+		return super.getCapability(cap, side);
 	}
 
 	@Override
