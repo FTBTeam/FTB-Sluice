@@ -16,6 +16,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,6 +35,12 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		@Override
 		public int getSlotLimit(int slot) {
 			return 1;
+		}
+
+		@NotNull
+		@Override
+		public ItemStack extractItem(int slot, int amount, boolean simulate) {
+			return ItemStack.EMPTY;
 		}
 	};
 
@@ -91,10 +98,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
 		List<ItemStack> out = SluiceModRecipeSerializers.getRandomResult(level, mesh, input);
 		out.forEach(e -> ejectItem(level, direction, e));
-		System.out.println("Processing item in stack: " + out.size());
-		if (out.size() > 0) {
-			out.forEach(System.out::println);
-		}
 
 		inventory.setStackInSlot(0, ItemStack.EMPTY);
 		cooldown = 100;

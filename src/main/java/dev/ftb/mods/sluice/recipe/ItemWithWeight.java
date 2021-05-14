@@ -1,5 +1,6 @@
 package dev.ftb.mods.sluice.recipe;
 
+import com.google.common.base.MoreObjects;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemWithWeight {
@@ -11,5 +12,13 @@ public class ItemWithWeight {
 	public ItemWithWeight(ItemStack i, double w) {
 		item = i;
 		weight = w;
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+			.add("item", item)
+			.add("weight", weight)
+			.toString();
 	}
 }

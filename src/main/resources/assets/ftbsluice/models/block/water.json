@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"parent": "block/block",
 	"textures": {
-		"particle": "sluice:block/sluice_water",
-		"water": "sluice:block/sluice_water"
+		"particle": "ftbsluice:block/sluice_water",
+		"water": "ftbsluice:block/sluice_water"
 	},
 	"elements": [
 		{

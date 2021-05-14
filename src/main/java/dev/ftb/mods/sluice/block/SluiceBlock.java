@@ -77,7 +77,6 @@ public class SluiceBlock extends Block {
     }
 
     @Override
-    @Deprecated
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack itemStack = player.getItemInHand(hand);
         BlockEntity tileEntity = world.getBlockEntity(pos);
@@ -115,7 +114,7 @@ public class SluiceBlock extends Block {
             }
 
             return InteractionResult.SUCCESS;
-        } else if (SluiceModRecipeSerializers.getSluiceRecipes(world, state.getValue(MESH), itemStack) != null) {
+        } else if (SluiceModRecipeSerializers.itemHasSluiceResults(world, state.getValue(MESH), itemStack)) {
             if (!world.isClientSide()) {
                 if (sluice.inventory.getStackInSlot(0).isEmpty()) {
                     sluice.clearCache();
