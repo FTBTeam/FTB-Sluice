@@ -29,7 +29,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -126,12 +125,11 @@ public class SluiceBlock extends Block {
             }
 
             return InteractionResult.SUCCESS;
-        } else if (itemStack.getItem() instanceof BucketItem && ((BucketItem) itemStack.getItem()).getFluid() == Fluids.WATER) {
+        } else if (itemStack.getItem() instanceof BucketItem && ((BucketItem) itemStack.getItem()).getFluid() == Fluids.WATER && state.getBlock() != SluiceModBlocks.NETHERITE_SLUICE.get()) {
             if (!world.isClientSide()) {
                 boolean fluidInserted = FluidUtil.interactWithFluidHandler(player, hand, sluice.tank);
                 if (fluidInserted) {
                     sluice.clearCache();
-                    world.setBlock(pos, state.setValue(WATER, true), Constants.BlockFlags.DEFAULT);
                 }
             }
         } else if (SluiceModRecipeSerializers.itemHasSluiceResults(world, state.getValue(MESH), itemStack)) {

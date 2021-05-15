@@ -49,7 +49,8 @@ dependencies {
 
 	modRuntime "curse.maven:powah-352656:3232535"
 	modRuntime "curse.maven:lollipop-347954:3232534"
-	modRuntime "curse.maven:pipez-443900:3243608"
+	modRuntime "curse.maven:pipez-443900:3273405"
+	modRuntime "curse.maven:the-one-probe-3310128:3303361"
 }
 
 processResources {

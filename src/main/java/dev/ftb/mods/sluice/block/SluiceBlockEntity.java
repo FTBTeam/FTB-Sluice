@@ -1,9 +1,13 @@
 package dev.ftb.mods.sluice.block;
 
+import dev.ftb.mods.sluice.SluiceConfig;
 import dev.ftb.mods.sluice.capabilities.Energy;
+import dev.ftb.mods.sluice.capabilities.Fluid;
 import dev.ftb.mods.sluice.recipe.SluiceModRecipeSerializers;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -14,16 +18,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,16 +48,17 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 			return 1;
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public ItemStack extractItem(int slot, int amount, boolean simulate) {
 			return ItemStack.EMPTY;
 		}
 	};
 
-	public final FluidTank tank = new FluidTank(1000, e -> e.isEmpty() || e.getFluid().isSame(Fluids.WATER));
+
 	public final LazyOptional<ItemStackHandler> inventoryOptional = LazyOptional.of(() -> this.inventory);
-	public final LazyOptional<FluidTank> fluidOptional = LazyOptional.of(() -> this.tank);
+	public final Fluid tank;
+	public final LazyOptional<Fluid> fluidOptional;
 	private final SluiceProperties properties;
 	private final boolean isNetherite;
 	public Energy energy;
@@ -63,6 +68,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 	 * the outputs
 	 */
 	public int processed;
+	public int maxProcessed;
 	public boolean isProcessing = false;
 
 	public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties) {
@@ -76,14 +82,30 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		this.properties = properties;
 		this.isNetherite = isNetherite;
 
-		this.energy = new Energy(100000, e -> {
+		this.energy = new Energy(!isNetherite ? 0 : SluiceConfig.NETHERITE_SLUICE.energyStorage.get(), e -> {
 			if (!this.isNetherite) return;
 			this.setChanged();
 		});
 
-		System.out.println(this.energy);
-
 		this.energyOptional = LazyOptional.of(() -> this.energy);
+		this.maxProcessed = this.properties.processingTime.get();
+
+		// Handles state changing
+		this.tank = new Fluid(SluiceConfig.SLUICES.tankStorage.get(), e -> e.isEmpty() || e.getFluid().isSame(Fluids.WATER), (fluid, value, action) -> {
+			if (this.level == null || this.getBlockState() == null) return;
+
+			if (action.execute() && !fluid.isEmpty() && !this.getBlockState().getValue(SluiceBlock.WATER)) {
+				this.level.setBlock(this.worldPosition, this.getBlockState().setValue(SluiceBlock.WATER, true), 3);
+			}
+		}, (fluid, value, action) -> {
+			if (this.level == null || this.getBlockState() == null) return;
+
+			if (action.execute() && fluid.isEmpty() && this.getBlockState().getValue(SluiceBlock.WATER)) {
+				this.level.setBlock(this.worldPosition, this.getBlockState().setValue(SluiceBlock.WATER, false), 3);
+			}
+		});
+
+		this.fluidOptional = LazyOptional.of(() -> this.tank);
 	}
 
 	@Override
@@ -97,6 +119,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 			return;
 		}
 
+		if (this.isNetherite && this.energy.getEnergyStored() > 0 && this.tank.getFluidAmount() <= SluiceConfig.SLUICES.tankStorage.get()) {
+			this.tank.fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
+		}
+
 		ItemStack input = this.inventory.getStackInSlot(0);
 		if (!this.isProcessing) {
 			if (input.isEmpty() || this.tank.isEmpty() || this.tank.getFluidAmount() < this.properties.fluidUsage.get()) {
@@ -104,26 +130,40 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 			}
 
 			this.processed = this.properties.processingTime.get();
+
 			this.isProcessing = true;
 			this.tank.drain(this.properties.fluidUsage.get(), IFluidHandler.FluidAction.EXECUTE);
-			System.out.println("Time set to process item");
+			if (this.isNetherite) {
+
+			}
+			this.setChanged();
+			this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
 		} else {
 			if(this.processed > 0) {
 				this.processed--;
-				System.out.println("Processing progress: " + this.processed + "%");
 			} else {
 				Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
 				MeshType mesh = state.getValue(SluiceBlock.MESH);
 
-				System.out.println("Finished processing");
 				this.processed = 0;
 				this.isProcessing = false;
 				List<ItemStack> out = SluiceModRecipeSerializers.getRandomResult(this.level, mesh, input);
 				out.forEach(e -> this.ejectItem(this.level, direction, e));
 
 				this.inventory.setStackInSlot(0, ItemStack.EMPTY);
+
+				if (this.isNetherite) {
+					this.energy.consumeEnergy(SluiceConfig.NETHERITE_SLUICE.costPerUse.get(), false);
+				}
+
 				this.setChanged();
+				this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
 			}
+		}
+
+		if (this.processed % 10 == 0) {
+			this.setChanged();
+			this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
 		}
 	}
 
@@ -135,10 +175,12 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		compound.put("Inventory", this.inventory.serializeNBT());
 		compound.put("Fluid", fluidTag);
 		compound.putInt("Processed", this.processed);
+		compound.putInt("MaxProcessed", this.maxProcessed);
 		compound.putBoolean("IsProcessing", this.isProcessing);
 		if (this.isNetherite) {
 			this.energyOptional.ifPresent(e -> compound.put("Energy", e.serializeNBT()));
 		}
+
 		return super.save(compound);
 	}
 
@@ -148,6 +190,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
 		this.inventory.deserializeNBT(compound.getCompound("Inventory"));
 		this.processed = compound.getInt("Processed");
+		this.maxProcessed = compound.getInt("MaxProcessed");
 		this.isProcessing = compound.getBoolean("IsProcessing");
 
 		if (this.isNetherite) {
@@ -161,11 +204,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 	@Nonnull
 	@Override
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.properties.allowsIO) {
 			return this.inventoryOptional.cast();
 		}
 
-		if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+		if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && !this.isNetherite) {
 			return this.fluidOptional.cast();
 		}
 
@@ -198,6 +241,27 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 			itemEntity.setDeltaMovement(mx, my, mz);
 			w.addFreshEntity(itemEntity);
 		}
+	}
+
+	@Override
+	public CompoundTag getUpdateTag() {
+		return this.save(new CompoundTag());
+	}
+
+	@Override
+	public void handleUpdateTag(BlockState state, CompoundTag tag) {
+		this.load(state, tag);
+	}
+
+	@Nullable
+	@Override
+	public ClientboundBlockEntityDataPacket getUpdatePacket() {
+		return new ClientboundBlockEntityDataPacket(this.worldPosition, 0, this.save(new CompoundTag()));
+	}
+
+	@Override
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+		this.load(this.getBlockState(), pkt.getTag());
 	}
 
 	public static class OakSluiceBlockEntity extends SluiceBlockEntity {

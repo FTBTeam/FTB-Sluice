@@ -1,5 +1,6 @@
 package dev.ftb.mods.sluice.block;
 
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -8,7 +9,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class TankBlockEntity extends BlockEntity {
     public final FluidTank tank = new FluidTank(10000);
@@ -18,10 +21,9 @@ public class TankBlockEntity extends BlockEntity {
         super(SluiceModBlockEntities.TANK.get());
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        System.out.println(cap);
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         return cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? this.fluidInventory.cast() : super.getCapability(cap);
     }
 
@@ -42,10 +44,14 @@ public class TankBlockEntity extends BlockEntity {
         }
     }
 
-    public static class CreativeTankBlockEntity extends TankBlockEntity {
+    public static class CreativeTankBlockEntity extends BlockEntity {
         public final FluidTank tank = new FluidTank(Integer.MAX_VALUE) {
             @Override
             public int fill(FluidStack resource, FluidAction action) {
+                if (action.simulate()) {
+                    return super.fill(resource, action);
+                }
+
                 int fill = super.fill(resource, action);
                 if (fill > 0) {
                     this.fluid.setAmount(Integer.MAX_VALUE);
@@ -56,7 +62,7 @@ public class TankBlockEntity extends BlockEntity {
                 return fill;
             }
 
-            @NotNull
+            @Nonnull
             @Override
             public FluidStack drain(int maxDrain, FluidAction action) {
                 return new FluidStack(this.fluid, Integer.MAX_VALUE);
@@ -64,9 +70,30 @@ public class TankBlockEntity extends BlockEntity {
         };
         public final LazyOptional<FluidTank> fluidInventory = LazyOptional.of(() -> this.tank);
 
-        @NotNull
+        public CreativeTankBlockEntity() {
+            super(SluiceModBlockEntities.CREATIVE_TANK.get());
+        }
+
         @Override
-        public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
+        public CompoundTag save(CompoundTag compound) {
+            CompoundTag fluidTag = new CompoundTag();
+            this.tank.writeToNBT(fluidTag);
+            compound.put("Fluid", fluidTag);
+            return super.save(compound);
+        }
+
+        @Override
+        public void load(BlockState state, CompoundTag compound) {
+            super.load(state, compound);
+
+            if (compound.contains("Fluid")) {
+                this.tank.readFromNBT(compound.getCompound("Fluid"));
+            }
+        }
+
+        @Nonnull
+        @Override
+        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
             return cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? this.fluidInventory.cast() : super.getCapability(cap);
         }
     }
