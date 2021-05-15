@@ -22,8 +22,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
@@ -32,10 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
@@ -64,7 +59,15 @@ public class SluiceBlock extends Block {
 
     @Override
     public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return new SluiceBlockEntity();
+        if (state.getBlock() == SluiceModBlocks.OAK_SLUICE.get()) {
+            return SluiceModBlockEntities.OAK_SLUICE.get().create();
+        } else if (state.getBlock() == SluiceModBlocks.IRON_SLUICE.get()) {
+            return SluiceModBlockEntities.IRON_SLUICE.get().create();
+        } else if (state.getBlock() == SluiceModBlocks.DIAMOND_SLUICE.get()) {
+            return SluiceModBlockEntities.DIAMOND_SLUICE.get().create();
+        } else {
+            return SluiceModBlockEntities.NETHERITE_SLUICE.get().create();
+        }
     }
 
     @Override

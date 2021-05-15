@@ -20,6 +20,9 @@ public class SluiceModItems {
 	public static final RegistryObject<Item> GOLD_MESH = REGISTRY.register("gold_mesh", () -> new MeshItem(MeshType.GOLD));
 	public static final RegistryObject<Item> DIAMOND_MESH = REGISTRY.register("diamond_mesh", () -> new MeshItem(MeshType.DIAMOND));
 
+	public static final RegistryObject<Item> TANK = REGISTRY.register("tank", () -> new BlockItem(SluiceModBlocks.TANK.get(), new Item.Properties().tab(SluiceMod.group)));
+	public static final RegistryObject<Item> TAP = REGISTRY.register("tap", () -> new BlockItem(SluiceModBlocks.TAP.get(), new Item.Properties().tab(SluiceMod.group)));
+
 	public static final RegistryObject<BlockItem> OAK_SLUICE = REGISTRY.register("oak_sluice", () -> new BlockItem(SluiceModBlocks.OAK_SLUICE.get(), new Item.Properties().tab(SluiceMod.group)));
 	public static final RegistryObject<BlockItem> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> new BlockItem(SluiceModBlocks.IRON_SLUICE.get(), new Item.Properties().tab(SluiceMod.group)));
 	public static final RegistryObject<BlockItem> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", () -> new BlockItem(SluiceModBlocks.DIAMOND_SLUICE.get(), new Item.Properties().tab(SluiceMod.group)));

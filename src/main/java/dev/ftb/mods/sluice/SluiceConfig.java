@@ -18,7 +18,7 @@ public class SluiceConfig {
         }
     }
 
-    private static class CategorySluice {
+    public static class CategorySluice {
         public final ForgeConfigSpec.IntValue tankStorage;
 
         public final ForgeConfigSpec.IntValue oakSluiceProcessing;
@@ -39,16 +39,16 @@ public class SluiceConfig {
                 .defineInRange("tank storage", 2000, 1000, 10000);
 
             oakSluiceProcessing = COMMON_BUILDER
-                .comment("Defines how long it takes to process a resource in this sluice")
+                .comment("Defines how long it takes to process a resource in this sluice (in ticks)")
                 .defineInRange("oak sluice processing time", 100, 0, 1000);
             ironSluiceProcessing = COMMON_BUILDER
-                .comment("Defines how long it takes to process a resource in this sluice")
+                .comment("Defines how long it takes to process a resource in this sluice (in ticks)")
                 .defineInRange("iron sluice processing time", 80, 0, 1000);
             diamondSluiceProcessing = COMMON_BUILDER
-                .comment("Defines how long it takes to process a resource in this sluice")
+                .comment("Defines how long it takes to process a resource in this sluice (in ticks)")
                 .defineInRange("diamond sluice processing time", 60, 0, 1000);
             netheriteSluiceProcessing = COMMON_BUILDER
-                .comment("Defines how long it takes to process a resource in this sluice")
+                .comment("Defines how long it takes to process a resource in this sluice (in ticks)")
                 .defineInRange("netherite sluice processing time", 40, 0, 1000);
 
             oakSluiceFluid = COMMON_BUILDER
@@ -68,7 +68,7 @@ public class SluiceConfig {
         }
     }
 
-    private static class CategoryNetheriteSluice {
+    public static class CategoryNetheriteSluice {
         public ForgeConfigSpec.IntValue energyStorage;
         public ForgeConfigSpec.IntValue costPerUse;
 
