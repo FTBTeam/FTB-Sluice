@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -34,7 +33,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * @author LatvianModder
@@ -175,13 +173,13 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 	 * @param itemStack the input item from the start of the process.
 	 */
 	private void finishProcessing(@Nonnull Level level, BlockState state, ItemStack itemStack) {
-		Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
 		MeshType mesh = state.getValue(SluiceBlock.MESH);
 
 		this.processed = 0;
 		this.isProcessing = false;
-		List<ItemStack> out = SluiceModRecipeSerializers.getRandomResult(level, mesh, itemStack);
-		out.forEach(e -> this.ejectItem(level, direction, e));
+
+		SluiceModRecipeSerializers.getRandomResult(level, mesh, itemStack)
+			.forEach(e -> this.ejectItem(level, e));
 
 		this.inventory.setStackInSlot(0, ItemStack.EMPTY);
 
@@ -245,7 +243,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		return super.getCapability(cap, side);
 	}
 
-	private void ejectItem(Level w, Direction direction, ItemStack stack) {
+	private void ejectItem(Level w, ItemStack stack) {
 		if (this.properties.allowsIO) {
 			// Find the closest inventory to the block.
 			IItemHandler handler = this.seekNearestInventory(w, this.getBlockPos()).orElseGet(EmptyHandler::new);
@@ -257,17 +255,13 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		}
 
 		if (!stack.isEmpty()) {
-			double x = this.worldPosition.getX() + 0.5D + direction.getStepX() * 0.7D;
-			double y = this.worldPosition.getY() + 0.5D;
-			double z = this.worldPosition.getZ() - direction.getStepZ() * 1.5D;
-			double in = w.random.nextFloat() * 0.1D;
-			double mx = direction.getStepX() * in;
-			double my = 0.14D;
-			double mz = direction.getStepZ() * in;
+			BlockPos pos = this.worldPosition.above();
 
-			ItemEntity itemEntity = new ItemEntity(w, x, y, z, stack);
+			double my = 0.14D * (w.random.nextFloat() * 0.4D);
+
+			ItemEntity itemEntity = new ItemEntity(w, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, stack);
 			itemEntity.setNoPickUpDelay();
-			itemEntity.setDeltaMovement(mx, my, mz);
+			itemEntity.setDeltaMovement(0, my, 0);
 			w.addFreshEntity(itemEntity);
 		}
 	}
