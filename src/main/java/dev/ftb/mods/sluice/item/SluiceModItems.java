@@ -5,6 +5,8 @@ import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceModBlocks;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -31,11 +33,12 @@ public class SluiceModItems {
 	public static final RegistryObject<Item> DUST = REGISTRY.register("dust", () -> new BlockItem(SluiceModBlocks.DUST_BLOCK.get(), new Item.Properties().tab(SluiceMod.group)));
 
 	// Hammers
-	public static final RegistryObject<Item> WOODEN_HAMMER = REGISTRY.register("wooden_hammer", () -> new HammerItem());
-	public static final RegistryObject<Item> STONE_HAMMER = REGISTRY.register("stone_hammer", () -> new HammerItem());
-	public static final RegistryObject<Item> IRON_HAMMER = REGISTRY.register("iron_hammer", () -> new HammerItem());
-	public static final RegistryObject<Item> GOLD_HAMMER = REGISTRY.register("gold_hammer", () -> new HammerItem());
-	public static final RegistryObject<Item> DIAMOND_HAMMER = REGISTRY.register("diamond_hammer", () -> new HammerItem());
+	public static final RegistryObject<Item> WOODEN_HAMMER = REGISTRY.register("wooden_hammer", () -> new HammerItem(Tiers.WOOD, 1, -2.8F));
+	public static final RegistryObject<Item> STONE_HAMMER = REGISTRY.register("stone_hammer", () -> new HammerItem(Tiers.STONE, 1, -2.8F));
+	public static final RegistryObject<Item> IRON_HAMMER = REGISTRY.register("iron_hammer", () -> new HammerItem(Tiers.IRON, 1, -2.8F));
+	public static final RegistryObject<Item> GOLD_HAMMER = REGISTRY.register("gold_hammer", () -> new HammerItem(Tiers.GOLD, 1, -2.8F));
+	public static final RegistryObject<Item> DIAMOND_HAMMER = REGISTRY.register("diamond_hammer", () -> new HammerItem(Tiers.DIAMOND, 1, -2.8F));
 
-	public static final RegistryObject<Item> CLAY_BUCKET = REGISTRY.register("clay_bucket", ClayBucket::new);
+	public static final RegistryObject<Item> CLAY_BUCKET = REGISTRY.register("clay_bucket", () -> new ClayBucket(() -> Fluids.EMPTY));
+	public static final RegistryObject<Item> CLAY_WATER_BUCKET = REGISTRY.register("clay_water_bucket", () -> new ClayBucket(() -> ClayBucket.CLAY_WATER_FLUID));
 }
