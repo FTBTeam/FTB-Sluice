@@ -123,7 +123,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		}
 
 		//
-		if (this.isNetherite && this.energy.getEnergyStored() > 0 && this.tank.getFluidAmount() <= SluiceConfig.SLUICES.tankStorage.get()) {
+		if (this.isNetherite && this.energy.getEnergyStored() > 0 && this.tank.getFluidAmount() < SluiceConfig.SLUICES.tankStorage.get()) {
 			this.tank.fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
 			this.energy.consumeEnergy(5, false); // Sip some power for the water.
 		}
