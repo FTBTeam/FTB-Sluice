@@ -9,7 +9,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 def ENV = System.getenv()
-version = "${mod_version}-build.${ENV.BUILD_NUMBER ?: 9999}"
+version = "${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
 archivesBaseName = project.archives_base_name
 group = project.maven_group
 
@@ -97,19 +97,30 @@ jar {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
 			artifact(remapJar) {
 				builtBy remapJar
+				artifactId = archivesBaseName + "-forge"
+				classifier null
 			}
 		}
 	}
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
+//		if (ENV.LOCAL_MAVEN) {
+//			maven {
+//				url = "file://${ENV.LOCAL_MAVEN}"
+//			}
+//		}
+//
+//		if (ENV.SAPS_TOKEN) {
+//			maven {
+//				url "https://maven.saps.dev/minecraft"
+//				credentials {
+//					username = "ftb"
+//					password = "${ENV.SAPS_TOKEN}"
+//				}
+//			}
+//		}
 	}
 }
 
