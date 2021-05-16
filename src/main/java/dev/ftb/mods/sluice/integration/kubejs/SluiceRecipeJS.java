@@ -8,21 +8,26 @@ import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
 
 public class SluiceRecipeJS extends RecipeJS {
+	private int max = 0;
+
 	@Override
 	public void create(ListJS args) {
-		meshes(args.get(0));
-		inputItems.add(parseIngredientItem(args.get(1)));
+		this.meshes(args.get(0));
+		this.inputItems.add(this.parseIngredientItem(args.get(1)));
+		this.json.addProperty("max", (Number) args.get(2));
 
-		for (Object o : ListJS.orSelf(args.get(2))) {
+		this.max = ((Number) args.get(2)).intValue();
+
+		for (Object o : ListJS.orSelf(args.get(3))) {
 			ListJS l = ListJS.orSelf(o);
 
-			ItemStackJS i = parseResultItem(l.get(0));
+			ItemStackJS i = this.parseResultItem(l.get(0));
 
 			if (l.size() >= 2) {
 				i = i.withChance(((Number) l.get(1)).doubleValue());
 			}
 
-			outputItems.add(i);
+			this.outputItems.add(i);
 		}
 	}
 
@@ -33,35 +38,37 @@ public class SluiceRecipeJS extends RecipeJS {
 			meshes.add(o.toString());
 		}
 
-		json.add("meshes", meshes);
-		save();
+		this.json.add("meshes", meshes);
+		this.save();
 		return this;
 	}
 
 	@Override
 	public void deserialize() {
-		inputItems.add(parseIngredientItem(json.get("ingredient")));
+		this.inputItems.add(this.parseIngredientItem(this.json.get("ingredient")));
+		this.max = this.json.get("max").getAsInt();
 
-		for (JsonElement e : json.get("results").getAsJsonArray()) {
+		for (JsonElement e : this.json.get("results").getAsJsonArray()) {
 			JsonObject o = e.getAsJsonObject();
-			outputItems.add(parseResultItem(o).withChance(o.has("chance") ? o.get("chance").getAsDouble() : 1D));
+			this.outputItems.add(this.parseResultItem(o).withChance(o.has("chance") ? o.get("chance").getAsDouble() : 1D));
 		}
 	}
 
 	@Override
 	public void serialize() {
-		if (serializeOutputs) {
+		if (this.serializeOutputs) {
 			JsonArray array = new JsonArray();
 
-			for (ItemStackJS o : outputItems) {
+			for (ItemStackJS o : this.outputItems) {
 				array.add(o.toResultJson());
 			}
 
-			json.add("results", array);
+			this.json.add("results", array);
 		}
 
-		if (serializeInputs) {
-			json.add("ingredient", inputItems.get(0).toJson());
+		if (this.serializeInputs) {
+			this.json.add("ingredient", this.inputItems.get(0).toJson());
+			this.json.addProperty("max", this.max);
 		}
 	}
 }

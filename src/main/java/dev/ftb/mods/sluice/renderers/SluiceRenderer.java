@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.animation.TileEntityRendererAnimation;
 
@@ -35,7 +34,7 @@ public class SluiceRenderer extends TileEntityRendererAnimation<SluiceBlockEntit
         matrix.mulPose(Vector3f.ZP.rotationDegrees(-90 + v));
 
         Minecraft.getInstance().getItemRenderer().renderStatic(
-            new ItemStack(Items.SAND), ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND, light, otherlight, matrix, renderer
+            resource, ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND, light, otherlight, matrix, renderer
         );
 
         matrix.popPose();

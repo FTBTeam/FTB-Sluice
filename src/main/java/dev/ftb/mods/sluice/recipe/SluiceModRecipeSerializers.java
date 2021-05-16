@@ -12,7 +12,10 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -23,7 +26,7 @@ public class SluiceModRecipeSerializers {
     public static final RegistryObject<RecipeSerializer<?>> SLUICE = REGISTRY.register("sluice", SluiceRecipeSerializer::new);
     public static final RecipeType<SluiceRecipe> SLUICE_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":sluice");
 
-    private static final Map<Pair<Item, MeshType>, List<ItemWithWeight>> sluiceCache = new HashMap<>();
+    private static final Map<Pair<Item, MeshType>, InputRecipeResult> sluiceCache = new HashMap<>();
 
     public static void clearCache() {
         sluiceCache.clear();
@@ -37,17 +40,23 @@ public class SluiceModRecipeSerializers {
      * @param input an input item to find results for
      * @return A list of items with the chances.
      */
-    public static List<ItemWithWeight> getSluiceRecipes(Level world, MeshType mesh, ItemStack input) {
+    public static InputRecipeResult getSluiceRecipes(Level world, MeshType mesh, ItemStack input) {
         return sluiceCache.computeIfAbsent(Pair.of(input.getItem(), mesh), key -> {
             List<ItemWithWeight> list = new ArrayList<>();
 
+            int max = -1;
             for (SluiceRecipe recipe : world.getRecipeManager().getRecipesFor(SLUICE_TYPE, NoInventory.INSTANCE, world)) {
                 if (recipe.meshes.contains(mesh) && recipe.ingredient.test(input)) {
+                    // Only set based on the first min max we see.
+                    if (max == -1) {
+                        max = recipe.max;
+                    }
+
                     recipe.results.forEach(e -> list.add(new ItemWithWeight(e.item, e.weight)));
                 }
             }
 
-            return list;
+            return new InputRecipeResult(list, max);
         });
     }
 
@@ -55,7 +64,7 @@ public class SluiceModRecipeSerializers {
      * Checks that a given input has any result.
      */
     public static boolean itemHasSluiceResults(Level level, MeshType mesh, ItemStack input) {
-        return !getSluiceRecipes(level, mesh, input).isEmpty();
+        return !getSluiceRecipes(level, mesh, input).getItems().isEmpty();
     }
 
     /**
@@ -64,11 +73,15 @@ public class SluiceModRecipeSerializers {
      */
     public static List<ItemStack> getRandomResult(Level world, MeshType mesh, ItemStack input) {
         List<ItemStack> outputResults = new ArrayList<>();
-        List<ItemWithWeight> resultsWithWeights = getSluiceRecipes(world, mesh, input);
+        InputRecipeResult recipe = getSluiceRecipes(world, mesh, input);
 
-        for (ItemWithWeight result : resultsWithWeights) {
+        for (ItemWithWeight result : recipe.getItems()) {
             float number = world.getRandom().nextFloat();
             if (number <= result.weight) {
+                if (outputResults.size() >= recipe.getMaxDrops()) {
+                    break;
+                }
+
                 outputResults.add(result.item.copy());
             }
         }

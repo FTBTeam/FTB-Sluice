@@ -122,6 +122,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 			return;
 		}
 
+		//
 		if (this.isNetherite && this.energy.getEnergyStored() > 0 && this.tank.getFluidAmount() <= SluiceConfig.SLUICES.tankStorage.get()) {
 			this.tank.fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
 			this.energy.consumeEnergy(5, false); // Sip some power for the water.
@@ -159,9 +160,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		}
 
 		this.processed = this.properties.processingTime.get();
-
 		this.isProcessing = true;
-		this.tank.drain(this.properties.fluidUsage.get(), IFluidHandler.FluidAction.EXECUTE);
 
 		this.setChanged();
 		level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
@@ -182,6 +181,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 			.forEach(e -> this.ejectItem(level, e));
 
 		this.inventory.setStackInSlot(0, ItemStack.EMPTY);
+		this.tank.drain(this.properties.fluidUsage.get(), IFluidHandler.FluidAction.EXECUTE);
 
 		if (this.isNetherite) {
 			this.energy.consumeEnergy(SluiceConfig.NETHERITE_SLUICE.costPerUse.get(), false);
@@ -270,6 +270,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 	 * Attempts to seek out a valid inventory, when found, we hold it in memory. We then
 	 * check that on every use after being found. If the tile disappears we'll try to find
 	 * another, otherwise, we'll send back and empty. Max call depth 1, max loops 6.
+	 * (Don't allow sluice tile as a cap)
 	 *
 	 * @param level level to find the inventory from
 	 * @param start the starting pos (the tiles pos)
@@ -283,7 +284,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 			for (Direction direction : Direction.values()) {
 				BlockPos relative = start.relative(direction);
 				BlockEntity blockEntity = level.getBlockEntity(relative);
-				if (blockEntity != null) {
+				if (blockEntity != null && !(blockEntity instanceof SluiceBlockEntity)) {
 					LazyOptional<IItemHandler> capability = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite());
 					if (capability.isPresent()) {
 						this.closestInventory = Pair.of(relative, direction.getOpposite());
@@ -296,7 +297,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		} else {
 			// Validate that the tile is still valid before sending it's cap back.
 			BlockEntity blockEntity = level.getBlockEntity(this.closestInventory.getKey());
-			if (blockEntity == null) {
+			if (blockEntity == null || blockEntity instanceof SluiceBlockEntity) {
 				this.closestInventory = null;
 				return this.seekNearestInventory(level, start); // Try again.
 			}

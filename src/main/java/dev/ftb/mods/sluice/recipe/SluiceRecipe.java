@@ -22,6 +22,7 @@ public class SluiceRecipe implements Recipe<NoInventory> {
     public Ingredient ingredient;
     public List<ItemWithWeight> results;
     public HashSet<MeshType> meshes;
+    public int max;
 
     public SluiceRecipe(ResourceLocation i, String g) {
         this.id = i;
@@ -29,6 +30,7 @@ public class SluiceRecipe implements Recipe<NoInventory> {
         this.ingredient = Ingredient.EMPTY;
         this.results = new ArrayList<>();
         this.meshes = new HashSet<>();
+        this.max = 0;
     }
 
     @Override
@@ -71,7 +73,7 @@ public class SluiceRecipe implements Recipe<NoInventory> {
         return SluiceModRecipeSerializers.SLUICE_TYPE;
     }
 
-	/*
+    /*
 	public String chanceString(int totalWeight) {
 		if (totalWeight <= 0) {
 			return "??%";

@@ -25,6 +25,8 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
             r.ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
         }
 
+        r.max = json.get("max").getAsInt();
+
         for (JsonElement e : json.get("results").getAsJsonArray()) {
             JsonObject o = e.getAsJsonObject();
             r.results.add(new ItemWithWeight(ShapedRecipe.itemFromJson(o), o.get("chance").getAsDouble()));
@@ -45,6 +47,7 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
     public SluiceRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
         SluiceRecipe r = new SluiceRecipe(recipeId, buffer.readUtf(Short.MAX_VALUE));
         r.ingredient = Ingredient.fromNetwork(buffer);
+        r.max = buffer.readVarInt();
 
         int w = buffer.readVarInt();
 
@@ -67,6 +70,8 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
     public void toNetwork(FriendlyByteBuf buffer, SluiceRecipe r) {
         buffer.writeUtf(r.getGroup(), Short.MAX_VALUE);
         r.ingredient.toNetwork(buffer);
+        buffer.writeInt(r.max);
+
         buffer.writeVarInt(r.results.size());
 
         for (ItemWithWeight i : r.results) {
