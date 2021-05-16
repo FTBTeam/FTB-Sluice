@@ -1,9 +1,7 @@
 package dev.ftb.mods.sluice.integration.jei;
 
 
-/**
- * @author LatvianModder
- */
+
 public class SluiceCategory /*implements IRecipeCategory<SluiceRecipe>*/ {
 	/*
 	public static final ResourceLocation UID = new ResourceLocation(JarMod.MOD_ID + ":jar");

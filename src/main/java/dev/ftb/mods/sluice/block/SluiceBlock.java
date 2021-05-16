@@ -34,9 +34,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 
-/**
- * @author LatvianModder
- */
+
 public class SluiceBlock extends Block {
     public static final VoxelShape SHAPE = box(0, 0, 0, 16, 10, 16);
 

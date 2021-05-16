@@ -3,9 +3,16 @@
   "block.ftbsluice.iron_sluice": "Iron Sluice",
   "block.ftbsluice.netherite_sluice": "Netherite Sluice",
   "block.ftbsluice.oak_sluice": "Oak Sluice",
+  "block.ftbsluice.tap": "Tap",
+  "item.ftbsluice.clay_bucket": "Clay Bucket",
   "item.ftbsluice.cloth_mesh": "Cloth Mesh",
+  "item.ftbsluice.diamond_hammer": "Diamond Hammer",
   "item.ftbsluice.diamond_mesh": "Diamond Mesh",
+  "item.ftbsluice.gold_hammer": "Gold Hammer",
   "item.ftbsluice.gold_mesh": "Gold Mesh",
+  "item.ftbsluice.iron_hammer": "Iron Hammer",
   "item.ftbsluice.iron_mesh": "Iron Mesh",
+  "item.ftbsluice.stone_hammer": "Stone Hammer",
+  "item.ftbsluice.wooden_hammer": "Wooden Hammer",
   "itemGroup.ftbsluice": "Sluice"
 }

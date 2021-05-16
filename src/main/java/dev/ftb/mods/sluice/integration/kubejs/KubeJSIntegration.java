@@ -11,5 +11,6 @@ public class KubeJSIntegration {
 
 	private static void registerRecipeHandlers(RegisterRecipeHandlersEvent event) {
 		event.register(new ResourceLocation(SluiceMod.MOD_ID, "sluice"), SluiceRecipeJS::new);
+		event.register(new ResourceLocation(SluiceMod.MOD_ID, "hammer"), HammerRecipeJS::new);
 	}
 }

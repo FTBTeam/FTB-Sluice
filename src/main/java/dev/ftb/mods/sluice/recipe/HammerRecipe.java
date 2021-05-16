@@ -1,6 +1,7 @@
 package dev.ftb.mods.sluice.recipe;
 
-import dev.ftb.mods.sluice.block.MeshType;
+import com.google.common.base.MoreObjects;
+import dev.ftb.mods.sluice.item.HammerTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -13,22 +14,19 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-
-public class SluiceRecipe implements Recipe<NoInventory> {
+public class HammerRecipe implements Recipe<NoInventory> {
     private final ResourceLocation id;
     public String group;
     public Ingredient ingredient;
-    public List<ItemWithWeight> results;
-    public HashSet<MeshType> meshes;
-    public int max;
+    public List<ItemStack> results;
+    public HashSet<HammerTypes> hammers;
 
-    public SluiceRecipe(ResourceLocation i, String g) {
+    public HammerRecipe(ResourceLocation i, String g) {
         this.id = i;
         this.group = g;
         this.ingredient = Ingredient.EMPTY;
         this.results = new ArrayList<>();
-        this.meshes = new HashSet<>();
-        this.max = 0;
+        this.hammers = new HashSet<>();
     }
 
     @Override
@@ -63,36 +61,22 @@ public class SluiceRecipe implements Recipe<NoInventory> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return SluiceModRecipeSerializers.SLUICE.get();
+        return SluiceModRecipeSerializers.HAMMER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return SluiceModRecipeSerializers.SLUICE_TYPE;
+        return SluiceModRecipeSerializers.HAMMER_TYPE;
     }
 
-    /*
-	public String chanceString(int totalWeight) {
-		if (totalWeight <= 0) {
-			return "??%";
-		} else if (weight <= 0) {
-			return "0%";
-		} else if (weight >= totalWeight) {
-			return "100%";
-		}
-
-		int chance = weight * 100 / totalWeight;
-		double chanced = weight * 100D / (double) totalWeight;
-
-		if (chance != chanced) {
-			if (chanced < 0.01D) {
-				return "<0.01%";
-			}
-
-			return String.format("%.2f%%", chanced);
-		}
-
-		return chance + "%";
-	}
-	*/
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("id", this.id)
+            .add("group", this.group)
+            .add("ingredient", this.ingredient)
+            .add("results", this.results)
+            .add("hammers", this.hammers)
+            .toString();
+    }
 }

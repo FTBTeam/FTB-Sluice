@@ -11,9 +11,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
-/**
- * @author LatvianModder
- */
+
 public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<SluiceRecipe> {
     @Override
     public SluiceRecipe fromJson(ResourceLocation recipeId, JsonObject json) {

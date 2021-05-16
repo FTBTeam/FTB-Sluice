@@ -2,6 +2,7 @@ package dev.ftb.mods.sluice.recipe;
 
 import dev.ftb.mods.sluice.SluiceMod;
 import dev.ftb.mods.sluice.block.MeshType;
+import dev.ftb.mods.sluice.item.HammerTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -17,19 +18,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author LatvianModder
- */
+
 public class SluiceModRecipeSerializers {
     public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, SluiceMod.MOD_ID);
 
     public static final RegistryObject<RecipeSerializer<?>> SLUICE = REGISTRY.register("sluice", SluiceRecipeSerializer::new);
     public static final RecipeType<SluiceRecipe> SLUICE_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":sluice");
 
+    public static final RegistryObject<RecipeSerializer<?>> HAMMER = REGISTRY.register("hammer", HammerRecipeSerializer::new);
+    public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":hammer");
+
     private static final Map<Pair<Item, MeshType>, InputRecipeResult> sluiceCache = new HashMap<>();
+    private static final Map<Pair<Item, HammerTypes>, List<ItemStack>> hammerCache = new HashMap<>();
 
     public static void clearCache() {
         sluiceCache.clear();
+        hammerCache.clear();
     }
 
     /**
@@ -87,5 +91,19 @@ public class SluiceModRecipeSerializers {
         }
 
         return outputResults;
+    }
+
+    public static List<ItemStack> getHammerDrops(Level level, ItemStack hammer, ItemStack input) {
+        return HammerTypes.getHammerFromItem(hammer).map(ham -> hammerCache.computeIfAbsent(Pair.of(input.getItem(), ham), key -> {
+            List<ItemStack> drops = new ArrayList<>();
+
+            for (HammerRecipe recipe : level.getRecipeManager().getRecipesFor(HAMMER_TYPE, NoInventory.INSTANCE, level)) {
+                if (recipe.hammers.contains(ham) && recipe.ingredient.test(input)) {
+                    recipe.results.forEach(e -> drops.add(e.copy()));
+                }
+            }
+
+            return drops;
+        })).orElse(new ArrayList<>());
     }
 }

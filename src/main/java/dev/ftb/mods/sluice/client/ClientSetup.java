@@ -9,9 +9,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-/**
- * @author LatvianModder
- */
+
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = SluiceMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
 	@SubscribeEvent

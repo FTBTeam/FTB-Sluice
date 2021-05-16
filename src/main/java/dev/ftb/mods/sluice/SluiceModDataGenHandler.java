@@ -20,10 +20,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.client.model.generators.BlockModelProvider;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
+import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,9 +31,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-/**
- * @author LatvianModder
- */
+
 @Mod.EventBusSubscriber(modid = SluiceMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class SluiceModDataGenHandler {
 	public static final String MODID = SluiceMod.MOD_ID;
@@ -68,15 +63,24 @@ public class SluiceModDataGenHandler {
 
 		@Override
 		protected void addTranslations() {
-			add("itemGroup." + MODID, "Sluice");
+			this.add("itemGroup." + MODID, "Sluice");
 
 			for (MeshType type : MeshType.REAL_VALUES) {
-				addItem(type.meshItem, type.getSerializedName().substring(0, 1).toUpperCase() + type.getSerializedName().substring(1) + " Mesh");
+				this.addItem(type.meshItem, type.getSerializedName().substring(0, 1).toUpperCase() + type.getSerializedName().substring(1) + " Mesh");
 			}
 
 			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
-				addBlock(p.getLeft(), p.getRight().substring(0, 1).toUpperCase() + p.getRight().substring(1) + " Sluice");
+				this.addBlock(p.getLeft(), p.getRight().substring(0, 1).toUpperCase() + p.getRight().substring(1) + " Sluice");
 			}
+
+			this.addBlock(SluiceModBlocks.DUST_BLOCK, "Dust");
+			this.addItem(SluiceModItems.TAP, "Tap");
+			this.addItem(SluiceModItems.CLAY_BUCKET, "Clay Bucket");
+			this.addItem(SluiceModItems.WOODEN_HAMMER, "Wooden Hammer");
+			this.addItem(SluiceModItems.STONE_HAMMER, "Stone Hammer");
+			this.addItem(SluiceModItems.IRON_HAMMER, "Iron Hammer");
+			this.addItem(SluiceModItems.GOLD_HAMMER, "Gold Hammer");
+			this.addItem(SluiceModItems.DIAMOND_HAMMER, "Diamond Hammer");
 		}
 	}
 
@@ -85,12 +89,12 @@ public class SluiceModDataGenHandler {
 
 		public SMBlockStateModels(DataGenerator generator, String modid, ExistingFileHelper existingFileHelper, SMBlockModels bm) {
 			super(generator, modid, existingFileHelper);
-			blockModels = bm;
+			this.blockModels = bm;
 		}
 
 		@Override
 		public BlockModelProvider models() {
-			return blockModels;
+			return this.blockModels;
 		}
 
 		@Override
@@ -99,17 +103,19 @@ public class SluiceModDataGenHandler {
 			int[] dirsRot = {0, 180, 270, 90};
 
 			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
-				MultiPartBlockStateBuilder builder = getMultipartBuilder(p.getLeft().get());
+				MultiPartBlockStateBuilder builder = this.getMultipartBuilder(p.getLeft().get());
 
 				for (int d = 0; d < 4; d++) {
-					builder.part().modelFile(models().getExistingFile(modLoc("block/" + p.getRight() + "_frame"))).rotationY(dirsRot[d]).addModel().condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
-					builder.part().modelFile(models().getExistingFile(modLoc("block/water"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.WATER, true).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
+					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + p.getRight() + "_frame"))).rotationY(dirsRot[d]).addModel().condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
+					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/water"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.WATER, true).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
 
 					for (MeshType type : MeshType.REAL_VALUES) {
-						builder.part().modelFile(models().getExistingFile(modLoc("block/" + type.getSerializedName() + "_mesh"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.MESH, type).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
+						builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + type.getSerializedName() + "_mesh"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.MESH, type).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
 					}
 				}
 			}
+
+			this.simpleBlock(SluiceModBlocks.DUST_BLOCK.get());
 		}
 	}
 
@@ -121,17 +127,15 @@ public class SluiceModDataGenHandler {
 		@Override
 		protected void registerModels() {
 			for (MeshType type : MeshType.REAL_VALUES) {
-				withExistingParent(type.getSerializedName() + "_mesh", modLoc("block/mesh"))
-						.texture("mesh", modLoc("item/" + type.getSerializedName() + "_mesh"))
-				;
+				this.withExistingParent(type.getSerializedName() + "_mesh", this.modLoc("block/mesh"))
+						.texture("mesh", this.modLoc("item/" + type.getSerializedName() + "_mesh"));
 			}
 
 			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
-				withExistingParent(p.getRight() + "_frame", modLoc("block/frame"))
-						.texture("base", modLoc("block/" + p.getRight() + "_sluice_base"))
-						.texture("back", modLoc("block/" + p.getRight() + "_sluice_back"))
-						.texture("side", modLoc("block/" + p.getRight() + "_sluice_side"))
-				;
+				this.withExistingParent(p.getRight() + "_frame", this.modLoc("block/frame"))
+						.texture("base", this.modLoc("block/" + p.getRight() + "_sluice_base"))
+						.texture("back", this.modLoc("block/" + p.getRight() + "_sluice_back"))
+						.texture("side", this.modLoc("block/" + p.getRight() + "_sluice_side"));
 			}
 		}
 	}
@@ -144,12 +148,30 @@ public class SluiceModDataGenHandler {
 		@Override
 		protected void registerModels() {
 			for (MeshType type : MeshType.REAL_VALUES) {
-				singleTexture(type.getSerializedName() + "_mesh", new ResourceLocation("minecraft", "item/generated"), "layer0", modLoc("item/" + type.getSerializedName() + "_mesh"));
+				this.singleTexture(type.getSerializedName() + "_mesh", new ResourceLocation("minecraft", "item/generated"), "layer0", this.modLoc("item/" + type.getSerializedName() + "_mesh"));
 			}
 
 			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
-				withExistingParent(p.getRight() + "_sluice", modLoc("block/" + p.getRight() + "_frame"));
+				this.withExistingParent(p.getRight() + "_sluice", this.modLoc("block/" + p.getRight() + "_frame"));
 			}
+
+			this.registerBlockModel(SluiceModBlocks.DUST_BLOCK.get());
+			this.simpleItem(SluiceModItems.CLAY_BUCKET);
+			this.simpleItem(SluiceModItems.WOODEN_HAMMER);
+			this.simpleItem(SluiceModItems.STONE_HAMMER);
+			this.simpleItem(SluiceModItems.IRON_HAMMER);
+			this.simpleItem(SluiceModItems.GOLD_HAMMER);
+			this.simpleItem(SluiceModItems.DIAMOND_HAMMER);
+		}
+
+		private void simpleItem(Supplier<Item> item) {
+			String path = item.get().getRegistryName().getPath();
+			this.singleTexture(path, this.mcLoc("item/handheld"), "layer0", this.modLoc("item/" + path));
+		}
+
+		private void registerBlockModel(Block block) {
+			String path = block.getRegistryName().getPath();
+			this.getBuilder(path).parent(new ModelFile.UncheckedModelFile(this.modLoc("block/" + path)));
 		}
 	}
 
@@ -187,31 +209,31 @@ public class SluiceModDataGenHandler {
 		protected void buildShapelessRecipes(Consumer<FinishedRecipe> consumer) {
 			for (MeshType type : MeshType.REAL_VALUES) {
 				ShapedRecipeBuilder.shaped(type.meshItem.get())
-						.unlockedBy("has_item", has(STRING))
+						.unlockedBy("has_item", has(this.STRING))
 						.group(MODID + ":mesh")
 						.pattern("SIS")
 						.pattern("ICI")
 						.pattern("SIS")
-						.define('S', STICK)
-						.define('C', STRING)
+						.define('S', this.STICK)
+						.define('C', this.STRING)
 						.define('I', type.getIngredient())
 						.save(consumer);
 			}
 
 			ShapedRecipeBuilder.shaped(SluiceModItems.OAK_SLUICE.get())
-					.unlockedBy("has_item", has(STRING))
+					.unlockedBy("has_item", has(this.STRING))
 					.pattern("WS")
 					.pattern("WW")
-					.define('S', STICK)
+					.define('S', this.STICK)
 					.define('W', Items.OAK_LOG)
 					.save(consumer);
 
 			ShapedRecipeBuilder.shaped(SluiceModItems.IRON_SLUICE.get())
-					.unlockedBy("has_item", has(STRING))
+					.unlockedBy("has_item", has(this.STRING))
 					.pattern("IC")
 					.pattern("SI")
 					.define('S', SluiceModItems.OAK_SLUICE.get())
-					.define('I', IRON_INGOT)
+					.define('I', this.IRON_INGOT)
 					.define('C', Items.CHAIN)
 					.save(consumer);
 
@@ -220,7 +242,7 @@ public class SluiceModDataGenHandler {
 					.pattern("DD")
 					.pattern("SD")
 					.define('S', SluiceModItems.IRON_SLUICE.get())
-					.define('D', DIAMOND_GEM)
+					.define('D', this.DIAMOND_GEM)
 					.save(consumer);
 
 			UpgradeRecipeBuilder.smithing(Ingredient.of(SluiceModItems.DIAMOND_SLUICE.get()), Ingredient.of(Items.NETHERITE_INGOT), SluiceModItems.NETHERITE_SLUICE.get())

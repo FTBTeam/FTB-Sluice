@@ -34,9 +34,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * @author LatvianModder
- */
+
 public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity {
 	public final ItemStackHandler inventory = new ItemStackHandler(1) {
 		@Override

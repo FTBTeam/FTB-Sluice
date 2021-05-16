@@ -12,9 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-/**
- * @author LatvianModder
- */
+
 public enum MeshType implements StringRepresentable {
 	NONE("none", () -> Items.AIR, () -> null),
 	CLOTH("cloth", SluiceModItems.CLOTH_MESH, () -> ItemTags.bind("forge:string")),
@@ -32,31 +30,31 @@ public enum MeshType implements StringRepresentable {
 		}
 	}
 
-	private final String name;
 	public final Supplier<Item> meshItem;
+	private final String name;
 	private final Supplier<Tag<Item>> ingredient;
 	private Tag<Item> ingredient0;
 
 	MeshType(String n, Supplier<Item> m, Supplier<Tag<Item>> i) {
-		name = n;
-		meshItem = m;
-		ingredient = i;
+		this.name = n;
+		this.meshItem = m;
+		this.ingredient = i;
 	}
 
 	@Override
 	public String getSerializedName() {
-		return name;
+		return this.name;
 	}
 
 	public ItemStack getItemStack() {
-		return meshItem.get() == Items.AIR ? ItemStack.EMPTY : new ItemStack(meshItem.get());
+		return this.meshItem.get() == Items.AIR ? ItemStack.EMPTY : new ItemStack(this.meshItem.get());
 	}
 
 	public Tag<Item> getIngredient() {
-		if (ingredient0 == null) {
-			ingredient0 = ingredient.get();
+		if (this.ingredient0 == null) {
+			this.ingredient0 = this.ingredient.get();
 		}
 
-		return ingredient0;
+		return this.ingredient0;
 	}
 }
