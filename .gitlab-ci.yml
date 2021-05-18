@@ -12,6 +12,8 @@ cache:
     - build
 
 build_publish:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   stage: build
   script:
     - rm -rf **/build/libs
