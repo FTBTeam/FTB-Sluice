@@ -2,7 +2,8 @@
   "multipart": [
     {
       "when": {
-        "facing": "north"
+        "facing": "north",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/netherite_sluice"
@@ -11,7 +12,8 @@
     {
       "when": {
         "water": "true",
-        "facing": "north"
+        "facing": "north",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/sluice_waterflow"
@@ -20,7 +22,8 @@
     {
       "when": {
         "mesh": "cloth",
-        "facing": "north"
+        "facing": "north",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/cloth_mesh"
@@ -29,7 +32,8 @@
     {
       "when": {
         "mesh": "iron",
-        "facing": "north"
+        "facing": "north",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/iron_mesh"
@@ -38,7 +42,8 @@
     {
       "when": {
         "mesh": "gold",
-        "facing": "north"
+        "facing": "north",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/gold_mesh"
@@ -47,7 +52,8 @@
     {
       "when": {
         "mesh": "diamond",
-        "facing": "north"
+        "facing": "north",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/diamond_mesh"
@@ -55,7 +61,8 @@
     },
     {
       "when": {
-        "facing": "south"
+        "facing": "south",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/netherite_sluice",
@@ -65,7 +72,8 @@
     {
       "when": {
         "water": "true",
-        "facing": "south"
+        "facing": "south",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/sluice_waterflow",
@@ -75,7 +83,8 @@
     {
       "when": {
         "mesh": "cloth",
-        "facing": "south"
+        "facing": "south",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/cloth_mesh",
@@ -85,7 +94,8 @@
     {
       "when": {
         "mesh": "iron",
-        "facing": "south"
+        "facing": "south",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/iron_mesh",
@@ -95,7 +105,8 @@
     {
       "when": {
         "mesh": "gold",
-        "facing": "south"
+        "facing": "south",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/gold_mesh",
@@ -105,7 +116,8 @@
     {
       "when": {
         "mesh": "diamond",
-        "facing": "south"
+        "facing": "south",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/diamond_mesh",
@@ -114,7 +126,8 @@
     },
     {
       "when": {
-        "facing": "west"
+        "facing": "west",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/netherite_sluice",
@@ -124,7 +137,8 @@
     {
       "when": {
         "water": "true",
-        "facing": "west"
+        "facing": "west",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/sluice_waterflow",
@@ -134,7 +148,8 @@
     {
       "when": {
         "mesh": "cloth",
-        "facing": "west"
+        "facing": "west",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/cloth_mesh",
@@ -144,7 +159,8 @@
     {
       "when": {
         "mesh": "iron",
-        "facing": "west"
+        "facing": "west",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/iron_mesh",
@@ -154,7 +170,8 @@
     {
       "when": {
         "mesh": "gold",
-        "facing": "west"
+        "facing": "west",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/gold_mesh",
@@ -164,7 +181,8 @@
     {
       "when": {
         "mesh": "diamond",
-        "facing": "west"
+        "facing": "west",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/diamond_mesh",
@@ -173,7 +191,8 @@
     },
     {
       "when": {
-        "facing": "east"
+        "facing": "east",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/netherite_sluice",
@@ -183,7 +202,8 @@
     {
       "when": {
         "water": "true",
-        "facing": "east"
+        "facing": "east",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/sluice_waterflow",
@@ -193,7 +213,8 @@
     {
       "when": {
         "mesh": "cloth",
-        "facing": "east"
+        "facing": "east",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/cloth_mesh",
@@ -203,7 +224,8 @@
     {
       "when": {
         "mesh": "iron",
-        "facing": "east"
+        "facing": "east",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/iron_mesh",
@@ -213,7 +235,8 @@
     {
       "when": {
         "mesh": "gold",
-        "facing": "east"
+        "facing": "east",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/gold_mesh",
@@ -223,7 +246,8 @@
     {
       "when": {
         "mesh": "diamond",
-        "facing": "east"
+        "facing": "east",
+        "part": "main"
       },
       "apply": {
         "model": "ftbsluice:block/diamond_mesh",

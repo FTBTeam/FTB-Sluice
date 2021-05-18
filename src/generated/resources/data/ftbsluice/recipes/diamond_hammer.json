@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "hrh",
+    " r ",
+    " r "
+  ],
+  "key": {
+    "h": {
+      "tag": "forge:gems/diamond"
+    },
+    "r": {
+      "tag": "forge:rods/wooden"
+    }
+  },
+  "result": {
+    "item": "ftbsluice:diamond_hammer"
+  }
+}

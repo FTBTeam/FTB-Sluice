@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "hrh",
+    " r ",
+    " r "
+  ],
+  "key": {
+    "h": {
+      "tag": "minecraft:planks"
+    },
+    "r": {
+      "tag": "forge:rods/wooden"
+    }
+  },
+  "result": {
+    "item": "ftbsluice:wooden_hammer"
+  }
+}

@@ -1,32 +1,46 @@
 package dev.ftb.mods.sluice;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlock;
 import dev.ftb.mods.sluice.block.SluiceModBlocks;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.UpgradeRecipeBuilder;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.common.data.ForgeLootTableProvider;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -52,6 +66,7 @@ public class SluiceModDataGenHandler {
 			gen.addProvider(blockTags);
 			gen.addProvider(new SMItemTags(gen, blockTags));
 			gen.addProvider(new SMRecipes(gen));
+			gen.addProvider(new SMLootTableProvider(gen));
 		}
 	}
 
@@ -106,11 +121,11 @@ public class SluiceModDataGenHandler {
 				MultiPartBlockStateBuilder builder = this.getMultipartBuilder(p.getLeft().get());
 
 				for (int d = 0; d < 4; d++) {
-					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + p.getRight() + "_sluice"))).rotationY(dirsRot[d]).addModel().condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
-					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/sluice_waterflow"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.WATER, true).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
+					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + p.getRight() + "_sluice"))).rotationY(dirsRot[d]).addModel().condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.MAIN);
+					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/sluice_waterflow"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.WATER, true).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.MAIN);
 
 					for (MeshType type : MeshType.REAL_VALUES) {
-						builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + type.getSerializedName() + "_mesh"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.MESH, type).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
+						builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + type.getSerializedName() + "_mesh"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.MESH, type).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.MAIN);
 					}
 				}
 			}
@@ -126,17 +141,6 @@ public class SluiceModDataGenHandler {
 
 		@Override
 		protected void registerModels() {
-//			for (MeshType type : MeshType.REAL_VALUES) {
-//				this.withExistingParent(type.getSerializedName() + "_mesh", this.modLoc("block/mesh"))
-//						.texture("mesh", this.modLoc("item/" + type.getSerializedName() + "_mesh"));
-//			}
-//
-//			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
-//				this.withExistingParent(p.getRight() + "_frame", this.modLoc("block/frame"))
-//						.texture("base", this.modLoc("block/" + p.getRight() + "_sluice_base"))
-//						.texture("back", this.modLoc("block/" + p.getRight() + "_sluice_back"))
-//						.texture("side", this.modLoc("block/" + p.getRight() + "_sluice_side"));
-//			}
 		}
 	}
 
@@ -147,14 +151,6 @@ public class SluiceModDataGenHandler {
 
 		@Override
 		protected void registerModels() {
-//			for (MeshType type : MeshType.REAL_VALUES) {
-//				this.singleTexture(type.getSerializedName() + "_mesh", new ResourceLocation("minecraft", "item/generated"), "layer0", this.modLoc("item/" + type.getSerializedName() + "_mesh"));
-//			}
-//
-//			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
-//				this.withExistingParent(p.getRight() + "_sluice", this.modLoc("block/" + p.getRight() + "_frame"));
-//			}
-
 			this.registerBlockModel(SluiceModBlocks.DUST_BLOCK.get());
 			this.simpleItem(SluiceModItems.CLAY_BUCKET);
 			this.simpleItem(SluiceModItems.CLAY_WATER_BUCKET);
@@ -249,6 +245,84 @@ public class SluiceModDataGenHandler {
 			UpgradeRecipeBuilder.smithing(Ingredient.of(SluiceModItems.DIAMOND_SLUICE.get()), Ingredient.of(Items.NETHERITE_INGOT), SluiceModItems.NETHERITE_SLUICE.get())
 					.unlocks("has_item", has(Items.NETHERITE_INGOT))
 					.save(consumer, SluiceMod.MOD_ID + ":netherite_sluice");
+
+			this.hammer(SluiceModItems.WOODEN_HAMMER.get(), ItemTags.PLANKS, consumer);
+			this.hammer(SluiceModItems.STONE_HAMMER.get(), Items.STONE, consumer);
+			this.hammer(SluiceModItems.IRON_HAMMER.get(), this.IRON_INGOT, consumer);
+			this.hammer(SluiceModItems.GOLD_HAMMER.get(), Items.GOLD_INGOT, consumer);
+			this.hammer(SluiceModItems.DIAMOND_HAMMER.get(), this.DIAMOND_GEM, consumer);
+		}
+
+		private void hammer(ItemLike output, Tag<Item> head, Consumer<FinishedRecipe> consumer) {
+			ShapedRecipeBuilder.shaped(output)
+				.unlockedBy("has_item", has(head))
+				.pattern("hrh")
+				.pattern(" r ")
+				.pattern(" r ")
+				.define('h', head)
+				.define('r', this.STICK)
+				.save(consumer);
+		}
+
+		private void hammer(ItemLike output, ItemLike head, Consumer<FinishedRecipe> consumer) {
+			ShapedRecipeBuilder.shaped(output)
+				.unlockedBy("has_item", has(head))
+				.pattern("hrh")
+				.pattern(" r ")
+				.pattern(" r ")
+				.define('h', head)
+				.define('r', this.STICK)
+				.save(consumer);
+		}
+	}
+
+	private static class SMLootTableProvider extends ForgeLootTableProvider {
+		private final List<com.mojang.datafixers.util.Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> lootTables = Lists.newArrayList(com.mojang.datafixers.util.Pair.of(SMBlockLootProvider::new, LootContextParamSets.BLOCK));
+
+		public SMLootTableProvider(DataGenerator dataGeneratorIn) {
+			super(dataGeneratorIn);
+		}
+
+		@Override
+		protected List<com.mojang.datafixers.util.Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
+			return this.lootTables;
+		}
+	}
+
+	public static class SMBlockLootProvider extends BlockLoot {
+		private final Map<ResourceLocation, LootTable.Builder> tables = Maps.newHashMap();
+
+		@Override
+		protected void addTables() {
+			this.dropSelf(SluiceModBlocks.TANK.get());
+			this.dropSelf(SluiceModBlocks.TAP.get());
+			SluiceModBlocks.SLUICES.forEach(e -> this.dropSelf(e.getKey().get()));
+		}
+
+		@Override
+		public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
+			this.addTables();
+
+			for (ResourceLocation rs : new ArrayList<>(this.tables.keySet())) {
+				if (rs != BuiltInLootTables.EMPTY) {
+					LootTable.Builder builder = this.tables.remove(rs);
+
+					if (builder == null) {
+						throw new IllegalStateException(String.format("Missing loottable '%s'", rs));
+					}
+
+					consumer.accept(rs, builder);
+				}
+			}
+
+			if (!this.tables.isEmpty()) {
+				throw new IllegalStateException("Created block loot tables for non-blocks: " + this.tables.keySet());
+			}
+		}
+
+		@Override
+		protected void add(Block blockIn, LootTable.Builder table) {
+			this.tables.put(blockIn.getLootTable(), table);
 		}
 	}
 }

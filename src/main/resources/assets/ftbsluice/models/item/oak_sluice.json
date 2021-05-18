@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "ftbsluice:block/wooden_sluice",
-		"particle": "ftbsluice:block/wooden_sluice"
+		"0": "ftbsluice:block/oak_sluice",
+		"particle": "ftbsluice:block/oak_sluice"
 	},
 	"elements": [
 		{
