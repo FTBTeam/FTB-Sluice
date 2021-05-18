@@ -12,7 +12,6 @@ import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.UpgradeRecipeBuilder;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.item.Item;
@@ -76,6 +75,7 @@ public class SluiceModDataGenHandler {
 			this.addBlock(SluiceModBlocks.DUST_BLOCK, "Dust");
 			this.addItem(SluiceModItems.TAP, "Tap");
 			this.addItem(SluiceModItems.CLAY_BUCKET, "Clay Bucket");
+			this.addItem(SluiceModItems.CLAY_WATER_BUCKET, "Clay Water Bucket");
 			this.addItem(SluiceModItems.WOODEN_HAMMER, "Wooden Hammer");
 			this.addItem(SluiceModItems.STONE_HAMMER, "Stone Hammer");
 			this.addItem(SluiceModItems.IRON_HAMMER, "Iron Hammer");
@@ -106,8 +106,8 @@ public class SluiceModDataGenHandler {
 				MultiPartBlockStateBuilder builder = this.getMultipartBuilder(p.getLeft().get());
 
 				for (int d = 0; d < 4; d++) {
-					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + p.getRight() + "_frame"))).rotationY(dirsRot[d]).addModel().condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
-					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/water"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.WATER, true).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
+					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + p.getRight() + "_sluice"))).rotationY(dirsRot[d]).addModel().condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
+					builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/sluice_waterflow"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.WATER, true).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
 
 					for (MeshType type : MeshType.REAL_VALUES) {
 						builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + type.getSerializedName() + "_mesh"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.MESH, type).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]);
@@ -126,17 +126,17 @@ public class SluiceModDataGenHandler {
 
 		@Override
 		protected void registerModels() {
-			for (MeshType type : MeshType.REAL_VALUES) {
-				this.withExistingParent(type.getSerializedName() + "_mesh", this.modLoc("block/mesh"))
-						.texture("mesh", this.modLoc("item/" + type.getSerializedName() + "_mesh"));
-			}
-
-			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
-				this.withExistingParent(p.getRight() + "_frame", this.modLoc("block/frame"))
-						.texture("base", this.modLoc("block/" + p.getRight() + "_sluice_base"))
-						.texture("back", this.modLoc("block/" + p.getRight() + "_sluice_back"))
-						.texture("side", this.modLoc("block/" + p.getRight() + "_sluice_side"));
-			}
+//			for (MeshType type : MeshType.REAL_VALUES) {
+//				this.withExistingParent(type.getSerializedName() + "_mesh", this.modLoc("block/mesh"))
+//						.texture("mesh", this.modLoc("item/" + type.getSerializedName() + "_mesh"));
+//			}
+//
+//			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
+//				this.withExistingParent(p.getRight() + "_frame", this.modLoc("block/frame"))
+//						.texture("base", this.modLoc("block/" + p.getRight() + "_sluice_base"))
+//						.texture("back", this.modLoc("block/" + p.getRight() + "_sluice_back"))
+//						.texture("side", this.modLoc("block/" + p.getRight() + "_sluice_side"));
+//			}
 		}
 	}
 
@@ -147,16 +147,17 @@ public class SluiceModDataGenHandler {
 
 		@Override
 		protected void registerModels() {
-			for (MeshType type : MeshType.REAL_VALUES) {
-				this.singleTexture(type.getSerializedName() + "_mesh", new ResourceLocation("minecraft", "item/generated"), "layer0", this.modLoc("item/" + type.getSerializedName() + "_mesh"));
-			}
-
-			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
-				this.withExistingParent(p.getRight() + "_sluice", this.modLoc("block/" + p.getRight() + "_frame"));
-			}
+//			for (MeshType type : MeshType.REAL_VALUES) {
+//				this.singleTexture(type.getSerializedName() + "_mesh", new ResourceLocation("minecraft", "item/generated"), "layer0", this.modLoc("item/" + type.getSerializedName() + "_mesh"));
+//			}
+//
+//			for (Pair<Supplier<Block>, String> p : SluiceModBlocks.SLUICES) {
+//				this.withExistingParent(p.getRight() + "_sluice", this.modLoc("block/" + p.getRight() + "_frame"));
+//			}
 
 			this.registerBlockModel(SluiceModBlocks.DUST_BLOCK.get());
 			this.simpleItem(SluiceModItems.CLAY_BUCKET);
+			this.simpleItem(SluiceModItems.CLAY_WATER_BUCKET);
 			this.simpleItem(SluiceModItems.WOODEN_HAMMER);
 			this.simpleItem(SluiceModItems.STONE_HAMMER);
 			this.simpleItem(SluiceModItems.IRON_HAMMER);

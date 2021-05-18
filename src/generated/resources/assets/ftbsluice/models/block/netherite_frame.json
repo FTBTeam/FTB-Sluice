@@ -1,8 +1,0 @@
-{
-  "parent": "ftbsluice:block/frame",
-  "textures": {
-    "base": "ftbsluice:block/netherite_sluice_base",
-    "back": "ftbsluice:block/netherite_sluice_back",
-    "side": "ftbsluice:block/netherite_sluice_side"
-  }
-}

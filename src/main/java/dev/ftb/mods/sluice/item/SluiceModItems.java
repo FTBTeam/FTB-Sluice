@@ -40,5 +40,5 @@ public class SluiceModItems {
 	public static final RegistryObject<Item> DIAMOND_HAMMER = REGISTRY.register("diamond_hammer", () -> new HammerItem(Tiers.DIAMOND, 1, -2.8F));
 
 	public static final RegistryObject<Item> CLAY_BUCKET = REGISTRY.register("clay_bucket", () -> new ClayBucket(() -> Fluids.EMPTY));
-	public static final RegistryObject<Item> CLAY_WATER_BUCKET = REGISTRY.register("clay_water_bucket", () -> new ClayBucket(() -> ClayBucket.CLAY_WATER_FLUID));
+	public static final RegistryObject<Item> CLAY_WATER_BUCKET = REGISTRY.register("clay_water_bucket", () -> new ClayBucket(() -> Fluids.WATER));
 }

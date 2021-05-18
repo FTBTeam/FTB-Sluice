@@ -2,6 +2,7 @@ package dev.ftb.mods.sluice.block;
 
 import dev.ftb.mods.sluice.SluiceMod;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
@@ -29,8 +30,7 @@ public class SluiceModBlocks {
 	public static final RegistryObject<Block> TANK_CREATIVE = REGISTRY.register("tank_creative", () -> new Tank(true));
 
 	// MISC
-	public static final RegistryObject<Block> DUST_BLOCK = REGISTRY.register("dust", () -> new Block(BlockBehaviour.Properties.of(Material.SAND).harvestTool(ToolType.SHOVEL).strength(0.5F).sound(SoundType.SAND)));
-
+	public static final RegistryObject<Block> DUST_BLOCK = REGISTRY.register("dust", () -> new FallingBlock(BlockBehaviour.Properties.of(Material.SAND).harvestTool(ToolType.SHOVEL).strength(0.5F).sound(SoundType.SAND)));
 	public static final List<Pair<Supplier<Block>, String>> SLUICES = Arrays.asList(
 			Pair.of(OAK_SLUICE, "oak"),
 			Pair.of(IRON_SLUICE, "iron"),

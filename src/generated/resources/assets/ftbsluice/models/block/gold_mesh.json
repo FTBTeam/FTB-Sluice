@@ -1,6 +1,0 @@
-{
-  "parent": "ftbsluice:block/mesh",
-  "textures": {
-    "mesh": "ftbsluice:item/gold_mesh"
-  }
-}

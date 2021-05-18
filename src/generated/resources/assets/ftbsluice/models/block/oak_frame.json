@@ -1,8 +1,0 @@
-{
-  "parent": "ftbsluice:block/frame",
-  "textures": {
-    "base": "ftbsluice:block/oak_sluice_base",
-    "back": "ftbsluice:block/oak_sluice_back",
-    "side": "ftbsluice:block/oak_sluice_side"
-  }
-}

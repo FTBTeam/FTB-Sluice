@@ -5,7 +5,7 @@
         "facing": "north"
       },
       "apply": {
-        "model": "ftbsluice:block/iron_frame"
+        "model": "ftbsluice:block/iron_sluice"
       }
     },
     {
@@ -14,7 +14,7 @@
         "facing": "north"
       },
       "apply": {
-        "model": "ftbsluice:block/water"
+        "model": "ftbsluice:block/sluice_waterflow"
       }
     },
     {
@@ -58,7 +58,7 @@
         "facing": "south"
       },
       "apply": {
-        "model": "ftbsluice:block/iron_frame",
+        "model": "ftbsluice:block/iron_sluice",
         "y": 180
       }
     },
@@ -68,7 +68,7 @@
         "facing": "south"
       },
       "apply": {
-        "model": "ftbsluice:block/water",
+        "model": "ftbsluice:block/sluice_waterflow",
         "y": 180
       }
     },
@@ -117,7 +117,7 @@
         "facing": "west"
       },
       "apply": {
-        "model": "ftbsluice:block/iron_frame",
+        "model": "ftbsluice:block/iron_sluice",
         "y": 270
       }
     },
@@ -127,7 +127,7 @@
         "facing": "west"
       },
       "apply": {
-        "model": "ftbsluice:block/water",
+        "model": "ftbsluice:block/sluice_waterflow",
         "y": 270
       }
     },
@@ -176,7 +176,7 @@
         "facing": "east"
       },
       "apply": {
-        "model": "ftbsluice:block/iron_frame",
+        "model": "ftbsluice:block/iron_sluice",
         "y": 90
       }
     },
@@ -186,7 +186,7 @@
         "facing": "east"
       },
       "apply": {
-        "model": "ftbsluice:block/water",
+        "model": "ftbsluice:block/sluice_waterflow",
         "y": 90
       }
     },
