@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "ftbsluice:block/sluice_waterflow",
+		"1": "ftbsluice:block/sluice_waterflow",
 		"particle": "ftbsluice:block/sluice_waterflow"
 	},
 	"elements": [
@@ -11,25 +11,25 @@
 			"to": [13, 8.95, 14.25],
 			"rotation": {"angle": -22.5, "axis": "x", "origin": [2, 8, 17.25]},
 			"faces": {
-				"north": {"uv": [0, 0, 5, 0.25], "texture": "#0"},
-				"east": {"uv": [0, 0, 7, 0.25], "texture": "#0"},
-				"south": {"uv": [0, 0, 5, 0.25], "texture": "#0"},
-				"west": {"uv": [0, 0, 7, 0.25], "texture": "#0"},
-				"up": {"uv": [1, 7, 6, 0], "texture": "#0"},
-				"down": {"uv": [13.5, 12.5, 18.5, 19.5], "texture": "#0"}
+				"north": {"uv": [0, 0, 5, 0.25], "texture": "#1"},
+				"east": {"uv": [0, 0, 7, 0.25], "texture": "#1"},
+				"south": {"uv": [0, 0, 5, 0.25], "texture": "#1"},
+				"west": {"uv": [0, 0, 7, 0.25], "texture": "#1"},
+				"up": {"uv": [1, 7, 6, 0], "texture": "#1"},
+				"down": {"uv": [13.5, 12.5, 18.5, 19.5], "texture": "#1"}
 			}
 		},
 		{
-			"from": [2, 2, -16],
+			"from": [2, 2, 0],
 			"to": [14, 2.15, 3],
 			"rotation": {"angle": 0, "axis": "y", "origin": [2, 2.1, 0]},
 			"faces": {
-				"north": {"uv": [0, 0, 6, 0.125], "texture": "#0", "cullface": "north"},
-				"east": {"uv": [0, 0, 9.5, 0.125], "texture": "#0"},
-				"south": {"uv": [0, 0, 6, 0.125], "texture": "#0"},
-				"west": {"uv": [0, 0, 9.5, 0.125], "texture": "#0"},
-				"up": {"uv": [0.5, 16, 6.5, 6.5], "texture": "#0"},
-				"down": {"uv": [6.5, 17.5, 0.5, 8], "texture": "#0"}
+				"north": {"uv": [0, 0, 6, 0.125], "texture": "#1", "cullface": "north"},
+				"east": {"uv": [0, 0, 9.5, 0.125], "texture": "#1"},
+				"south": {"uv": [0, 0, 6, 0.125], "texture": "#1"},
+				"west": {"uv": [0, 0, 9.5, 0.125], "texture": "#1"},
+				"up": {"uv": [0.5, 8, 6.5, 6.5], "texture": "#1"},
+				"down": {"uv": [6.5, 8, 0.5, 6.5], "texture": "#1"}
 			}
 		}
 	],

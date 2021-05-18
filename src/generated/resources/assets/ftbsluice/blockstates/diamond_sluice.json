@@ -6,7 +6,7 @@
         "part": "main"
       },
       "apply": {
-        "model": "ftbsluice:block/diamond_sluice"
+        "model": "ftbsluice:block/diamond_sluice_body"
       }
     },
     {
@@ -16,7 +16,26 @@
         "part": "main"
       },
       "apply": {
-        "model": "ftbsluice:block/sluice_waterflow"
+        "model": "ftbsluice:block/sluice_waterflow_body"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "funnel"
+      },
+      "apply": {
+        "model": "ftbsluice:block/diamond_sluice_front"
+      }
+    },
+    {
+      "when": {
+        "water": "true",
+        "facing": "north",
+        "part": "funnel"
+      },
+      "apply": {
+        "model": "ftbsluice:block/sluice_waterflow_front"
       }
     },
     {
@@ -65,7 +84,7 @@
         "part": "main"
       },
       "apply": {
-        "model": "ftbsluice:block/diamond_sluice",
+        "model": "ftbsluice:block/diamond_sluice_body",
         "y": 180
       }
     },
@@ -76,7 +95,28 @@
         "part": "main"
       },
       "apply": {
-        "model": "ftbsluice:block/sluice_waterflow",
+        "model": "ftbsluice:block/sluice_waterflow_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "funnel"
+      },
+      "apply": {
+        "model": "ftbsluice:block/diamond_sluice_front",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "water": "true",
+        "facing": "south",
+        "part": "funnel"
+      },
+      "apply": {
+        "model": "ftbsluice:block/sluice_waterflow_front",
         "y": 180
       }
     },
@@ -130,7 +170,7 @@
         "part": "main"
       },
       "apply": {
-        "model": "ftbsluice:block/diamond_sluice",
+        "model": "ftbsluice:block/diamond_sluice_body",
         "y": 270
       }
     },
@@ -141,7 +181,28 @@
         "part": "main"
       },
       "apply": {
-        "model": "ftbsluice:block/sluice_waterflow",
+        "model": "ftbsluice:block/sluice_waterflow_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "funnel"
+      },
+      "apply": {
+        "model": "ftbsluice:block/diamond_sluice_front",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "water": "true",
+        "facing": "west",
+        "part": "funnel"
+      },
+      "apply": {
+        "model": "ftbsluice:block/sluice_waterflow_front",
         "y": 270
       }
     },
@@ -195,7 +256,7 @@
         "part": "main"
       },
       "apply": {
-        "model": "ftbsluice:block/diamond_sluice",
+        "model": "ftbsluice:block/diamond_sluice_body",
         "y": 90
       }
     },
@@ -206,7 +267,28 @@
         "part": "main"
       },
       "apply": {
-        "model": "ftbsluice:block/sluice_waterflow",
+        "model": "ftbsluice:block/sluice_waterflow_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "funnel"
+      },
+      "apply": {
+        "model": "ftbsluice:block/diamond_sluice_front",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "water": "true",
+        "facing": "east",
+        "part": "funnel"
+      },
+      "apply": {
+        "model": "ftbsluice:block/sluice_waterflow_front",
         "y": 90
       }
     },
