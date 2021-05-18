@@ -38,6 +38,7 @@ public class SluiceModItems {
 	public static final RegistryObject<Item> IRON_HAMMER = REGISTRY.register("iron_hammer", () -> new HammerItem(Tiers.IRON, 1, -2.8F));
 	public static final RegistryObject<Item> GOLD_HAMMER = REGISTRY.register("gold_hammer", () -> new HammerItem(Tiers.GOLD, 1, -2.8F));
 	public static final RegistryObject<Item> DIAMOND_HAMMER = REGISTRY.register("diamond_hammer", () -> new HammerItem(Tiers.DIAMOND, 1, -2.8F));
+	public static final RegistryObject<Item> NETHERITE_HAMMER = REGISTRY.register("netherite_hammer", () -> new HammerItem(Tiers.NETHERITE, 1, -2.8F, true));
 
 	public static final RegistryObject<Item> CLAY_BUCKET = REGISTRY.register("clay_bucket", () -> new ClayBucket(() -> Fluids.EMPTY));
 	public static final RegistryObject<Item> CLAY_WATER_BUCKET = REGISTRY.register("clay_water_bucket", () -> new ClayBucket(() -> Fluids.WATER));

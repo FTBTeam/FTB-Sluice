@@ -96,6 +96,7 @@ public class SluiceModDataGenHandler {
 			this.addItem(SluiceModItems.IRON_HAMMER, "Iron Hammer");
 			this.addItem(SluiceModItems.GOLD_HAMMER, "Gold Hammer");
 			this.addItem(SluiceModItems.DIAMOND_HAMMER, "Diamond Hammer");
+			this.addItem(SluiceModItems.NETHERITE_HAMMER, "Netherite Hammer");
 		}
 	}
 
@@ -162,6 +163,7 @@ public class SluiceModDataGenHandler {
 			this.simpleItem(SluiceModItems.IRON_HAMMER);
 			this.simpleItem(SluiceModItems.GOLD_HAMMER);
 			this.simpleItem(SluiceModItems.DIAMOND_HAMMER);
+			this.simpleItem(SluiceModItems.NETHERITE_HAMMER);
 		}
 
 		private void simpleItem(Supplier<Item> item) {
@@ -254,6 +256,7 @@ public class SluiceModDataGenHandler {
 			this.hammer(SluiceModItems.IRON_HAMMER.get(), this.IRON_INGOT, consumer);
 			this.hammer(SluiceModItems.GOLD_HAMMER.get(), Items.GOLD_INGOT, consumer);
 			this.hammer(SluiceModItems.DIAMOND_HAMMER.get(), this.DIAMOND_GEM, consumer);
+			this.hammer(SluiceModItems.NETHERITE_HAMMER.get(), Items.NETHERITE_INGOT, consumer);
 		}
 
 		private void hammer(ItemLike output, Tag<Item> head, Consumer<FinishedRecipe> consumer) {
@@ -299,6 +302,7 @@ public class SluiceModDataGenHandler {
 		protected void addTables() {
 			this.dropSelf(SluiceModBlocks.TANK.get());
 			this.dropSelf(SluiceModBlocks.TAP.get());
+			this.dropSelf(SluiceModBlocks.DUST_BLOCK.get());
 			SluiceModBlocks.SLUICES.forEach(e -> this.dropSelf(e.getKey().get()));
 		}
 

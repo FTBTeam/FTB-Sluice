@@ -5,12 +5,21 @@ import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.ToolType;
 
 import java.util.HashSet;
 
 public class HammerItem extends DiggerItem {
+    private static final Properties props = new Properties().tab(SluiceMod.group);
+
     public HammerItem(Tiers tier, float attackBase, float attackSpeed) {
-        super(attackBase, attackSpeed, tier, new HashSet<>(), new Properties().tab(SluiceMod.group));
+        this(tier, attackBase, attackSpeed, false);
+    }
+
+    public HammerItem(Tiers tier, float attackBase, float attackSpeed, boolean fireResistant) {
+        super(attackBase, attackSpeed, tier, new HashSet<>(), !fireResistant
+            ? props.addToolType(ToolType.PICKAXE, tier.getLevel()).addToolType(ToolType.SHOVEL, tier.getLevel())
+            : props.addToolType(ToolType.PICKAXE, tier.getLevel()).addToolType(ToolType.SHOVEL, tier.getLevel()).fireResistant());
     }
 
     @Override
