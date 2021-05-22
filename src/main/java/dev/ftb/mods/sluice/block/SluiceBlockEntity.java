@@ -166,7 +166,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
 		// Throw items out if we don't have a recipe from them. It's simpler than giving the cap a world and mesh.
 		if (!SluiceModRecipeSerializers.itemHasSluiceResults(level, this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
-			this.ejectItem(level, stack);
+			this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
 			this.inventory.setStackInSlot(0, ItemStack.EMPTY);
 			this.setChanged();
 			return;
@@ -191,7 +191,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		this.isProcessing = false;
 
 		SluiceModRecipeSerializers.getRandomResult(level, mesh, itemStack)
-			.forEach(e -> this.ejectItem(level, e));
+			.forEach(e -> this.ejectItem(level, state.getValue(BlockStateProperties.HORIZONTAL_FACING), e));
 
 		this.inventory.setStackInSlot(0, ItemStack.EMPTY);
 		this.tank.drain(this.properties.fluidUsage.get(), IFluidHandler.FluidAction.EXECUTE);
@@ -256,7 +256,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		return super.getCapability(cap, side);
 	}
 
-	private void ejectItem(Level w, ItemStack stack) {
+	private void ejectItem(Level w, Direction direction, ItemStack stack) {
 		if (this.properties.allowsIO) {
 			// Find the closest inventory to the block.
 			IItemHandler handler = this.seekNearestInventory(w, this.getBlockPos()).orElseGet(EmptyHandler::new);
@@ -268,11 +268,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 		}
 
 		if (!stack.isEmpty()) {
-			BlockPos pos = this.worldPosition.above();
+			BlockPos pos = this.worldPosition.relative(direction);
 
 			double my = 0.14D * (w.random.nextFloat() * 0.4D);
 
-			ItemEntity itemEntity = new ItemEntity(w, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, stack);
+			ItemEntity itemEntity = new ItemEntity(w, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, stack);
 			itemEntity.setNoPickUpDelay();
 			itemEntity.setDeltaMovement(0, my, 0);
 			w.addFreshEntity(itemEntity);
