@@ -1,7 +1,6 @@
 package dev.ftb.mods.sluice.recipe;
 
 import com.google.common.base.MoreObjects;
-import dev.ftb.mods.sluice.item.HammerTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -11,7 +10,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class HammerRecipe implements Recipe<NoInventory> {
@@ -19,14 +17,12 @@ public class HammerRecipe implements Recipe<NoInventory> {
     public String group;
     public Ingredient ingredient;
     public List<ItemStack> results;
-    public HashSet<HammerTypes> hammers;
 
     public HammerRecipe(ResourceLocation i, String g) {
         this.id = i;
         this.group = g;
         this.ingredient = Ingredient.EMPTY;
         this.results = new ArrayList<>();
-        this.hammers = new HashSet<>();
     }
 
     @Override
@@ -76,7 +72,6 @@ public class HammerRecipe implements Recipe<NoInventory> {
             .add("group", this.group)
             .add("ingredient", this.ingredient)
             .add("results", this.results)
-            .add("hammers", this.hammers)
             .toString();
     }
 }

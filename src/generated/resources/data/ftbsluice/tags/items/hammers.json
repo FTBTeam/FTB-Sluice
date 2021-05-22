@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "ftbsluice:wooden_hammer",
+    "ftbsluice:stone_hammer",
+    "ftbsluice:iron_hammer",
+    "ftbsluice:gold_hammer",
+    "ftbsluice:diamond_hammer",
+    "ftbsluice:netherite_hammer"
+  ]
+}

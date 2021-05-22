@@ -2,7 +2,6 @@ package dev.ftb.mods.sluice.recipe;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.ftb.mods.sluice.item.HammerTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -28,11 +27,6 @@ public class HammerRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
             r.results.add(ShapedRecipe.itemFromJson(o));
         }
 
-        for (JsonElement e : json.get("hammers").getAsJsonArray()) {
-            HammerTypes t = HammerTypes.MAP.getOrDefault(e.getAsString(), HammerTypes.WOODEN);
-            r.hammers.add(t);
-        }
-
         return r;
     }
 
@@ -45,15 +39,6 @@ public class HammerRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
         for (int i = 0; i < w; i++) {
             r.results.add(buffer.readItem());
         }
-
-        int i = buffer.readByte() & 0xFF;
-
-        for (HammerTypes t : HammerTypes.VALUES) {
-            if ((i & (1 << t.ordinal())) != 0) {
-                r.hammers.add(t);
-            }
-        }
-
         return r;
     }
 
@@ -67,13 +52,5 @@ public class HammerRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
         for (ItemStack i : r.results) {
             buffer.writeItem(i);
         }
-
-        int hammers = 0;
-
-        for (HammerTypes t : r.hammers) {
-            hammers |= 1 << t.ordinal();
-        }
-
-        buffer.writeByte(hammers);
     }
 }

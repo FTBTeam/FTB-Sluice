@@ -14,7 +14,8 @@ public enum HammerTypes implements StringRepresentable {
 	STONE("stone", SluiceModItems.STONE_HAMMER.get()),
 	IRON("iron", SluiceModItems.IRON_HAMMER.get()),
 	GOLD("gold", SluiceModItems.GOLD_HAMMER.get()),
-	DIAMOND("diamond", SluiceModItems.DIAMOND_HAMMER.get());
+	DIAMOND("diamond", SluiceModItems.DIAMOND_HAMMER.get()),
+	NETHERITE("netherite", SluiceModItems.NETHERITE_HAMMER.get());
 
 	public static HammerTypes[] VALUES = values();
 	public static Map<String, HammerTypes> MAP = new HashMap<>();
