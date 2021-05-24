@@ -98,6 +98,8 @@ public class SluiceModDataGenHandler {
 			this.addItem(SluiceModItems.GOLD_HAMMER, "Gold Hammer");
 			this.addItem(SluiceModItems.DIAMOND_HAMMER, "Diamond Hammer");
 			this.addItem(SluiceModItems.NETHERITE_HAMMER, "Netherite Hammer");
+			this.addBlock(SluiceModBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
+			this.addBlock(SluiceModBlocks.CRUSHED_NETHERRACK, "Crushed Netherrack");
 		}
 	}
 
@@ -136,6 +138,8 @@ public class SluiceModDataGenHandler {
 			}
 
 			this.simpleBlock(SluiceModBlocks.DUST_BLOCK.get());
+			this.simpleBlock(SluiceModBlocks.CRUSHED_NETHERRACK.get());
+			this.simpleBlock(SluiceModBlocks.CRUSHED_ENDSTONE.get());
 		}
 	}
 
@@ -157,6 +161,8 @@ public class SluiceModDataGenHandler {
 		@Override
 		protected void registerModels() {
 			this.registerBlockModel(SluiceModBlocks.DUST_BLOCK.get());
+			this.registerBlockModel(SluiceModBlocks.CRUSHED_NETHERRACK.get());
+			this.registerBlockModel(SluiceModBlocks.CRUSHED_ENDSTONE.get());
 			this.simpleItem(SluiceModItems.CLAY_BUCKET);
 			this.simpleItem(SluiceModItems.CLAY_WATER_BUCKET);
 			this.simpleItem(SluiceModItems.WOODEN_HAMMER);

@@ -241,15 +241,15 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 	@Nonnull
 	@Override
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.properties.allowsIO) {
+		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {// && this.properties.allowsIO) {
 			return this.inventoryOptional.cast();
 		}
 
-		if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.properties.allowsTank && !this.isNetherite) {
+		if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) { //&& this.properties.allowsTank && !this.isNetherite) {
 			return this.fluidOptional.cast();
 		}
 
-		if (cap == CapabilityEnergy.ENERGY && this.isNetherite) {
+		if (cap == CapabilityEnergy.ENERGY) { // && this.isNetherite) {
 			return this.energyOptional.cast();
 		}
 
