@@ -1,8 +1,14 @@
 package dev.ftb.mods.sluice.integration.jei;
 
+import dev.ftb.mods.sluice.recipe.HammerRecipe;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+
+public class SluiceHammerCategory implements IRecipeCategory<HammerRecipe> {
+
+}
 
 
-public class SluiceCategory /*implements IRecipeCategory<SluiceRecipe>*/ {
+/*public class SluiceCategory implements IRecipeCategory<SluiceRecipe> {
 	/*
 	public static final ResourceLocation UID = new ResourceLocation(JarMod.MOD_ID + ":jar");
 
@@ -103,4 +109,3 @@ public class SluiceCategory /*implements IRecipeCategory<SluiceRecipe>*/ {
 		return Collections.emptyList();
 	}
 	 */
-}
