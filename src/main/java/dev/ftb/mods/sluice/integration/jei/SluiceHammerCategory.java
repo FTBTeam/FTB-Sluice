@@ -18,11 +18,9 @@ public class SluiceHammerCategory implements IRecipeCategory<HammerRecipe> {
     public static final ResourceLocation BACKGROUND = new ResourceLocation(SluiceMod.MOD_ID, "textures/gui/hammer_jei_background.png");
 
     private final IDrawableStatic background;
-    private final IDrawableStatic slot;
 
     public SluiceHammerCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.drawableBuilder(BACKGROUND, 0, 0, 156, 62).setTextureSize(180, 62).build();
-        this.slot = guiHelper.drawableBuilder(BACKGROUND, 161, 4, 18, 18).setTextureSize(180, 62).build();
     }
 
     @Override
