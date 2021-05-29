@@ -2,12 +2,13 @@ package dev.ftb.mods.sluice.recipe;
 
 import dev.ftb.mods.sluice.SluiceMod;
 import dev.ftb.mods.sluice.block.MeshType;
-import dev.ftb.mods.sluice.item.HammerTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -27,13 +28,14 @@ public class SluiceModRecipeSerializers {
 
     public static final RegistryObject<RecipeSerializer<?>> HAMMER = REGISTRY.register("hammer", HammerRecipeSerializer::new);
     public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":hammer");
-
+    public static final List<Ingredient> hammerableCache = new ArrayList<>();
     private static final Map<Pair<Item, MeshType>, InputRecipeResult> sluiceCache = new HashMap<>();
-    private static final Map<Pair<Item, HammerTypes>, List<ItemStack>> hammerCache = new HashMap<>();
+    private static final Map<Item, List<ItemStack>> hammerCache = new HashMap<>();
 
     public static void clearCache() {
         sluiceCache.clear();
         hammerCache.clear();
+        hammerableCache.clear();
     }
 
     /**
@@ -93,17 +95,23 @@ public class SluiceModRecipeSerializers {
         return outputResults;
     }
 
-    public static List<ItemStack> getHammerDrops(Level level, ItemStack hammer, ItemStack input) {
-        return HammerTypes.getHammerFromItem(hammer).map(ham -> hammerCache.computeIfAbsent(Pair.of(input.getItem(), ham), key -> {
+    public static List<ItemStack> getHammerDrops(Level level, ItemStack input) {
+        return hammerCache.computeIfAbsent(input.getItem(), key -> {
             List<ItemStack> drops = new ArrayList<>();
-
             for (HammerRecipe recipe : level.getRecipeManager().getRecipesFor(HAMMER_TYPE, NoInventory.INSTANCE, level)) {
-                if (recipe.hammers.contains(ham) && recipe.ingredient.test(input)) {
+                if (recipe.ingredient.test(input)) {
                     recipe.results.forEach(e -> drops.add(e.copy()));
                 }
             }
 
             return drops;
-        })).orElse(new ArrayList<>());
+        });
+    }
+
+    public static boolean hammerable(BlockState state) {
+        return hammerableCache.stream().anyMatch(e -> {
+            ItemStack stack = new ItemStack(state.getBlock());
+            return e.test(stack);
+        });
     }
 }

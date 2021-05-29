@@ -6,6 +6,7 @@ import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlock;
 import dev.ftb.mods.sluice.block.SluiceModBlocks;
 import dev.ftb.mods.sluice.item.SluiceModItems;
+import dev.ftb.mods.sluice.tags.SluiceTags;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
@@ -64,7 +65,7 @@ public class SluiceModDataGenHandler {
 		if (event.includeServer()) {
 			SMBlockTags blockTags = new SMBlockTags(gen);
 			gen.addProvider(blockTags);
-			gen.addProvider(new SMItemTags(gen, blockTags));
+			gen.addProvider(new SMItemTags(gen, blockTags, event.getExistingFileHelper()));
 			gen.addProvider(new SMRecipes(gen));
 			gen.addProvider(new SMLootTableProvider(gen));
 		}
@@ -97,6 +98,8 @@ public class SluiceModDataGenHandler {
 			this.addItem(SluiceModItems.GOLD_HAMMER, "Gold Hammer");
 			this.addItem(SluiceModItems.DIAMOND_HAMMER, "Diamond Hammer");
 			this.addItem(SluiceModItems.NETHERITE_HAMMER, "Netherite Hammer");
+			this.addBlock(SluiceModBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
+			this.addBlock(SluiceModBlocks.CRUSHED_NETHERRACK, "Crushed Netherrack");
 		}
 	}
 
@@ -135,6 +138,8 @@ public class SluiceModDataGenHandler {
 			}
 
 			this.simpleBlock(SluiceModBlocks.DUST_BLOCK.get());
+			this.simpleBlock(SluiceModBlocks.CRUSHED_NETHERRACK.get());
+			this.simpleBlock(SluiceModBlocks.CRUSHED_ENDSTONE.get());
 		}
 	}
 
@@ -156,6 +161,8 @@ public class SluiceModDataGenHandler {
 		@Override
 		protected void registerModels() {
 			this.registerBlockModel(SluiceModBlocks.DUST_BLOCK.get());
+			this.registerBlockModel(SluiceModBlocks.CRUSHED_NETHERRACK.get());
+			this.registerBlockModel(SluiceModBlocks.CRUSHED_ENDSTONE.get());
 			this.simpleItem(SluiceModItems.CLAY_BUCKET);
 			this.simpleItem(SluiceModItems.CLAY_WATER_BUCKET);
 			this.simpleItem(SluiceModItems.WOODEN_HAMMER);
@@ -188,12 +195,20 @@ public class SluiceModDataGenHandler {
 	}
 
 	private static class SMItemTags extends ItemTagsProvider {
-		public SMItemTags(DataGenerator dataGenerator, BlockTagsProvider blockTagProvider) {
-			super(dataGenerator, blockTagProvider);
+		public SMItemTags(DataGenerator dataGenerator, BlockTagsProvider blockTagProvider, ExistingFileHelper helper) {
+			super(dataGenerator, blockTagProvider, SluiceMod.MOD_ID, helper);
 		}
 
 		@Override
 		protected void addTags() {
+			this.tag(SluiceTags.Items.HAMMERS).add(
+				SluiceModItems.WOODEN_HAMMER.get(),
+				SluiceModItems.STONE_HAMMER.get(),
+				SluiceModItems.IRON_HAMMER.get(),
+				SluiceModItems.GOLD_HAMMER.get(),
+				SluiceModItems.DIAMOND_HAMMER.get(),
+				SluiceModItems.NETHERITE_HAMMER.get()
+			);
 		}
 	}
 

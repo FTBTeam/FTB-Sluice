@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -31,6 +32,9 @@ public class SluiceModBlocks {
 
 	// MISC
 	public static final RegistryObject<Block> DUST_BLOCK = REGISTRY.register("dust", () -> new FallingBlock(BlockBehaviour.Properties.of(Material.SAND).harvestTool(ToolType.SHOVEL).strength(0.5F).sound(SoundType.SAND)));
+	public static final RegistryObject<Block> CRUSHED_NETHERRACK = REGISTRY.register("crushed_netherrack", () -> new Block(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.NETHER).requiresCorrectToolForDrops().strength(0.4F).sound(SoundType.NETHERRACK)));
+	public static final RegistryObject<Block> CRUSHED_ENDSTONE = REGISTRY.register("crushed_endstone", () -> new Block(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.SAND).requiresCorrectToolForDrops().strength(3.0F, 9.0F)));
+
 	public static final List<Pair<Supplier<Block>, String>> SLUICES = Arrays.asList(
 			Pair.of(OAK_SLUICE, "oak"),
 			Pair.of(IRON_SLUICE, "iron"),

@@ -1,0 +1,11 @@
+{
+  "type": "ftbsluice:hammer",
+  "conditions": [
+    {
+      "condition": "minecraft:match_tool",
+      "predicate": {
+        "tag": "ftbsluice:hammers"
+      }
+    }
+  ]
+}

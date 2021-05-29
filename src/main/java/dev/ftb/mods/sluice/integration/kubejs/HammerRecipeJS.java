@@ -11,25 +11,12 @@ public class HammerRecipeJS extends RecipeJS {
 
 	@Override
 	public void create(ListJS args) {
-		this.hammers(args.get(0));
-		this.inputItems.add(this.parseIngredientItem(args.get(1)));
+		this.inputItems.add(this.parseIngredientItem(args.get(0)));
 
-		for (Object o : ListJS.orSelf(args.get(2))) {
+		for (Object o : ListJS.orSelf(args.get(1))) {
 			ItemStackJS i = this.parseResultItem(o);
 			this.outputItems.add(i);
 		}
-	}
-
-	public HammerRecipeJS hammers(Object a) {
-		JsonArray hammers = new JsonArray();
-
-		for (Object o : ListJS.orSelf(a)) {
-			hammers.add(o.toString());
-		}
-
-		this.json.add("hammers", hammers);
-		this.save();
-		return this;
 	}
 
 	@Override

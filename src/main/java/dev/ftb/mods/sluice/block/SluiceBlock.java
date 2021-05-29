@@ -46,15 +46,15 @@ public class SluiceBlock extends Block {
     public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
     public static final BooleanProperty WATER = BooleanProperty.create("water");
 
-    private static final VoxelShape NORTH_BODY_SHAPE = Stream.of(Block.box(12.5, 0, 0, 14.5, 1, 1),Block.box(1.5, 0, 13.5, 3.5, 1, 15.5),Block.box(12.5, 0, 13.5, 14.5, 1, 15.5),Block.box(1.5, 0, 0, 3.5, 1, 1),Block.box(1, 1, 0, 15, 2, 16),Block.box(14, 2, 0, 15, 8, 16),Block.box(1, 2, 0, 2, 8, 16),Block.box(2, 5, 0, 14, 8, 1),Block.box(2, 2, 15, 14, 8, 16),Block.box(2, 2, 0, 14, 2.5, 1),Block.box(2, 7, 1, 14, 12, 2),Block.box(2, 7, 14, 14, 12, 15),Block.box(13, 7, 2, 14, 12, 14),Block.box(2, 7, 2, 3, 12, 14)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
-    private static final VoxelShape EAST_BODY_SHAPE = Stream.of(Block.box(15, 0, 12.5, 16, 1, 14.5),Block.box(0.5, 0, 1.5, 2.5, 1, 3.5),Block.box(0.5, 0, 12.5, 2.5, 1, 14.5),Block.box(15, 0, 1.5, 16, 1, 3.5),Block.box(0, 1, 1, 16, 2, 15),Block.box(0, 2, 14, 16, 8, 15),Block.box(0, 2, 1, 16, 8, 2),Block.box(15, 5, 2, 16, 8, 14),Block.box(0, 2, 2, 1, 8, 14),Block.box(15, 2, 2, 16, 2.5, 14),Block.box(14, 7, 2, 15, 12, 14),Block.box(1, 7, 2, 2, 12, 14),Block.box(2, 7, 13, 14, 12, 14),Block.box(2, 7, 2, 14, 12, 3)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
-    private static final VoxelShape SOUTH_BODY_SHAPE = Stream.of(Block.box(1.5, 0, 15, 3.5, 1, 16),Block.box(12.5, 0, 0.5, 14.5, 1, 2.5),Block.box(1.5, 0, 0.5, 3.5, 1, 2.5),Block.box(12.5, 0, 15, 14.5, 1, 16),Block.box(1, 1, 0, 15, 2, 16),Block.box(1, 2, 0, 2, 8, 16),Block.box(14, 2, 0, 15, 8, 16),Block.box(2, 5, 15, 14, 8, 16),Block.box(2, 2, 0, 14, 8, 1),Block.box(2, 2, 15, 14, 2.5, 16),Block.box(2, 7, 14, 14, 12, 15),Block.box(2, 7, 1, 14, 12, 2),Block.box(2, 7, 2, 3, 12, 14),Block.box(13, 7, 2, 14, 12, 14)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
-    private static final VoxelShape WEST_BODY_SHAPE = Stream.of(Block.box(0, 0, 1.5, 1, 1, 3.5),Block.box(13.5, 0, 12.5, 15.5, 1, 14.5),Block.box(13.5, 0, 1.5, 15.5, 1, 3.5),Block.box(0, 0, 12.5, 1, 1, 14.5),Block.box(0, 1, 1, 16, 2, 15),Block.box(0, 2, 1, 16, 8, 2),Block.box(0, 2, 14, 16, 8, 15),Block.box(0, 5, 2, 1, 8, 14),Block.box(15, 2, 2, 16, 8, 14),Block.box(0, 2, 2, 1, 2.5, 14),Block.box(1, 7, 2, 2, 12, 14),Block.box(14, 7, 2, 15, 12, 14),Block.box(2, 7, 2, 14, 12, 3),Block.box(2, 7, 13, 14, 12, 14)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final VoxelShape NORTH_BODY_SHAPE = Stream.of(Block.box(12.5, 0, 0, 14.5, 1, 1), Block.box(1.5, 0, 13.5, 3.5, 1, 15.5), Block.box(12.5, 0, 13.5, 14.5, 1, 15.5), Block.box(1.5, 0, 0, 3.5, 1, 1), Block.box(1, 1, 0, 15, 2, 16), Block.box(14, 2, 0, 15, 8, 16), Block.box(1, 2, 0, 2, 8, 16), Block.box(2, 5, 0, 14, 8, 1), Block.box(2, 2, 15, 14, 8, 16), Block.box(2, 2, 0, 14, 2.5, 1), Block.box(2, 7, 1, 14, 12, 2), Block.box(2, 7, 14, 14, 12, 15), Block.box(13, 7, 2, 14, 12, 14), Block.box(2, 7, 2, 3, 12, 14)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final VoxelShape EAST_BODY_SHAPE = Stream.of(Block.box(15, 0, 12.5, 16, 1, 14.5), Block.box(0.5, 0, 1.5, 2.5, 1, 3.5), Block.box(0.5, 0, 12.5, 2.5, 1, 14.5), Block.box(15, 0, 1.5, 16, 1, 3.5), Block.box(0, 1, 1, 16, 2, 15), Block.box(0, 2, 14, 16, 8, 15), Block.box(0, 2, 1, 16, 8, 2), Block.box(15, 5, 2, 16, 8, 14), Block.box(0, 2, 2, 1, 8, 14), Block.box(15, 2, 2, 16, 2.5, 14), Block.box(14, 7, 2, 15, 12, 14), Block.box(1, 7, 2, 2, 12, 14), Block.box(2, 7, 13, 14, 12, 14), Block.box(2, 7, 2, 14, 12, 3)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final VoxelShape SOUTH_BODY_SHAPE = Stream.of(Block.box(1.5, 0, 15, 3.5, 1, 16), Block.box(12.5, 0, 0.5, 14.5, 1, 2.5), Block.box(1.5, 0, 0.5, 3.5, 1, 2.5), Block.box(12.5, 0, 15, 14.5, 1, 16), Block.box(1, 1, 0, 15, 2, 16), Block.box(1, 2, 0, 2, 8, 16), Block.box(14, 2, 0, 15, 8, 16), Block.box(2, 5, 15, 14, 8, 16), Block.box(2, 2, 0, 14, 8, 1), Block.box(2, 2, 15, 14, 2.5, 16), Block.box(2, 7, 14, 14, 12, 15), Block.box(2, 7, 1, 14, 12, 2), Block.box(2, 7, 2, 3, 12, 14), Block.box(13, 7, 2, 14, 12, 14)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final VoxelShape WEST_BODY_SHAPE = Stream.of(Block.box(0, 0, 1.5, 1, 1, 3.5), Block.box(13.5, 0, 12.5, 15.5, 1, 14.5), Block.box(13.5, 0, 1.5, 15.5, 1, 3.5), Block.box(0, 0, 12.5, 1, 1, 14.5), Block.box(0, 1, 1, 16, 2, 15), Block.box(0, 2, 1, 16, 8, 2), Block.box(0, 2, 14, 16, 8, 15), Block.box(0, 5, 2, 1, 8, 14), Block.box(15, 2, 2, 16, 8, 14), Block.box(0, 2, 2, 1, 2.5, 14), Block.box(1, 7, 2, 2, 12, 14), Block.box(14, 7, 2, 15, 12, 14), Block.box(2, 7, 2, 14, 12, 3), Block.box(2, 7, 13, 14, 12, 14)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
-    private static final VoxelShape NORTH_FRONT_SHAPE = Stream.of(Block.box(2, 1.5, 12, 14, 2.5, 13),Block.box(1, 2, 0, 2, 4, 16),Block.box(2, 1.5, 8, 14, 2.5, 9),Block.box(2, 1.5, 4, 14, 2.5, 5),Block.box(1, 1, 0, 15, 2, 16),Block.box(14, 2, 0, 15, 4, 16),Block.box(12.5, 0, 0.5, 14.5, 1, 2.5),Block.box(1.5, 0, 0.5, 3.5, 1, 2.5),Block.box(1.5, 0, 15, 3.5, 1, 16),Block.box(12.5, 0, 15, 14.5, 1, 16)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
-    private static final VoxelShape EAST_FRONT_SHAPE =Stream.of(Block.box(3, 1.5, 2, 4, 2.5, 14),Block.box(0, 2, 1, 16, 4, 2),Block.box(7, 1.5, 2, 8, 2.5, 14),Block.box(11, 1.5, 2, 12, 2.5, 14),Block.box(0, 1, 1, 16, 2, 15),Block.box(0, 2, 14, 16, 4, 15),Block.box(13.5, 0, 12.5, 15.5, 1, 14.5),Block.box(13.5, 0, 1.5, 15.5, 1, 3.5),Block.box(0, 0, 1.5, 1, 1, 3.5),Block.box(0, 0, 12.5, 1, 1, 14.5)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
-    private static final VoxelShape SOUTH_FRONT_SHAPE = Stream.of(Block.box(2, 1.5, 3, 14, 2.5, 4),Block.box(14, 2, 0, 15, 4, 16),Block.box(2, 1.5, 7, 14, 2.5, 8),Block.box(2, 1.5, 11, 14, 2.5, 12),Block.box(1, 1, 0, 15, 2, 16),Block.box(1, 2, 0, 2, 4, 16),Block.box(1.5, 0, 13.5, 3.5, 1, 15.5),Block.box(12.5, 0, 13.5, 14.5, 1, 15.5),Block.box(12.5, 0, 0, 14.5, 1, 1),Block.box(1.5, 0, 0, 3.5, 1, 1)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
-    private static final VoxelShape WEST_FRONT_SHAPE = Stream.of(Block.box(12, 1.5, 2, 13, 2.5, 14),Block.box(0, 2, 14, 16, 4, 15),Block.box(8, 1.5, 2, 9, 2.5, 14),Block.box(4, 1.5, 2, 5, 2.5, 14),Block.box(0, 1, 1, 16, 2, 15),Block.box(0, 2, 1, 16, 4, 2),Block.box(0.5, 0, 1.5, 2.5, 1, 3.5),Block.box(0.5, 0, 12.5, 2.5, 1, 14.5),Block.box(15, 0, 12.5, 16, 1, 14.5),Block.box(15, 0, 1.5, 16, 1, 3.5)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final VoxelShape NORTH_FRONT_SHAPE = Stream.of(Block.box(2, 1.5, 12, 14, 2.5, 13), Block.box(1, 2, 0, 2, 4, 16), Block.box(2, 1.5, 8, 14, 2.5, 9), Block.box(2, 1.5, 4, 14, 2.5, 5), Block.box(1, 1, 0, 15, 2, 16), Block.box(14, 2, 0, 15, 4, 16), Block.box(12.5, 0, 0.5, 14.5, 1, 2.5), Block.box(1.5, 0, 0.5, 3.5, 1, 2.5), Block.box(1.5, 0, 15, 3.5, 1, 16), Block.box(12.5, 0, 15, 14.5, 1, 16)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final VoxelShape EAST_FRONT_SHAPE = Stream.of(Block.box(3, 1.5, 2, 4, 2.5, 14), Block.box(0, 2, 1, 16, 4, 2), Block.box(7, 1.5, 2, 8, 2.5, 14), Block.box(11, 1.5, 2, 12, 2.5, 14), Block.box(0, 1, 1, 16, 2, 15), Block.box(0, 2, 14, 16, 4, 15), Block.box(13.5, 0, 12.5, 15.5, 1, 14.5), Block.box(13.5, 0, 1.5, 15.5, 1, 3.5), Block.box(0, 0, 1.5, 1, 1, 3.5), Block.box(0, 0, 12.5, 1, 1, 14.5)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final VoxelShape SOUTH_FRONT_SHAPE = Stream.of(Block.box(2, 1.5, 3, 14, 2.5, 4), Block.box(14, 2, 0, 15, 4, 16), Block.box(2, 1.5, 7, 14, 2.5, 8), Block.box(2, 1.5, 11, 14, 2.5, 12), Block.box(1, 1, 0, 15, 2, 16), Block.box(1, 2, 0, 2, 4, 16), Block.box(1.5, 0, 13.5, 3.5, 1, 15.5), Block.box(12.5, 0, 13.5, 14.5, 1, 15.5), Block.box(12.5, 0, 0, 14.5, 1, 1), Block.box(1.5, 0, 0, 3.5, 1, 1)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final VoxelShape WEST_FRONT_SHAPE = Stream.of(Block.box(12, 1.5, 2, 13, 2.5, 14), Block.box(0, 2, 14, 16, 4, 15), Block.box(8, 1.5, 2, 9, 2.5, 14), Block.box(4, 1.5, 2, 5, 2.5, 14), Block.box(0, 1, 1, 16, 2, 15), Block.box(0, 2, 1, 16, 4, 2), Block.box(0.5, 0, 1.5, 2.5, 1, 3.5), Block.box(0.5, 0, 12.5, 2.5, 1, 14.5), Block.box(15, 0, 12.5, 16, 1, 14.5), Block.box(15, 0, 1.5, 16, 1, 3.5)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     private static final HashMap<Direction, Pair<VoxelShape, VoxelShape>> SHAPES;
 
@@ -68,11 +68,11 @@ public class SluiceBlock extends Block {
 
     public SluiceBlock() {
         super(Properties.of(Material.METAL).sound(SoundType.METAL).strength(0.9F));
-		this.registerDefaultState(this.getStateDefinition().any()
-                .setValue(MESH, MeshType.NONE)
-                .setValue(WATER, false)
-                .setValue(PART, Part.MAIN)
-                .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+        this.registerDefaultState(this.getStateDefinition().any()
+            .setValue(MESH, MeshType.NONE)
+            .setValue(WATER, false)
+            .setValue(PART, Part.MAIN)
+            .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
@@ -107,7 +107,9 @@ public class SluiceBlock extends Block {
         }
 
         Pair<VoxelShape, VoxelShape> bodyFrontShapes = SHAPES.get(direction);
-        return state.getValue(PART) == Part.MAIN ? bodyFrontShapes.getKey() : bodyFrontShapes.getValue();
+        return state.getValue(PART) == Part.MAIN
+            ? bodyFrontShapes.getKey()
+            : bodyFrontShapes.getValue();
     }
 
     @Override
@@ -177,7 +179,7 @@ public class SluiceBlock extends Block {
                     sluice.clearCache();
                     ItemStack copy = itemStack.copy();
                     copy.setCount(1);
-                    ItemHandlerHelper.insertItem(sluice.inventory, copy, false);
+                    sluice.inventory.internalInsert(0, copy, false);
                     itemStack.shrink(1);
                 }
             }
@@ -199,7 +201,9 @@ public class SluiceBlock extends Block {
         BlockState facingState = context.getLevel().getBlockState(context.getClickedPos().above());
 
         BlockPos offsetPos = context.getClickedPos().relative(context.getHorizontalDirection().getOpposite());
-        return context.getLevel().getBlockState(offsetPos).canBeReplaced(context) ? this.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite()).setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER)).setValue(PART, Part.MAIN) : null;
+        return context.getLevel().getBlockState(offsetPos).canBeReplaced(context)
+            ? this.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite()).setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER)).setValue(PART, Part.MAIN)
+            : null;
     }
 
     @Override
@@ -213,7 +217,9 @@ public class SluiceBlock extends Block {
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
             Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-            BlockPos endPos = pos.relative(state.getValue(PART) == Part.FUNNEL ? direction.getOpposite() : direction);
+            BlockPos endPos = pos.relative(state.getValue(PART) == Part.FUNNEL
+                ? direction.getOpposite()
+                : direction);
             BlockState endState = world.getBlockState(endPos);
 
             if (state.getValue(PART) == Part.FUNNEL) {
@@ -253,6 +259,7 @@ public class SluiceBlock extends Block {
         FUNNEL("funnel");
 
         String name;
+
         Part(String name) {
             this.name = name;
         }
