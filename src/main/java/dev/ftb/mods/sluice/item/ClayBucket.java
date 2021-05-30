@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BucketPickup;
@@ -31,6 +32,7 @@ import java.util.function.Supplier;
 
 public class ClayBucket extends BucketItem {
     private final Fluid content;
+
     public ClayBucket(Supplier<Fluid> fluid) {
         super(fluid, new Properties().tab(SluiceMod.group).stacksTo(fluid.get() == Fluids.EMPTY ? 16 : 1));
         this.content = fluid.get();
@@ -103,7 +105,12 @@ public class ClayBucket extends BucketItem {
     }
 
     @Override
-    protected ItemStack getEmptySuccessItem(ItemStack p_203790_1_, Player p_203790_2_) {
-        return new ItemStack(SluiceModItems.CLAY_BUCKET.get());
+    protected ItemStack getEmptySuccessItem(ItemStack stack, Player player) {
+        return !player.abilities.instabuild ? new ItemStack(SluiceModItems.CLAY_BUCKET.get()) : stack;
+    }
+
+    @Override
+    public Fluid getFluid() {
+        return this.content;
     }
 }

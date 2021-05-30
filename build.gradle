@@ -42,6 +42,7 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings minecraft.officialMojangMappings()
 	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
 	modCompile "curse.maven:jei-238222:${jei_file}"
 	modCompile "me.shedaniel:architectury-forge:${arch_version}"
 	modCompile "dev.latvian.mods:kubejs-forge:${kubejs_version}"
@@ -51,6 +52,8 @@ dependencies {
 	modRuntime "curse.maven:lollipop-347954:3232534"
 	modRuntime "curse.maven:pipez-443900:3273405"
 	modRuntime "curse.maven:the-one-probe-3310128:3303361"
+	modRuntime "curse.maven:ceramics-250617:3234775"
+	modRuntime "curse.maven:mantle-74924:3326538"
 }
 
 processResources {
