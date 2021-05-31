@@ -1,9 +1,12 @@
 package dev.ftb.mods.sluice.block;
 
 import dev.ftb.mods.sluice.item.MeshItem;
+import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.recipe.SluiceModRecipeSerializers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -11,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -33,8 +37,10 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -168,9 +174,22 @@ public class SluiceBlock extends Block {
             return InteractionResult.SUCCESS;
         } else if (itemStack.getItem() instanceof BucketItem && ((BucketItem) itemStack.getItem()).getFluid() == Fluids.WATER && state.getBlock() != SluiceModBlocks.NETHERITE_SLUICE.get()) {
             if (!world.isClientSide()) {
-                boolean fluidInserted = FluidUtil.interactWithFluidHandler(player, hand, sluice.tank);
-                if (fluidInserted) {
-                    sluice.clearCache();
+                int transfer = sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.SIMULATE);
+                if (transfer > 0 && transfer <= 1000) {
+                    SoundEvent soundevent = ((BucketItem) itemStack.getItem()).getFluid().getAttributes().getFillSound();
+                    if (soundevent == null) {
+                        soundevent = SoundEvents.BUCKET_FILL;
+                    }
+
+                    player.playSound(soundevent, 1.0F, 1.0F);
+                    sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
+
+                    ItemStack output = itemStack.getItem() == Items.WATER_BUCKET
+                        ? new ItemStack(Items.BUCKET)
+                        : new ItemStack(SluiceModItems.CLAY_BUCKET.get());
+
+                    itemStack.shrink(1);
+                    ItemHandlerHelper.insertItemStacked(new InvWrapper(player.inventory), output, false);
                 }
             }
         } else if (SluiceModRecipeSerializers.itemHasSluiceResults(world, state.getValue(MESH), itemStack)) {
