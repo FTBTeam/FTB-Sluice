@@ -67,8 +67,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.isNetherite = isNetherite;
 
         this.energy = new Energy(!isNetherite
-            ? 0
-            : SluiceConfig.NETHERITE_SLUICE.energyStorage.get(), e -> {
+                ? 0
+                : SluiceConfig.NETHERITE_SLUICE.energyStorage.get(), e -> {
             if (!this.isNetherite) {
                 return;
             }
@@ -79,7 +79,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.maxProcessed = this.properties.processingTime.get();
 
         // Handles state changing
-        this.tank = new Fluid(true, SluiceConfig.SLUICES.tankStorage.get(), e -> e.isEmpty() || e.getFluid().isSame(Fluids.WATER), this::fluidStateUpdate, this::fluidStateUpdate);
+        this.tank = new Fluid(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true, this::fluidStateUpdate, this::fluidStateUpdate);
         this.fluidOptional = LazyOptional.of(() -> this.tank);
 
         this.inventory = new ItemsHandler(type != SluiceModBlockEntities.OAK_SLUICE.get(), 1) {
@@ -104,17 +104,17 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     }
 
     private void fluidStateUpdate(Fluid fluid, int value, IFluidHandler.FluidAction action) {
-        if (this.level == null || this.getBlockState() == null || action.simulate()) {
-            return;
-        }
-
-        if (!fluid.isEmpty() && !this.getBlockState().getValue(SluiceBlock.WATER)) {
-            this.setFluidModel(true);
-        }
-
-        if (fluid.isEmpty() && this.getBlockState().getValue(SluiceBlock.WATER)) {
-            this.setFluidModel(false);
-        }
+//        if (this.level == null || this.getBlockState() == null || action.simulate()) {
+//            return;
+//        }
+//
+//        if (!fluid.isEmpty() && !this.getBlockState().getValue(SluiceBlock.WATER)) {
+//            this.setFluidModel(true);
+//        }
+//
+//        if (fluid.isEmpty() && this.getBlockState().getValue(SluiceBlock.WATER)) {
+//            this.setFluidModel(false);
+//        }
     }
 
     private void setFluidModel(boolean show) {
@@ -176,7 +176,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         }
 
         // Throw items out if we don't have a recipe from them. It's simpler than giving the cap a world and mesh.
-        if (!SluiceModRecipeSerializers.itemHasSluiceResults(level, this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
+        if (!SluiceModRecipeSerializers.itemHasSluiceResults(this.tank.getFluid().getFluid(), level, this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
             this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
             this.inventory.setStackInSlot(0, ItemStack.EMPTY);
             this.setChanged();
@@ -201,8 +201,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.processed = 0;
         this.isProcessing = false;
 
-        SluiceModRecipeSerializers.getRandomResult(level, mesh, itemStack)
-            .forEach(e -> this.ejectItem(level, state.getValue(BlockStateProperties.HORIZONTAL_FACING), e));
+        SluiceModRecipeSerializers.getRandomResult(this.tank.getFluid().getFluid(), level, mesh, itemStack)
+                .forEach(e -> this.ejectItem(level, state.getValue(BlockStateProperties.HORIZONTAL_FACING), e));
 
         this.inventory.setStackInSlot(0, ItemStack.EMPTY);
         this.tank.internalDrain(this.properties.fluidUsage.get(), IFluidHandler.FluidAction.EXECUTE);
@@ -298,7 +298,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
      *
      * @param level level to find the inventory from
      * @param start the starting pos (the tiles pos)
-     *
      * @return A valid IItemHandler or a empty optional
      */
     private LazyOptional<IItemHandler> seekNearestInventory(Level level, BlockPos start) {
