@@ -39,9 +39,9 @@ public class Fluid extends FluidTank {
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-        if (this.isProtected) {
-            return 0;
-        }
+//        if (this.isProtected) {
+//            return 0;
+//        }
 
         return this.internalFill(resource, action);
     }

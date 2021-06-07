@@ -9,10 +9,11 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class SluiceModRecipeSerializers {
     public static final RegistryObject<RecipeSerializer<?>> HAMMER = REGISTRY.register("hammer", HammerRecipeSerializer::new);
     public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":hammer");
     public static final List<Ingredient> hammerableCache = new ArrayList<>();
-    private static final Map<Pair<Item, MeshType>, InputRecipeResult> sluiceCache = new HashMap<>();
+    private static final Map<Triple<Fluid, Item, MeshType>, InputRecipeResult> sluiceCache = new HashMap<>();
     private static final Map<Item, List<ItemStack>> hammerCache = new HashMap<>();
 
     public static void clearCache() {
@@ -46,13 +47,14 @@ public class SluiceModRecipeSerializers {
      * @param input an input item to find results for
      * @return A list of items with the chances.
      */
-    public static InputRecipeResult getSluiceRecipes(Level world, MeshType mesh, ItemStack input) {
-        return sluiceCache.computeIfAbsent(Pair.of(input.getItem(), mesh), key -> {
+    public static InputRecipeResult getSluiceRecipes(Fluid fluid, Level world, MeshType mesh, ItemStack input) {
+        return sluiceCache.computeIfAbsent(Triple.of(fluid, input.getItem(), mesh), key -> {
+            world.getRecipeManager().getRecipesFor(SLUICE_TYPE, NoInventory.INSTANCE, world).forEach(e -> System.out.println(e.fluid));
             List<ItemWithWeight> list = new ArrayList<>();
 
             int max = -1;
             for (SluiceRecipe recipe : world.getRecipeManager().getRecipesFor(SLUICE_TYPE, NoInventory.INSTANCE, world)) {
-                if (recipe.meshes.contains(mesh) && recipe.ingredient.test(input)) {
+                if (recipe.meshes.contains(mesh) && recipe.ingredient.test(input) && fluid.isSame(recipe.fluid)) {
                     // Only set based on the first min max we see.
                     if (max == -1) {
                         max = recipe.max;
@@ -69,17 +71,17 @@ public class SluiceModRecipeSerializers {
     /**
      * Checks that a given input has any result.
      */
-    public static boolean itemHasSluiceResults(Level level, MeshType mesh, ItemStack input) {
-        return !getSluiceRecipes(level, mesh, input).getItems().isEmpty();
+    public static boolean itemHasSluiceResults(Fluid fluid, Level level, MeshType mesh, ItemStack input) {
+        return !getSluiceRecipes(fluid, level, mesh, input).getItems().isEmpty();
     }
 
     /**
      * Computes a list of resulting output items based on an input. We get the outputting items from the
      * custom recipe.
      */
-    public static List<ItemStack> getRandomResult(Level world, MeshType mesh, ItemStack input) {
+    public static List<ItemStack> getRandomResult(Fluid fluid, Level world, MeshType mesh, ItemStack input) {
         List<ItemStack> outputResults = new ArrayList<>();
-        InputRecipeResult recipe = getSluiceRecipes(world, mesh, input);
+        InputRecipeResult recipe = getSluiceRecipes(fluid, world, mesh, input);
 
         for (ItemWithWeight result : recipe.getItems()) {
             float number = world.getRandom().nextFloat();

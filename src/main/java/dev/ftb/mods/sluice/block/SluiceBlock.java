@@ -1,12 +1,9 @@
 package dev.ftb.mods.sluice.block;
 
 import dev.ftb.mods.sluice.item.MeshItem;
-import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.recipe.SluiceModRecipeSerializers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -14,7 +11,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -28,7 +24,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -37,10 +32,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -75,10 +68,10 @@ public class SluiceBlock extends Block {
     public SluiceBlock() {
         super(Properties.of(Material.METAL).sound(SoundType.METAL).strength(0.9F));
         this.registerDefaultState(this.getStateDefinition().any()
-            .setValue(MESH, MeshType.NONE)
-            .setValue(WATER, false)
-            .setValue(PART, Part.MAIN)
-            .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+                .setValue(MESH, MeshType.NONE)
+                .setValue(WATER, false)
+                .setValue(PART, Part.MAIN)
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
@@ -114,8 +107,8 @@ public class SluiceBlock extends Block {
 
         Pair<VoxelShape, VoxelShape> bodyFrontShapes = SHAPES.get(direction);
         return state.getValue(PART) == Part.MAIN
-            ? bodyFrontShapes.getKey()
-            : bodyFrontShapes.getValue();
+                ? bodyFrontShapes.getKey()
+                : bodyFrontShapes.getValue();
     }
 
     @Override
@@ -172,27 +165,37 @@ public class SluiceBlock extends Block {
             }
 
             return InteractionResult.SUCCESS;
-        } else if (itemStack.getItem() instanceof BucketItem && ((BucketItem) itemStack.getItem()).getFluid() == Fluids.WATER && state.getBlock() != SluiceModBlocks.NETHERITE_SLUICE.get()) {
+        } else if (itemStack.getItem() instanceof BucketItem && state.getBlock() != SluiceModBlocks.NETHERITE_SLUICE.get()) {
             if (!world.isClientSide()) {
-                int transfer = sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.SIMULATE);
-                if (transfer > 0 && transfer <= 1000) {
-                    SoundEvent soundevent = ((BucketItem) itemStack.getItem()).getFluid().getAttributes().getFillSound();
-                    if (soundevent == null) {
-                        soundevent = SoundEvents.BUCKET_FILL;
-                    }
-
-                    player.playSound(soundevent, 1.0F, 1.0F);
-                    sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
-
-                    ItemStack output = itemStack.getItem() == Items.WATER_BUCKET
-                        ? new ItemStack(Items.BUCKET)
-                        : new ItemStack(SluiceModItems.CLAY_BUCKET.get());
-
-                    itemStack.shrink(1);
-                    ItemHandlerHelper.insertItemStacked(new InvWrapper(player.inventory), output, false);
+                if (FluidUtil.interactWithFluidHandler(player, hand, sluice.tank)) {
+                    System.out.println("Yup");
+                } else {
+                    System.out.println("Nope");
                 }
+//                int transfer = sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.SIMULATE);
+//                if (transfer > 0 && transfer <= 1000) {
+//                    SoundEvent soundevent = ((BucketItem) itemStack.getItem()).getFluid().getAttributes().getFillSound();
+//                    if (soundevent == null) {
+//                        soundevent = SoundEvents.BUCKET_FILL;
+//                    }
+//
+//                    player.playSound(soundevent, 1.0F, 1.0F);
+//                    sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
+//
+//                    // Don't take if we're in creative
+//                    if (!player.abilities.instabuild) {
+//                        ItemStack output = itemStack.getItem() == Items.WATER_BUCKET
+//                                ? new ItemStack(Items.BUCKET)
+//                                : new ItemStack(SluiceModItems.CLAY_BUCKET.get());
+//
+//                        itemStack.shrink(1);
+//                        ItemHandlerHelper.insertItemStacked(new InvWrapper(player.inventory), output, false);
+//                    }
+//                } else {
+//                    return InteractionResult.FAIL;
+//                }
             }
-        } else if (SluiceModRecipeSerializers.itemHasSluiceResults(world, state.getValue(MESH), itemStack)) {
+        } else if (SluiceModRecipeSerializers.itemHasSluiceResults(sluice.tank.getFluid().getFluid(), world, state.getValue(MESH), itemStack)) {
             if (!world.isClientSide()) {
                 if (sluice.inventory.getStackInSlot(0).isEmpty()) {
                     sluice.clearCache();
@@ -221,8 +224,8 @@ public class SluiceBlock extends Block {
 
         BlockPos offsetPos = context.getClickedPos().relative(context.getHorizontalDirection().getOpposite());
         return context.getLevel().getBlockState(offsetPos).canBeReplaced(context)
-            ? this.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite()).setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER)).setValue(PART, Part.MAIN)
-            : null;
+                ? this.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite()).setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER)).setValue(PART, Part.MAIN)
+                : null;
     }
 
     @Override
@@ -237,8 +240,8 @@ public class SluiceBlock extends Block {
         if (!state.is(newState.getBlock())) {
             Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
             BlockPos endPos = pos.relative(state.getValue(PART) == Part.FUNNEL
-                ? direction.getOpposite()
-                : direction);
+                    ? direction.getOpposite()
+                    : direction);
             BlockState endState = world.getBlockState(endPos);
 
             if (state.getValue(PART) == Part.FUNNEL) {
@@ -265,7 +268,6 @@ public class SluiceBlock extends Block {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack item) {
         super.setPlacedBy(level, pos, state, entity, item);
         if (!level.isClientSide) {
-            System.out.println("Placed down");
             BlockPos lv = pos.relative(state.getValue(BlockStateProperties.HORIZONTAL_FACING));
             level.setBlock(lv, state.setValue(PART, Part.FUNNEL), 3);
             level.blockUpdated(pos, Blocks.AIR);
