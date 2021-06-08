@@ -1,9 +1,9 @@
 package dev.ftb.mods.sluice.integration.jei;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.ftb.mods.sluice.SluiceMod;
+import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
-import dev.ftb.mods.sluice.block.SluiceModBlocks;
+import dev.ftb.mods.sluice.block.SluiceBlocks;
 import dev.ftb.mods.sluice.recipe.SluiceRecipe;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
-    public static final ResourceLocation ID = new ResourceLocation(SluiceMod.MOD_ID, "sluice_jei");
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(SluiceMod.MOD_ID, "textures/gui/sluice_jei_background.png");
+    public static final ResourceLocation ID = new ResourceLocation(FTBSluice.MOD_ID, "sluice_jei");
+    public static final ResourceLocation BACKGROUND = new ResourceLocation(FTBSluice.MOD_ID, "textures/gui/sluice_jei_background.png");
 
     private final IDrawableStatic background;
 
@@ -75,7 +75,7 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
         recipeLayout.getItemStacks().set(60, sluiceRecipe.meshes.stream().map(MeshType::getItemStack).collect(Collectors.toList()));
 
         recipeLayout.getItemStacks().init(61, false, 4, 41);
-        recipeLayout.getItemStacks().set(61, SluiceModBlocks.SLUICES.stream().map(e -> new ItemStack(e.getKey().get())).collect(Collectors.toList()));
+        recipeLayout.getItemStacks().set(61, SluiceBlocks.SLUICES.stream().map(e -> new ItemStack(e.getKey().get())).collect(Collectors.toList()));
     }
 
     @Override

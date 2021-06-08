@@ -1,7 +1,7 @@
 package dev.ftb.mods.sluice.block;
 
 import dev.ftb.mods.sluice.item.MeshItem;
-import dev.ftb.mods.sluice.recipe.SluiceModRecipeSerializers;
+import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
@@ -85,14 +85,14 @@ public class SluiceBlock extends Block {
             return null;
         }
 
-        if (state.getBlock() == SluiceModBlocks.OAK_SLUICE.get()) {
-            return SluiceModBlockEntities.OAK_SLUICE.get().create();
-        } else if (state.getBlock() == SluiceModBlocks.IRON_SLUICE.get()) {
-            return SluiceModBlockEntities.IRON_SLUICE.get().create();
-        } else if (state.getBlock() == SluiceModBlocks.DIAMOND_SLUICE.get()) {
-            return SluiceModBlockEntities.DIAMOND_SLUICE.get().create();
+        if (state.getBlock() == SluiceBlocks.OAK_SLUICE.get()) {
+            return SluiceBlockEntities.OAK_SLUICE.get().create();
+        } else if (state.getBlock() == SluiceBlocks.IRON_SLUICE.get()) {
+            return SluiceBlockEntities.IRON_SLUICE.get().create();
+        } else if (state.getBlock() == SluiceBlocks.DIAMOND_SLUICE.get()) {
+            return SluiceBlockEntities.DIAMOND_SLUICE.get().create();
         } else {
-            return SluiceModBlockEntities.NETHERITE_SLUICE.get().create();
+            return SluiceBlockEntities.NETHERITE_SLUICE.get().create();
         }
     }
 
@@ -165,7 +165,7 @@ public class SluiceBlock extends Block {
             }
 
             return InteractionResult.SUCCESS;
-        } else if (itemStack.getItem() instanceof BucketItem && state.getBlock() != SluiceModBlocks.NETHERITE_SLUICE.get()) {
+        } else if (itemStack.getItem() instanceof BucketItem && state.getBlock() != SluiceBlocks.NETHERITE_SLUICE.get()) {
             if (!world.isClientSide()) {
                 if (FluidUtil.interactWithFluidHandler(player, hand, sluice.tank)) {
                     System.out.println("Yup");
@@ -195,7 +195,7 @@ public class SluiceBlock extends Block {
 //                    return InteractionResult.FAIL;
 //                }
             }
-        } else if (SluiceModRecipeSerializers.itemHasSluiceResults(sluice.tank.getFluid().getFluid(), world, state.getValue(MESH), itemStack)) {
+        } else if (FTBSluiceRecipes.itemHasSluiceResults(sluice.tank.getFluid().getFluid(), world, state.getValue(MESH), itemStack)) {
             if (!world.isClientSide()) {
                 if (sluice.inventory.getStackInSlot(0).isEmpty()) {
                     sluice.clearCache();

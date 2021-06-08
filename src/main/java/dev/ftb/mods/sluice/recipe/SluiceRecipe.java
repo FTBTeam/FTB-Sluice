@@ -67,11 +67,11 @@ public class SluiceRecipe implements Recipe<NoInventory> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return SluiceModRecipeSerializers.SLUICE.get();
+        return FTBSluiceRecipes.SLUICE.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return SluiceModRecipeSerializers.SLUICE_TYPE;
+        return FTBSluiceRecipes.SLUICE_TYPE;
     }
 }

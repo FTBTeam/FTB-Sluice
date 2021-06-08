@@ -10,19 +10,19 @@ public class TapBlockEntity extends BlockEntity {
     private final LazyOptional<FluidTank> fluidTank = LazyOptional.of(() -> new FluidTank(5000, stack -> true));
 
     public TapBlockEntity() {
-        super(SluiceModBlockEntities.TAP.get());
+        super(SluiceBlockEntities.TAP.get());
     }
 
     @Override
     public void load(BlockState state, CompoundTag nbt) {
         super.load(state, nbt);
-        fluidTank.ifPresent(e -> e.readFromNBT(nbt));
+        this.fluidTank.ifPresent(e -> e.readFromNBT(nbt));
     }
 
     @Override
     public CompoundTag save(CompoundTag compound) {
         CompoundTag save = super.save(compound);
-        fluidTank.ifPresent(e -> e.writeToNBT(save));
+        this.fluidTank.ifPresent(e -> e.writeToNBT(save));
         return save;
     }
 

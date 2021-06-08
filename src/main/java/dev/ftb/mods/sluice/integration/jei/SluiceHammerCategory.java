@@ -1,6 +1,6 @@
 package dev.ftb.mods.sluice.integration.jei;
 
-import dev.ftb.mods.sluice.SluiceMod;
+import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.recipe.HammerRecipe;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -14,8 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Arrays;
 
 public class SluiceHammerCategory implements IRecipeCategory<HammerRecipe> {
-    public static final ResourceLocation ID = new ResourceLocation(SluiceMod.MOD_ID, "hammers_jei");
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(SluiceMod.MOD_ID, "textures/gui/hammer_jei_background.png");
+    public static final ResourceLocation ID = new ResourceLocation(FTBSluice.MOD_ID, "hammers_jei");
+    public static final ResourceLocation BACKGROUND = new ResourceLocation(FTBSluice.MOD_ID, "textures/gui/hammer_jei_background.png");
 
     private final IDrawableStatic background;
 

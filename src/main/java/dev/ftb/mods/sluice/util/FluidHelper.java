@@ -1,4 +1,4 @@
-package dev.ftb.mods.sluice.utils;
+package dev.ftb.mods.sluice.util;
 
 import net.minecraftforge.fluids.FluidStack;
 

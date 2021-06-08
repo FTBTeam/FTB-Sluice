@@ -18,7 +18,7 @@ public class TankBlockEntity extends BlockEntity {
     public final LazyOptional<FluidTank> fluidInventory = LazyOptional.of(() -> this.tank);
 
     public TankBlockEntity() {
-        super(SluiceModBlockEntities.TANK.get());
+        super(SluiceBlockEntities.TANK.get());
     }
 
     @Nonnull
@@ -71,7 +71,7 @@ public class TankBlockEntity extends BlockEntity {
         public final LazyOptional<FluidTank> fluidInventory = LazyOptional.of(() -> this.tank);
 
         public CreativeTankBlockEntity() {
-            super(SluiceModBlockEntities.CREATIVE_TANK.get());
+            super(SluiceBlockEntities.CREATIVE_TANK.get());
         }
 
         @Override

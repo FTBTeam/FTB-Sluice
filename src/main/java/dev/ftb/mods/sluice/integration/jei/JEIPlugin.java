@@ -1,10 +1,10 @@
 package dev.ftb.mods.sluice.integration.jei;
 
-import dev.ftb.mods.sluice.SluiceMod;
+import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.recipe.NoInventory;
-import dev.ftb.mods.sluice.recipe.SluiceModRecipeSerializers;
+import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -21,7 +21,7 @@ import java.util.HashSet;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
-    public static final ResourceLocation SLUICE_JEI = new ResourceLocation(SluiceMod.MOD_ID, "jei");
+    public static final ResourceLocation SLUICE_JEI = new ResourceLocation(FTBSluice.MOD_ID, "jei");
     public static HashSet<RegistryObject<Item>> HAMMERS = new HashSet<RegistryObject<Item>>() {{
         this.add(SluiceModItems.WOODEN_HAMMER);
         this.add(SluiceModItems.STONE_HAMMER);
@@ -46,8 +46,8 @@ public class JEIPlugin implements IModPlugin {
     public void registerRecipes(IRecipeRegistration r) {
         Level level = Minecraft.getInstance().level;
         //		r.addRecipes(level.getRecipeManager().getRecipesFor(SluiceModRecipeSerializers.SLUICE_TYPE, NoInventory.INSTANCE, level), SluiceHammerCategory.ID);
-        r.addRecipes(level.getRecipeManager().getRecipesFor(SluiceModRecipeSerializers.HAMMER_TYPE, NoInventory.INSTANCE, level), SluiceHammerCategory.ID);
-        r.addRecipes(level.getRecipeManager().getRecipesFor(SluiceModRecipeSerializers.SLUICE_TYPE, NoInventory.INSTANCE, level), SluiceMeshCategory.ID);
+        r.addRecipes(level.getRecipeManager().getRecipesFor(FTBSluiceRecipes.HAMMER_TYPE, NoInventory.INSTANCE, level), SluiceHammerCategory.ID);
+        r.addRecipes(level.getRecipeManager().getRecipesFor(FTBSluiceRecipes.SLUICE_TYPE, NoInventory.INSTANCE, level), SluiceMeshCategory.ID);
     }
 
     @Override

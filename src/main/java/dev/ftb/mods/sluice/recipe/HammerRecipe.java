@@ -57,21 +57,21 @@ public class HammerRecipe implements Recipe<NoInventory> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return SluiceModRecipeSerializers.HAMMER.get();
+        return FTBSluiceRecipes.HAMMER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return SluiceModRecipeSerializers.HAMMER_TYPE;
+        return FTBSluiceRecipes.HAMMER_TYPE;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("id", this.id)
-            .add("group", this.group)
-            .add("ingredient", this.ingredient)
-            .add("results", this.results)
-            .toString();
+                .add("id", this.id)
+                .add("group", this.group)
+                .add("ingredient", this.ingredient)
+                .add("results", this.results)
+                .toString();
     }
 }

@@ -1,6 +1,6 @@
 package dev.ftb.mods.sluice.integration;
 
-import dev.ftb.mods.sluice.SluiceMod;
+import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.SluiceBlock;
 import dev.ftb.mods.sluice.block.SluiceBlockEntity;
 import mcjty.theoneprobe.api.*;
@@ -24,7 +24,7 @@ public class TheOneProbeProvider implements IProbeInfoProvider, Function<ITheOne
 
     @Override
     public String getID() {
-        return new ResourceLocation(SluiceMod.MOD_ID, "top_integration").toString();
+        return new ResourceLocation(FTBSluice.MOD_ID, "top_integration").toString();
     }
 
     @Override

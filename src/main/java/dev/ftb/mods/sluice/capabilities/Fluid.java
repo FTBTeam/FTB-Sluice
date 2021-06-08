@@ -2,7 +2,6 @@ package dev.ftb.mods.sluice.capabilities;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -13,28 +12,20 @@ import java.util.function.Predicate;
  * that the block entity can be public.
  */
 public class Fluid extends FluidTank {
-    private final TriConsumer<Fluid, Integer, FluidAction> onFill;
-    private final TriConsumer<Fluid, Integer, FluidAction> onDrain;
     private final boolean isProtected;
 
-    public Fluid(boolean isProtected, int capacity, Predicate<FluidStack> validator, TriConsumer<Fluid, Integer, FluidAction> onFill, TriConsumer<Fluid, Integer, FluidAction> onDrain) {
+    public Fluid(boolean isProtected, int capacity, Predicate<FluidStack> validator) {
         super(capacity, validator);
 
         this.isProtected = isProtected;
-        this.onFill = onFill;
-        this.onDrain = onDrain;
     }
 
     public int internalFill(FluidStack resource, FluidAction action) {
-        int fill = super.fill(resource, action);
-        this.onFill.accept(this, fill, action);
-        return fill;
+        return super.fill(resource, action);
     }
 
     public FluidStack internalDrain(int maxDrain, FluidAction action) {
-        FluidStack drain = super.drain(maxDrain, action);
-        this.onDrain.accept(this, maxDrain, action);
-        return drain;
+        return super.drain(maxDrain, action);
     }
 
     @Override

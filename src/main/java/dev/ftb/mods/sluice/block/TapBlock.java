@@ -34,6 +34,6 @@ public class TapBlock extends Block {
     @Nullable
     @Override
     public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return SluiceModBlockEntities.TAP.get().create();
+        return SluiceBlockEntities.TAP.get().create();
     }
 }

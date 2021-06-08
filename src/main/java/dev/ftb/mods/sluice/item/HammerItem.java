@@ -1,6 +1,6 @@
 package dev.ftb.mods.sluice.item;
 
-import dev.ftb.mods.sluice.SluiceMod;
+import dev.ftb.mods.sluice.FTBSluice;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tiers;
@@ -10,7 +10,7 @@ import net.minecraftforge.common.ToolType;
 import java.util.HashSet;
 
 public class HammerItem extends DiggerItem {
-    private static final Properties props = new Properties().tab(SluiceMod.group);
+    private static final Properties props = new Properties().tab(FTBSluice.group);
 
     public HammerItem(Tiers tier, float attackBase, float attackSpeed) {
         this(tier, attackBase, attackSpeed, false);
@@ -18,8 +18,8 @@ public class HammerItem extends DiggerItem {
 
     public HammerItem(Tiers tier, float attackBase, float attackSpeed, boolean fireResistant) {
         super(attackBase, attackSpeed, tier, new HashSet<>(), !fireResistant
-            ? props.addToolType(ToolType.PICKAXE, tier.getLevel()).addToolType(ToolType.SHOVEL, tier.getLevel()).durability(tier.getUses())
-            : props.addToolType(ToolType.PICKAXE, tier.getLevel()).addToolType(ToolType.SHOVEL, tier.getLevel()).durability(tier.getUses()).fireResistant());
+                ? props.addToolType(ToolType.PICKAXE, tier.getLevel()).addToolType(ToolType.SHOVEL, tier.getLevel()).durability(tier.getUses())
+                : props.addToolType(ToolType.PICKAXE, tier.getLevel()).addToolType(ToolType.SHOVEL, tier.getLevel()).durability(tier.getUses()).fireResistant());
     }
 
     @Override

@@ -33,6 +33,10 @@ public class SluiceModRecipeSerializers {
     private static final Map<Triple<Fluid, Item, MeshType>, InputRecipeResult> sluiceCache = new HashMap<>();
     private static final Map<Item, List<ItemStack>> hammerCache = new HashMap<>();
 
+    public static void createSluiceCaches() {
+
+    }
+
     public static void clearCache() {
         sluiceCache.clear();
         hammerCache.clear();
