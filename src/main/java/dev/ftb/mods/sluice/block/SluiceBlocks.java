@@ -26,7 +26,6 @@ public class SluiceBlocks {
     public static final RegistryObject<Block> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", SluiceBlock::new);
     public static final RegistryObject<Block> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", SluiceBlock::new);
 
-    public static final RegistryObject<Block> TAP = REGISTRY.register("tap", TapBlock::new);
     public static final RegistryObject<Block> TANK = REGISTRY.register("tank", () -> new Tank(false));
     public static final RegistryObject<Block> TANK_CREATIVE = REGISTRY.register("tank_creative", () -> new Tank(true));
 

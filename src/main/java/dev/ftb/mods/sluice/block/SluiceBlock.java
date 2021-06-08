@@ -33,6 +33,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -165,7 +166,7 @@ public class SluiceBlock extends Block {
             }
 
             return InteractionResult.SUCCESS;
-        } else if (itemStack.getItem() instanceof BucketItem && state.getBlock() != SluiceBlocks.NETHERITE_SLUICE.get()) {
+        } else if ((itemStack.getItem() instanceof BucketItem || itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) && state.getBlock() != SluiceBlocks.NETHERITE_SLUICE.get()) {
             if (!world.isClientSide()) {
                 if (FluidUtil.interactWithFluidHandler(player, hand, sluice.tank)) {
                     System.out.println("Yup");
@@ -195,7 +196,7 @@ public class SluiceBlock extends Block {
 //                    return InteractionResult.FAIL;
 //                }
             }
-        } else if (FTBSluiceRecipes.itemHasSluiceResults(sluice.tank.getFluid().getFluid(), world, state.getValue(MESH), itemStack)) {
+        } else if (FTBSluiceRecipes.itemIsSluiceInput(state.getValue(MESH), itemStack)) {
             if (!world.isClientSide()) {
                 if (sluice.inventory.getStackInSlot(0).isEmpty()) {
                     sluice.clearCache();

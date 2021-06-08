@@ -22,7 +22,6 @@ public class SluiceModItems {
 
     public static final RegistryObject<Item> TANK = REGISTRY.register("tank", () -> new BlockItem(SluiceBlocks.TANK.get(), new Item.Properties().tab(FTBSluice.group)));
     public static final RegistryObject<Item> TANK_CREATIVE = REGISTRY.register("creative_tank", () -> new BlockItem(SluiceBlocks.TANK_CREATIVE.get(), new Item.Properties().tab(FTBSluice.group)));
-    public static final RegistryObject<Item> TAP = REGISTRY.register("tap", () -> new BlockItem(SluiceBlocks.TAP.get(), new Item.Properties().tab(FTBSluice.group)));
 
     public static final RegistryObject<BlockItem> OAK_SLUICE = REGISTRY.register("oak_sluice", () -> new BlockItem(SluiceBlocks.OAK_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
     public static final RegistryObject<BlockItem> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> new BlockItem(SluiceBlocks.IRON_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));

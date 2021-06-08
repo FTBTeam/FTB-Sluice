@@ -24,7 +24,6 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -64,17 +63,12 @@ public class FTBSluice {
 
         bus.addListener(this::clientSetup);
         bus.addListener(this::sendIMC);
-        bus.addListener(this::loadComplete);
 
         MinecraftForge.EVENT_BUS.register(this);
 
         if (ModList.get().isLoaded("kubejs")) {
             KubeJSIntegration.init();
         }
-    }
-
-    private void loadComplete(FMLLoadCompleteEvent event) {
-        FTBSluiceRecipes.createSluiceCaches();
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
@@ -84,8 +78,8 @@ public class FTBSluice {
     @SubscribeEvent
     public void recipesSetup(RecipesUpdatedEvent event) {
         RecipeManager recipeManager = event.getRecipeManager();
+        FTBSluiceRecipes.createSluiceCaches(recipeManager);
         FTBSluiceRecipes.hammerableCache.addAll(recipeManager.getAllRecipesFor(FTBSluiceRecipes.HAMMER_TYPE).stream().map(e -> e.ingredient).collect(Collectors.toList()));
-        FTBSluiceRecipes.createSluiceCaches();
     }
 
     public void sendIMC(InterModEnqueueEvent event) {
