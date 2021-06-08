@@ -4,7 +4,7 @@ import dev.ftb.mods.sluice.SluiceConfig;
 import dev.ftb.mods.sluice.capabilities.Energy;
 import dev.ftb.mods.sluice.capabilities.Fluid;
 import dev.ftb.mods.sluice.capabilities.ItemsHandler;
-import dev.ftb.mods.sluice.recipe.SluiceModRecipeSerializers;
+import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -18,19 +18,20 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.EmptyHandler;
-import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,8 +54,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     public int maxProcessed;
     public boolean isProcessing = false;
 
-    private Pair<BlockPos, Direction> closestInventory;
-
     public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties) {
         this(type, properties, false);
     }
@@ -69,6 +68,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.energy = new Energy(!isNetherite
                 ? 0
                 : SluiceConfig.NETHERITE_SLUICE.energyStorage.get(), e -> {
+            // Shouldn't be needed but it's better safe.
             if (!this.isNetherite) {
                 return;
             }
@@ -79,10 +79,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.maxProcessed = this.properties.processingTime.get();
 
         // Handles state changing
-        this.tank = new Fluid(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true, this::fluidStateUpdate, this::fluidStateUpdate);
+        this.tank = new Fluid(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true);
         this.fluidOptional = LazyOptional.of(() -> this.tank);
 
-        this.inventory = new ItemsHandler(type != SluiceModBlockEntities.OAK_SLUICE.get(), 1) {
+        this.inventory = new ItemsHandler(type == SluiceBlockEntities.OAK_SLUICE.get(), 1) {
             @Override
             protected void onContentsChanged(int slot) {
                 SluiceBlockEntity.this.setChanged();
@@ -91,6 +91,15 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             @Override
             public int getSlotLimit(int slot) {
                 return 1;
+            }
+
+            @Override
+            public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+                if (FTBSluiceRecipes.itemIsSluiceInput(SluiceBlockEntity.this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
+                    return super.insertItem(slot, stack, simulate);
+                }
+
+                return stack;
             }
 
             @Nonnull
@@ -103,31 +112,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.inventoryOptional = LazyOptional.of(() -> this.inventory);
     }
 
-    private void fluidStateUpdate(Fluid fluid, int value, IFluidHandler.FluidAction action) {
-//        if (this.level == null || this.getBlockState() == null || action.simulate()) {
-//            return;
-//        }
-//
-//        if (!fluid.isEmpty() && !this.getBlockState().getValue(SluiceBlock.WATER)) {
-//            this.setFluidModel(true);
-//        }
-//
-//        if (fluid.isEmpty() && this.getBlockState().getValue(SluiceBlock.WATER)) {
-//            this.setFluidModel(false);
-//        }
-    }
-
-    private void setFluidModel(boolean show) {
-        assert this.level != null;
-
-        this.level.setBlock(this.worldPosition, this.getBlockState().setValue(SluiceBlock.WATER, show), Constants.BlockFlags.DEFAULT_AND_RERENDER);
-        BlockPos relative = this.getBlockPos().relative(this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING));
-        BlockState blockState = this.level.getBlockState(relative);
-        if (blockState.getBlock() instanceof SluiceBlock && blockState.getValue(SluiceBlock.PART) == SluiceBlock.Part.FUNNEL) {
-            this.level.setBlock(relative, blockState.setValue(SluiceBlock.WATER, show), Constants.BlockFlags.DEFAULT_AND_RERENDER);
-        }
-    }
-
     @Override
     public void tick() {
         if (this.level == null || this.level.isClientSide()) {
@@ -137,11 +121,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         BlockState state = this.getBlockState();
         if (!(state.getBlock() instanceof SluiceBlock)) {
             return;
-        }
-
-        if (this.isNetherite && this.energy.getEnergyStored() > 0 && this.tank.getFluidAmount() < SluiceConfig.SLUICES.tankStorage.get()) {
-            this.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
-            this.energy.consumeEnergy(5, false); // Sip some power for the water.
         }
 
         ItemStack input = this.inventory.getStackInSlot(0);
@@ -176,7 +155,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         }
 
         // Throw items out if we don't have a recipe from them. It's simpler than giving the cap a world and mesh.
-        if (!SluiceModRecipeSerializers.itemHasSluiceResults(this.tank.getFluid().getFluid(), level, this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
+        if (!FTBSluiceRecipes.itemHasSluiceResults(this.tank.getFluid().getFluid(), level, this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
             this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
             this.inventory.setStackInSlot(0, ItemStack.EMPTY);
             this.setChanged();
@@ -201,7 +180,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.processed = 0;
         this.isProcessing = false;
 
-        SluiceModRecipeSerializers.getRandomResult(this.tank.getFluid().getFluid(), level, mesh, itemStack)
+        FTBSluiceRecipes.getRandomResult(this.tank.getFluid().getFluid(), level, mesh, itemStack)
                 .forEach(e -> this.ejectItem(level, state.getValue(BlockStateProperties.HORIZONTAL_FACING), e));
 
         this.inventory.setStackInSlot(0, ItemStack.EMPTY);
@@ -252,11 +231,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.properties.allowsIO) {
             return this.inventoryOptional.cast();
         }
 
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.properties.allowsTank) {
             return this.fluidOptional.cast();
         }
 
@@ -270,7 +249,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     private void ejectItem(Level w, Direction direction, ItemStack stack) {
         if (this.properties.allowsIO) {
             // Find the closest inventory to the block.
-            IItemHandler handler = this.seekNearestInventory(w, this.getBlockPos()).orElseGet(EmptyHandler::new);
+            IItemHandler handler = this.seekNearestInventory(w).orElseGet(EmptyHandler::new);
 
             // Empty handler does not have slots and is thus very simple to check against.
             if (handler.getSlots() != 0) {
@@ -291,48 +270,26 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     }
 
     /**
-     * Attempts to seek out a valid inventory, when found, we hold it in memory. We then
-     * check that on every use after being found. If the tile disappears we'll try to find
-     * another, otherwise, we'll send back and empty. Max call depth 1, max loops 6.
-     * (Don't allow sluice tile as a cap)
-     *
      * @param level level to find the inventory from
-     * @param start the starting pos (the tiles pos)
      * @return A valid IItemHandler or a empty optional
      */
-    private LazyOptional<IItemHandler> seekNearestInventory(Level level, BlockPos start) {
-        if (this.closestInventory == null) {
-            // Go around the block and find a valid cap. We then use getOpposite to ensure the side we've found
-            // Of the other block is actually accepting an inventory. Some pipes are very directional.
-            for (Direction direction : Direction.values()) {
-                BlockPos relative = start.relative(direction);
-                BlockEntity blockEntity = level.getBlockEntity(relative);
-                if (blockEntity != null && !(blockEntity instanceof SluiceBlockEntity)) {
-                    LazyOptional<IItemHandler> capability = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite());
-                    if (capability.isPresent()) {
-                        this.closestInventory = Pair.of(relative, direction.getOpposite());
-                        return capability;
-                    }
-                }
+    private LazyOptional<IItemHandler> seekNearestInventory(Level level) {
+        BlockPos pos = this.getBlockPos().relative(this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), 2);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity != null && !(blockEntity instanceof SluiceBlockEntity)) {
+            LazyOptional<IItemHandler> capability = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+            if (capability.isPresent()) {
+                return capability;
             }
-
-            return LazyOptional.empty();
-        } else {
-            // Validate that the tile is still valid before sending it's cap back.
-            BlockEntity blockEntity = level.getBlockEntity(this.closestInventory.getKey());
-            if (blockEntity == null || blockEntity instanceof SluiceBlockEntity) {
-                this.closestInventory = null;
-                return this.seekNearestInventory(level, start); // Try again.
-            }
-
-            LazyOptional<IItemHandler> capability = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.closestInventory.getValue());
-            if (!capability.isPresent()) {
-                this.closestInventory = null;
-                return this.seekNearestInventory(level, start); // Try again.
-            }
-
-            return capability;
         }
+
+        return LazyOptional.empty();
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public AABB getRenderBoundingBox() {
+        return new AABB(this.getBlockPos()).inflate(1);
     }
 
     @Override
@@ -358,25 +315,25 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
     public static class OakSluiceBlockEntity extends SluiceBlockEntity {
         public OakSluiceBlockEntity() {
-            super(SluiceModBlockEntities.OAK_SLUICE.get(), SluiceProperties.OAK);
+            super(SluiceBlockEntities.OAK_SLUICE.get(), SluiceProperties.OAK);
         }
     }
 
     public static class IronSluiceBlockEntity extends SluiceBlockEntity {
         public IronSluiceBlockEntity() {
-            super(SluiceModBlockEntities.IRON_SLUICE.get(), SluiceProperties.IRON);
+            super(SluiceBlockEntities.IRON_SLUICE.get(), SluiceProperties.IRON);
         }
     }
 
     public static class DiamondSluiceBlockEntity extends SluiceBlockEntity {
         public DiamondSluiceBlockEntity() {
-            super(SluiceModBlockEntities.DIAMOND_SLUICE.get(), SluiceProperties.DIAMOND);
+            super(SluiceBlockEntities.DIAMOND_SLUICE.get(), SluiceProperties.DIAMOND);
         }
     }
 
     public static class NetheriteSluiceBlockEntity extends SluiceBlockEntity {
         public NetheriteSluiceBlockEntity() {
-            super(SluiceModBlockEntities.NETHERITE_SLUICE.get(), SluiceProperties.NETHERITE, true);
+            super(SluiceBlockEntities.NETHERITE_SLUICE.get(), SluiceProperties.NETHERITE, true);
         }
     }
 }

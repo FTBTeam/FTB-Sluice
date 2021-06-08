@@ -1,3 +1,3 @@
 @mcp.MethodsReturnNonnullByDefault
 @javax.annotation.ParametersAreNonnullByDefault
-package dev.ftb.mods.sluice.renderers;
+package dev.ftb.mods.sluice.renderer;

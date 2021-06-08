@@ -1,7 +1,7 @@
 package dev.ftb.mods.sluice.block;
 
 import dev.ftb.mods.sluice.item.MeshItem;
-import dev.ftb.mods.sluice.recipe.SluiceModRecipeSerializers;
+import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
@@ -33,6 +33,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -85,14 +86,14 @@ public class SluiceBlock extends Block {
             return null;
         }
 
-        if (state.getBlock() == SluiceModBlocks.OAK_SLUICE.get()) {
-            return SluiceModBlockEntities.OAK_SLUICE.get().create();
-        } else if (state.getBlock() == SluiceModBlocks.IRON_SLUICE.get()) {
-            return SluiceModBlockEntities.IRON_SLUICE.get().create();
-        } else if (state.getBlock() == SluiceModBlocks.DIAMOND_SLUICE.get()) {
-            return SluiceModBlockEntities.DIAMOND_SLUICE.get().create();
+        if (state.getBlock() == SluiceBlocks.OAK_SLUICE.get()) {
+            return SluiceBlockEntities.OAK_SLUICE.get().create();
+        } else if (state.getBlock() == SluiceBlocks.IRON_SLUICE.get()) {
+            return SluiceBlockEntities.IRON_SLUICE.get().create();
+        } else if (state.getBlock() == SluiceBlocks.DIAMOND_SLUICE.get()) {
+            return SluiceBlockEntities.DIAMOND_SLUICE.get().create();
         } else {
-            return SluiceModBlockEntities.NETHERITE_SLUICE.get().create();
+            return SluiceBlockEntities.NETHERITE_SLUICE.get().create();
         }
     }
 
@@ -165,37 +166,11 @@ public class SluiceBlock extends Block {
             }
 
             return InteractionResult.SUCCESS;
-        } else if (itemStack.getItem() instanceof BucketItem && state.getBlock() != SluiceModBlocks.NETHERITE_SLUICE.get()) {
+        } else if (itemStack.getItem() instanceof BucketItem || itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
             if (!world.isClientSide()) {
-                if (FluidUtil.interactWithFluidHandler(player, hand, sluice.tank)) {
-                    System.out.println("Yup");
-                } else {
-                    System.out.println("Nope");
-                }
-//                int transfer = sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.SIMULATE);
-//                if (transfer > 0 && transfer <= 1000) {
-//                    SoundEvent soundevent = ((BucketItem) itemStack.getItem()).getFluid().getAttributes().getFillSound();
-//                    if (soundevent == null) {
-//                        soundevent = SoundEvents.BUCKET_FILL;
-//                    }
-//
-//                    player.playSound(soundevent, 1.0F, 1.0F);
-//                    sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
-//
-//                    // Don't take if we're in creative
-//                    if (!player.abilities.instabuild) {
-//                        ItemStack output = itemStack.getItem() == Items.WATER_BUCKET
-//                                ? new ItemStack(Items.BUCKET)
-//                                : new ItemStack(SluiceModItems.CLAY_BUCKET.get());
-//
-//                        itemStack.shrink(1);
-//                        ItemHandlerHelper.insertItemStacked(new InvWrapper(player.inventory), output, false);
-//                    }
-//                } else {
-//                    return InteractionResult.FAIL;
-//                }
+                FluidUtil.interactWithFluidHandler(player, hand, sluice.tank);
             }
-        } else if (SluiceModRecipeSerializers.itemHasSluiceResults(sluice.tank.getFluid().getFluid(), world, state.getValue(MESH), itemStack)) {
+        } else if (FTBSluiceRecipes.itemIsSluiceInput(state.getValue(MESH), itemStack)) {
             if (!world.isClientSide()) {
                 if (sluice.inventory.getStackInSlot(0).isEmpty()) {
                     sluice.clearCache();

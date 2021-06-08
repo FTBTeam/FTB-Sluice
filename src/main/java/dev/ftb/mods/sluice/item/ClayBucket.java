@@ -1,9 +1,10 @@
 package dev.ftb.mods.sluice.item;
 
-import dev.ftb.mods.sluice.SluiceMod;
+import dev.ftb.mods.sluice.FTBSluice;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -15,7 +16,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BucketPickup;
@@ -26,15 +26,18 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public class ClayBucket extends BucketItem {
     private final Fluid content;
 
     public ClayBucket(Supplier<Fluid> fluid) {
-        super(fluid, new Properties().tab(SluiceMod.group).stacksTo(fluid.get() == Fluids.EMPTY ? 16 : 1));
+        super(fluid, new Properties().tab(FTBSluice.group).stacksTo(fluid.get() == Fluids.EMPTY ? 16 : 1));
         this.content = fluid.get();
     }
 
@@ -51,7 +54,7 @@ public class ClayBucket extends BucketItem {
         } else if (raytraceresult.getType() != HitResult.Type.BLOCK) {
             return InteractionResultHolder.pass(itemstack);
         } else {
-            BlockHitResult blockraytraceresult = (BlockHitResult)raytraceresult;
+            BlockHitResult blockraytraceresult = (BlockHitResult) raytraceresult;
             BlockPos blockpos = blockraytraceresult.getBlockPos();
             Direction direction = blockraytraceresult.getDirection();
             BlockPos blockpos1 = blockpos.relative(direction);
@@ -85,7 +88,7 @@ public class ClayBucket extends BucketItem {
                     if (this.emptyBucket(player, level, blockpos2, blockraytraceresult)) {
                         this.checkExtraContent(level, itemstack, blockpos2);
                         if (player instanceof ServerPlayer) {
-                            CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)player, blockpos2, itemstack);
+                            CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer) player, blockpos2, itemstack);
                         }
 
                         player.awardStat(Stats.ITEM_USED.get(this));
@@ -101,12 +104,17 @@ public class ClayBucket extends BucketItem {
     }
 
     private boolean canBlockContainFluid(Level worldIn, BlockPos posIn, BlockState blockstate) {
-        return blockstate.getBlock() instanceof LiquidBlockContainer && ((LiquidBlockContainer)blockstate.getBlock()).canPlaceLiquid(worldIn, posIn, blockstate, this.content);
+        return blockstate.getBlock() instanceof LiquidBlockContainer && ((LiquidBlockContainer) blockstate.getBlock()).canPlaceLiquid(worldIn, posIn, blockstate, this.content);
     }
 
     @Override
     protected ItemStack getEmptySuccessItem(ItemStack stack, Player player) {
         return !player.abilities.instabuild ? new ItemStack(SluiceModItems.CLAY_BUCKET.get()) : stack;
+    }
+
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        return new FluidBucketWrapper(stack);
     }
 
     @Override

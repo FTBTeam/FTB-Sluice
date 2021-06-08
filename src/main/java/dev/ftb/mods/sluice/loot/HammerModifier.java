@@ -1,7 +1,7 @@
 package dev.ftb.mods.sluice.loot;
 
 import com.google.gson.JsonObject;
-import dev.ftb.mods.sluice.recipe.SluiceModRecipeSerializers;
+import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import dev.ftb.mods.sluice.tags.SluiceTags;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -30,11 +30,11 @@ public class HammerModifier extends LootModifier {
         Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
         BlockState blockState = context.getParamOrNull(LootContextParams.BLOCK_STATE);
 
-        if (!(entity instanceof Player) || hammer == null || blockState == null || !SluiceTags.Items.HAMMERS.contains(hammer.getItem()) || !SluiceModRecipeSerializers.hammerable(blockState)) {
+        if (!(entity instanceof Player) || hammer == null || blockState == null || !SluiceTags.Items.HAMMERS.contains(hammer.getItem()) || !FTBSluiceRecipes.hammerable(blockState)) {
             return list;
         }
 
-        List<ItemStack> hammerDrops = SluiceModRecipeSerializers.getHammerDrops(entity.level, new ItemStack(blockState.getBlock()));
+        List<ItemStack> hammerDrops = FTBSluiceRecipes.getHammerDrops(entity.level, new ItemStack(blockState.getBlock()));
         if (hammerDrops.size() > 0) {
             return hammerDrops.stream().map(ItemStack::copy).collect(Collectors.toList());
         }

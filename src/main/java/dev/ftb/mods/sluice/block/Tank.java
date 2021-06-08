@@ -27,7 +27,7 @@ public class Tank extends Block {
     public Tank(boolean isCreative) {
         super(Properties.of(Material.GLASS));
         this.registerDefaultState(this.getStateDefinition().any()
-            .setValue(CREATIVE, isCreative));
+                .setValue(CREATIVE, isCreative));
 
         this.isCreative = isCreative;
     }
@@ -63,7 +63,7 @@ public class Tank extends Block {
     @Nullable
     @Override
     public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return this.isCreative ? SluiceModBlockEntities.CREATIVE_TANK.get().create() : SluiceModBlockEntities.TANK.get().create();
+        return this.isCreative ? SluiceBlockEntities.CREATIVE_TANK.get().create() : SluiceBlockEntities.TANK.get().create();
     }
 
     @Override

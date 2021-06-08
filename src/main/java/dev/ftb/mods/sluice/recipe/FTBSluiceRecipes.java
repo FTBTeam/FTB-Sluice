@@ -1,10 +1,11 @@
 package dev.ftb.mods.sluice.recipe;
 
-import dev.ftb.mods.sluice.SluiceMod;
+import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -15,26 +16,47 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Triple;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
-public class SluiceModRecipeSerializers {
-    public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, SluiceMod.MOD_ID);
+public class FTBSluiceRecipes {
+    public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, FTBSluice.MOD_ID);
 
     public static final RegistryObject<RecipeSerializer<?>> SLUICE = REGISTRY.register("sluice", SluiceRecipeSerializer::new);
-    public static final RecipeType<SluiceRecipe> SLUICE_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":sluice");
+    public static final RecipeType<SluiceRecipe> SLUICE_TYPE = RecipeType.register(FTBSluice.MOD_ID + ":sluice");
 
     public static final RegistryObject<RecipeSerializer<?>> HAMMER = REGISTRY.register("hammer", HammerRecipeSerializer::new);
-    public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":hammer");
+    public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(FTBSluice.MOD_ID + ":hammer");
     public static final List<Ingredient> hammerableCache = new ArrayList<>();
+
     private static final Map<Triple<Fluid, Item, MeshType>, InputRecipeResult> sluiceCache = new HashMap<>();
+
+    // Ignores the fluid requirement to check for valid insert actions
+    private static final HashMap<MeshType, HashSet<Ingredient>> sluiceInputCache = new HashMap<>();
+
     private static final Map<Item, List<ItemStack>> hammerCache = new HashMap<>();
+
+    public static void createSluiceCaches(RecipeManager recipeManager) {
+        List<SluiceRecipe> sluiceRecipes = recipeManager.getAllRecipesFor(SLUICE_TYPE);
+
+        // Mesh -> has -> Ingredients.
+        for (SluiceRecipe e : sluiceRecipes) {
+            for (MeshType a : e.meshes) {
+                if (sluiceInputCache.containsKey(a)) {
+                    sluiceInputCache.get(a).add(e.ingredient);
+                } else {
+                    HashSet<Ingredient> value = new HashSet<>();
+                    value.add(e.ingredient);
+                    sluiceInputCache.put(a, value);
+                }
+            }
+        }
+    }
 
     public static void clearCache() {
         sluiceCache.clear();
+        sluiceInputCache.clear();
+
         hammerCache.clear();
         hammerableCache.clear();
     }
@@ -73,6 +95,14 @@ public class SluiceModRecipeSerializers {
      */
     public static boolean itemHasSluiceResults(Fluid fluid, Level level, MeshType mesh, ItemStack input) {
         return !getSluiceRecipes(fluid, level, mesh, input).getItems().isEmpty();
+    }
+
+    public static boolean itemIsSluiceInput(MeshType mesh, ItemStack input) {
+        if (!sluiceInputCache.containsKey(mesh)) {
+            return false;
+        }
+
+        return sluiceInputCache.get(mesh).stream().anyMatch(e -> e.test(input));
     }
 
     /**

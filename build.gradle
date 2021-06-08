@@ -1,6 +1,6 @@
 plugins {
-	id 'forgified-fabric-loom' version '0.6-SNAPSHOT'
-	id 'maven-publish'
+    id 'forgified-fabric-loom' version '0.6-SNAPSHOT'
+    id 'maven-publish'
 }
 
 apply from: 'https://files.latmod.com/public/markdown-git-changelog.gradle'
@@ -14,112 +14,121 @@ archivesBaseName = project.archives_base_name
 group = project.maven_group
 
 loom {
-	silentMojangMappingsLicense()
+    silentMojangMappingsLicense()
 
-	mixinConfigs = [
-	]
+    mixinConfigs = [
+    ]
 
-	useFabricMixin = true
+    useFabricMixin = true
 
-	dataGen {
-		mod project.mod_id
-	}
+    dataGen {
+        mod project.mod_id
+    }
 
-	launches {
-		data {
-			arg "--existing", file("src/main/resources").absolutePath
-		}
-	}
+    launches {
+        data {
+            arg "--existing", file("src/main/resources").absolutePath
+        }
+    }
 }
 
 repositories {
-	maven { url "https://www.cursemaven.com" }
-	maven { url "https://maven.saps.dev/minecraft" }
-	maven { url "https://maven.shedaniel.me/" }
+    maven { url "https://www.cursemaven.com" }
+    maven { url "https://maven.saps.dev/minecraft" }
+    maven { url "https://maven.shedaniel.me/" }
+    maven {
+        name 'tterrag'
+        url 'https://maven.tterrag.com/'
+        content {
+            includeGroup 'mcjty.theoneprobe'
+        }
+    }
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings minecraft.officialMojangMappings()
-	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings minecraft.officialMojangMappings()
+    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 
-	modCompile "curse.maven:jei-238222:${jei_file}"
-	modCompile "me.shedaniel:architectury-forge:${arch_version}"
-	modCompile "dev.latvian.mods:kubejs-forge:${kubejs_version}"
-	modCompile "dev.latvian.mods:rhino:${rhino_version}"
+    modImplementation "curse.maven:jei-238222:${jei_file}"
+    modImplementation "me.shedaniel:architectury-forge:${arch_version}"
+    modImplementation "dev.latvian.mods:kubejs-forge:${kubejs_version}"
+    modImplementation "dev.latvian.mods:rhino:${rhino_version}"
 
-	modRuntime "curse.maven:powah-352656:3232535"
-	modRuntime "curse.maven:lollipop-347954:3232534"
-	modRuntime "curse.maven:pipez-443900:3273405"
-	modRuntime "curse.maven:the-one-probe-3310128:3303361"
-	modRuntime "curse.maven:ceramics-250617:3234775"
-	modRuntime "curse.maven:mantle-74924:3326538"
+    modImplementation "mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api"
+    modRuntime "mcjty.theoneprobe:TheOneProbe-1.16:${top_version}"
+
+    modRuntime "curse.maven:powah-352656:3232535"
+    modRuntime "curse.maven:lollipop-347954:3232534"
+    modRuntime "curse.maven:pipez-443900:3273405"
+    modRuntime "curse.maven:ceramics-250617:3234775"
+    modRuntime "curse.maven:mantle-74924:3326538"
 }
 
 processResources {
-	inputs.property "version", project.version
+    inputs.property "version", project.version
 
-	filesMatching("META-INF/mods.toml") {
-		expand "version": project.version
-	}
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = "UTF-8"
-	def targetVersion = 8
-	if (JavaVersion.current().isJava9Compatible()) {
-		it.options.release = targetVersion
-	}
+    it.options.encoding = "UTF-8"
+    def targetVersion = 8
+    if (JavaVersion.current().isJava9Compatible()) {
+        it.options.release = targetVersion
+    }
 }
 
 java {
-	// withSourcesJar()
+    // withSourcesJar()
 }
 
 jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}" }
-	}
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
 
-	manifest {
-		attributes([
-				"Specification-Title"     : project.mod_id,
-				"Specification-Vendor"    : project.mod_author,
-				"Specification-Version"   : "1",
-				"Implementation-Title"    : project.name,
-				"Implementation-Version"  : version,
-				"Implementation-Vendor"   : project.mod_author,
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-		])
-	}
+    manifest {
+        attributes([
+                "Specification-Title"     : project.mod_id,
+                "Specification-Vendor"    : project.mod_author,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : version,
+                "Implementation-Vendor"   : project.mod_author,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
 
-	classifier "dev"
+    classifier "dev"
 }
 
 // configure the maven publication
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifact(remapJar) {
-				builtBy remapJar
-				artifactId = archivesBaseName + "-forge"
-				classifier null
-			}
-		}
-	}
+    publications {
+        mavenJava(MavenPublication) {
+            artifact(remapJar) {
+                builtBy remapJar
+                artifactId = archivesBaseName + "-forge"
+                classifier null
+            }
+        }
+    }
 
-	repositories {
-		maven {
-			url "${ENV.CI_API_V4_URL}/projects/${ENV.CI_PROJECT_ID}/packages/maven"
-			credentials(HttpHeaderCredentials) {
-				name = 'Job-Token'
-				value = ENV.CI_JOB_TOKEN
-			}
-			authentication {
-				header(HttpHeaderAuthentication)
-			}
-		}
-	}
+    repositories {
+        maven {
+            url "${ENV.CI_API_V4_URL}/projects/${ENV.CI_PROJECT_ID}/packages/maven"
+            credentials(HttpHeaderCredentials) {
+                name = 'Job-Token'
+                value = ENV.CI_JOB_TOKEN
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+    }
 //	repositories {
 ////		if (ENV.LOCAL_MAVEN) {
 ////			maven {
@@ -140,16 +149,16 @@ publishing {
 }
 
 if (ENV.CURSEFORGE_KEY) {
-	curseforge {
-		apiKey = ENV.CURSEFORGE_KEY
-		project {
-			id = project.curseforge_id
-			releaseType = "release"
-			addGameVersion "Forge"
-			addGameVersion "1.16.5"
-			mainArtifact(remapJar.archivePath)
-			changelog = getGitChangelog
-			changelogType = 'markdown'
-		}
-	}
+    curseforge {
+        apiKey = ENV.CURSEFORGE_KEY
+        project {
+            id = project.curseforge_id
+            releaseType = "release"
+            addGameVersion "Forge"
+            addGameVersion "1.16.5"
+            mainArtifact(remapJar.archivePath)
+            changelog = getGitChangelog
+            changelogType = 'markdown'
+        }
+    }
 }
