@@ -18,6 +18,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
@@ -281,6 +284,12 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         }
 
         return LazyOptional.empty();
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public AABB getRenderBoundingBox() {
+        return new AABB(this.getBlockPos()).inflate(1);
     }
 
     @Override
