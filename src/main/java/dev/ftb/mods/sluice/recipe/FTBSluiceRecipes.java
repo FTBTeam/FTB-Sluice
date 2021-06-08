@@ -1,6 +1,6 @@
 package dev.ftb.mods.sluice.recipe;
 
-import dev.ftb.mods.sluice.SluiceMod;
+import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,14 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 
-public class SluiceModRecipeSerializers {
-    public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, SluiceMod.MOD_ID);
+public class FTBSluiceRecipes {
+    public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, FTBSluice.MOD_ID);
 
     public static final RegistryObject<RecipeSerializer<?>> SLUICE = REGISTRY.register("sluice", SluiceRecipeSerializer::new);
-    public static final RecipeType<SluiceRecipe> SLUICE_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":sluice");
+    public static final RecipeType<SluiceRecipe> SLUICE_TYPE = RecipeType.register(FTBSluice.MOD_ID + ":sluice");
 
     public static final RegistryObject<RecipeSerializer<?>> HAMMER = REGISTRY.register("hammer", HammerRecipeSerializer::new);
-    public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(SluiceMod.MOD_ID + ":hammer");
+    public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(FTBSluice.MOD_ID + ":hammer");
     public static final List<Ingredient> hammerableCache = new ArrayList<>();
     private static final Map<Triple<Fluid, Item, MeshType>, InputRecipeResult> sluiceCache = new HashMap<>();
     private static final Map<Item, List<ItemStack>> hammerCache = new HashMap<>();
