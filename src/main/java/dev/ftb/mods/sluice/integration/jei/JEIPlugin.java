@@ -1,10 +1,10 @@
 package dev.ftb.mods.sluice.integration.jei;
 
 import dev.ftb.mods.sluice.FTBSluice;
-import dev.ftb.mods.sluice.block.MeshType;
+import dev.ftb.mods.sluice.block.SluiceBlocks;
 import dev.ftb.mods.sluice.item.SluiceModItems;
-import dev.ftb.mods.sluice.recipe.NoInventory;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
+import dev.ftb.mods.sluice.recipe.NoInventory;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -45,7 +45,6 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration r) {
         Level level = Minecraft.getInstance().level;
-        //		r.addRecipes(level.getRecipeManager().getRecipesFor(SluiceModRecipeSerializers.SLUICE_TYPE, NoInventory.INSTANCE, level), SluiceHammerCategory.ID);
         r.addRecipes(level.getRecipeManager().getRecipesFor(FTBSluiceRecipes.HAMMER_TYPE, NoInventory.INSTANCE, level), SluiceHammerCategory.ID);
         r.addRecipes(level.getRecipeManager().getRecipesFor(FTBSluiceRecipes.SLUICE_TYPE, NoInventory.INSTANCE, level), SluiceMeshCategory.ID);
     }
@@ -53,13 +52,6 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration r) {
         HAMMERS.forEach(hammer -> r.addRecipeCatalyst(new ItemStack(hammer.get()), SluiceHammerCategory.ID));
-
-        for (MeshType value : MeshType.REAL_VALUES) {
-            r.addRecipeCatalyst(value.getItemStack(), SluiceMeshCategory.ID);
-        }
-        // r.addRecipeCatalyst(new ItemStack(SluiceModItems.OAK_SLUICE.get()), SluiceCategory.UID);
-        // r.addRecipeCatalyst(new ItemStack(SluiceModItems.IRON_SLUICE.get()), SluiceCategory.UID);
-        // r.addRecipeCatalyst(new ItemStack(SluiceModItems.DIAMOND_SLUICE.get()), SluiceCategory.UID);
-        // r.addRecipeCatalyst(new ItemStack(SluiceModItems.NETHERITE_SLUICE.get()), SluiceCategory.UID);
+        SluiceBlocks.SLUICES.forEach(e -> r.addRecipeCatalyst(new ItemStack(e.getKey().get()), SluiceMeshCategory.ID));
     }
 }

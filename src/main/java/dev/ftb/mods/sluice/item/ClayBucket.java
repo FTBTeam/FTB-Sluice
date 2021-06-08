@@ -4,6 +4,7 @@ import dev.ftb.mods.sluice.FTBSluice;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -25,8 +26,11 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public class ClayBucket extends BucketItem {
@@ -106,6 +110,11 @@ public class ClayBucket extends BucketItem {
     @Override
     protected ItemStack getEmptySuccessItem(ItemStack stack, Player player) {
         return !player.abilities.instabuild ? new ItemStack(SluiceModItems.CLAY_BUCKET.get()) : stack;
+    }
+
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        return new FluidBucketWrapper(stack);
     }
 
     @Override

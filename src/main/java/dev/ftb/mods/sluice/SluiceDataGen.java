@@ -89,7 +89,6 @@ public class SluiceDataGen {
             }
 
             this.addBlock(SluiceBlocks.DUST_BLOCK, "Dust");
-            this.addItem(SluiceModItems.TAP, "Tap");
             this.addItem(SluiceModItems.CLAY_BUCKET, "Clay Bucket");
             this.addItem(SluiceModItems.CLAY_WATER_BUCKET, "Clay Water Bucket");
             this.addItem(SluiceModItems.WOODEN_HAMMER, "Wooden Hammer");
@@ -316,7 +315,6 @@ public class SluiceDataGen {
         @Override
         protected void addTables() {
             this.dropSelf(SluiceBlocks.TANK.get());
-            this.dropSelf(SluiceBlocks.TAP.get());
             this.dropSelf(SluiceBlocks.DUST_BLOCK.get());
             SluiceBlocks.SLUICES.forEach(e -> this.dropSelf(e.getKey().get()));
         }

@@ -18,19 +18,17 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.EmptyHandler;
-import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,8 +50,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     public int processed;
     public int maxProcessed;
     public boolean isProcessing = false;
-
-    private Pair<BlockPos, Direction> closestInventory;
 
     public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties) {
         this(type, properties, false);
@@ -94,6 +90,15 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
                 return 1;
             }
 
+            @Override
+            public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+                if (FTBSluiceRecipes.itemIsSluiceInput(SluiceBlockEntity.this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
+                    return super.insertItem(slot, stack, simulate);
+                }
+
+                return stack;
+            }
+
             @Nonnull
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
@@ -113,11 +118,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         BlockState state = this.getBlockState();
         if (!(state.getBlock() instanceof SluiceBlock)) {
             return;
-        }
-
-        if (this.isNetherite && this.energy.getEnergyStored() > 0 && this.tank.getFluidAmount() < SluiceConfig.SLUICES.tankStorage.get()) {
-            this.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
-            this.energy.consumeEnergy(5, false); // Sip some power for the water.
         }
 
         ItemStack input = this.inventory.getStackInSlot(0);
@@ -246,7 +246,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     private void ejectItem(Level w, Direction direction, ItemStack stack) {
         if (this.properties.allowsIO) {
             // Find the closest inventory to the block.
-            IItemHandler handler = this.seekNearestInventory(w, this.getBlockPos()).orElseGet(EmptyHandler::new);
+            IItemHandler handler = this.seekNearestInventory(w).orElseGet(EmptyHandler::new);
 
             // Empty handler does not have slots and is thus very simple to check against.
             if (handler.getSlots() != 0) {
@@ -267,48 +267,20 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     }
 
     /**
-     * Attempts to seek out a valid inventory, when found, we hold it in memory. We then
-     * check that on every use after being found. If the tile disappears we'll try to find
-     * another, otherwise, we'll send back and empty. Max call depth 1, max loops 6.
-     * (Don't allow sluice tile as a cap)
-     *
      * @param level level to find the inventory from
-     * @param start the starting pos (the tiles pos)
      * @return A valid IItemHandler or a empty optional
      */
-    private LazyOptional<IItemHandler> seekNearestInventory(Level level, BlockPos start) {
-        if (this.closestInventory == null) {
-            // Go around the block and find a valid cap. We then use getOpposite to ensure the side we've found
-            // Of the other block is actually accepting an inventory. Some pipes are very directional.
-            for (Direction direction : Direction.values()) {
-                BlockPos relative = start.relative(direction);
-                BlockEntity blockEntity = level.getBlockEntity(relative);
-                if (blockEntity != null && !(blockEntity instanceof SluiceBlockEntity)) {
-                    LazyOptional<IItemHandler> capability = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite());
-                    if (capability.isPresent()) {
-                        this.closestInventory = Pair.of(relative, direction.getOpposite());
-                        return capability;
-                    }
-                }
+    private LazyOptional<IItemHandler> seekNearestInventory(Level level) {
+        BlockPos pos = this.getBlockPos().relative(this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), 2);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity != null && !(blockEntity instanceof SluiceBlockEntity)) {
+            LazyOptional<IItemHandler> capability = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+            if (capability.isPresent()) {
+                return capability;
             }
-
-            return LazyOptional.empty();
-        } else {
-            // Validate that the tile is still valid before sending it's cap back.
-            BlockEntity blockEntity = level.getBlockEntity(this.closestInventory.getKey());
-            if (blockEntity == null || blockEntity instanceof SluiceBlockEntity) {
-                this.closestInventory = null;
-                return this.seekNearestInventory(level, start); // Try again.
-            }
-
-            LazyOptional<IItemHandler> capability = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.closestInventory.getValue());
-            if (!capability.isPresent()) {
-                this.closestInventory = null;
-                return this.seekNearestInventory(level, start); // Try again.
-            }
-
-            return capability;
         }
+
+        return LazyOptional.empty();
     }
 
     @Override

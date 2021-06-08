@@ -166,35 +166,9 @@ public class SluiceBlock extends Block {
             }
 
             return InteractionResult.SUCCESS;
-        } else if ((itemStack.getItem() instanceof BucketItem || itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) && state.getBlock() != SluiceBlocks.NETHERITE_SLUICE.get()) {
+        } else if (itemStack.getItem() instanceof BucketItem || itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
             if (!world.isClientSide()) {
-                if (FluidUtil.interactWithFluidHandler(player, hand, sluice.tank)) {
-                    System.out.println("Yup");
-                } else {
-                    System.out.println("Nope");
-                }
-//                int transfer = sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.SIMULATE);
-//                if (transfer > 0 && transfer <= 1000) {
-//                    SoundEvent soundevent = ((BucketItem) itemStack.getItem()).getFluid().getAttributes().getFillSound();
-//                    if (soundevent == null) {
-//                        soundevent = SoundEvents.BUCKET_FILL;
-//                    }
-//
-//                    player.playSound(soundevent, 1.0F, 1.0F);
-//                    sluice.tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
-//
-//                    // Don't take if we're in creative
-//                    if (!player.abilities.instabuild) {
-//                        ItemStack output = itemStack.getItem() == Items.WATER_BUCKET
-//                                ? new ItemStack(Items.BUCKET)
-//                                : new ItemStack(SluiceModItems.CLAY_BUCKET.get());
-//
-//                        itemStack.shrink(1);
-//                        ItemHandlerHelper.insertItemStacked(new InvWrapper(player.inventory), output, false);
-//                    }
-//                } else {
-//                    return InteractionResult.FAIL;
-//                }
+                FluidUtil.interactWithFluidHandler(player, hand, sluice.tank);
             }
         } else if (FTBSluiceRecipes.itemIsSluiceInput(state.getValue(MESH), itemStack)) {
             if (!world.isClientSide()) {
