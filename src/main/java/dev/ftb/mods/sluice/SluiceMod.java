@@ -2,6 +2,7 @@ package dev.ftb.mods.sluice;
 
 import dev.ftb.mods.sluice.block.SluiceModBlockEntities;
 import dev.ftb.mods.sluice.block.SluiceModBlocks;
+import dev.ftb.mods.sluice.integration.TheOneProbeProvider;
 import dev.ftb.mods.sluice.integration.kubejs.KubeJSIntegration;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.loot.HammerModifier;
@@ -16,12 +17,14 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -31,49 +34,56 @@ import java.util.stream.Collectors;
 
 @Mod(SluiceMod.MOD_ID)
 public class SluiceMod {
-	public static final String MOD_ID = "ftbsluice";
-	public static final CreativeModeTab group = new CreativeModeTab(MOD_ID) {
-		@Override
-		@OnlyIn(Dist.CLIENT)
-		public ItemStack makeIcon() {
-			return new ItemStack(SluiceModItems.IRON_SLUICE.get());
-		}
-	};
+    public static final String MOD_ID = "ftbsluice";
+    public static final CreativeModeTab group = new CreativeModeTab(MOD_ID) {
+        @Override
+        @OnlyIn(Dist.CLIENT)
+        public ItemStack makeIcon() {
+            return new ItemStack(SluiceModItems.IRON_SLUICE.get());
+        }
+    };
 
-	public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, MOD_ID);
-	public static final RegistryObject<GlobalLootModifierSerializer<HammerModifier>> HAMMER_LOOT_MODIFIER = LOOT_MODIFIERS.register("hammer", HammerModifier.Serializer::new);
+    public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, MOD_ID);
+    public static final RegistryObject<GlobalLootModifierSerializer<HammerModifier>> HAMMER_LOOT_MODIFIER = LOOT_MODIFIERS.register("hammer", HammerModifier.Serializer::new);
 
-	public static SluiceMod instance;
+    public static SluiceMod instance;
 
-	public SluiceMod() {
-		instance = this;
+    public SluiceMod() {
+        instance = this;
 
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SluiceConfig.COMMON_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SluiceConfig.COMMON_CONFIG);
 
-		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
-		SluiceModBlocks.REGISTRY.register(bus);
-		SluiceModItems.REGISTRY.register(bus);
-		SluiceModBlockEntities.REGISTRY.register(bus);
-		SluiceModRecipeSerializers.REGISTRY.register(bus);
-		LOOT_MODIFIERS.register(bus);
+        SluiceModBlocks.REGISTRY.register(bus);
+        SluiceModItems.REGISTRY.register(bus);
+        SluiceModBlockEntities.REGISTRY.register(bus);
+        SluiceModRecipeSerializers.REGISTRY.register(bus);
+        LOOT_MODIFIERS.register(bus);
 
-		bus.addListener(this::clientSetup);
+        bus.addListener(this::clientSetup);
+        bus.addListener(this::sendIMC);
 
-		MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(this);
 
-		if (ModList.get().isLoaded("kubejs")) {
-			KubeJSIntegration.init();
-		}
-	}
+        if (ModList.get().isLoaded("kubejs")) {
+            KubeJSIntegration.init();
+        }
+    }
 
-	private void clientSetup(FMLClientSetupEvent event) {
-		SluiceClient.init();
-	}
+    private void clientSetup(FMLClientSetupEvent event) {
+        SluiceClient.init();
+    }
 
-	@SubscribeEvent
-	public void recipesSetup(RecipesUpdatedEvent event) {
-		RecipeManager recipeManager = event.getRecipeManager();
-		SluiceModRecipeSerializers.hammerableCache.addAll(recipeManager.getAllRecipesFor(SluiceModRecipeSerializers.HAMMER_TYPE).stream().map(e -> e.ingredient).collect(Collectors.toList()));
-	}
+    @SubscribeEvent
+    public void recipesSetup(RecipesUpdatedEvent event) {
+        RecipeManager recipeManager = event.getRecipeManager();
+        SluiceModRecipeSerializers.hammerableCache.addAll(recipeManager.getAllRecipesFor(SluiceModRecipeSerializers.HAMMER_TYPE).stream().map(e -> e.ingredient).collect(Collectors.toList()));
+    }
+
+    public void sendIMC(InterModEnqueueEvent event) {
+        if (ModList.get().isLoaded("theoneprobe")) {
+            InterModComms.sendTo("theoneprobe", "getTheOneProbe", TheOneProbeProvider::new);
+        }
+    }
 }

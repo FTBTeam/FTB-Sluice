@@ -82,7 +82,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.tank = new Fluid(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true, this::fluidStateUpdate, this::fluidStateUpdate);
         this.fluidOptional = LazyOptional.of(() -> this.tank);
 
-        this.inventory = new ItemsHandler(type != SluiceModBlockEntities.OAK_SLUICE.get(), 1) {
+        this.inventory = new ItemsHandler(type == SluiceModBlockEntities.OAK_SLUICE.get(), 1) {
             @Override
             protected void onContentsChanged(int slot) {
                 SluiceBlockEntity.this.setChanged();
@@ -252,7 +252,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && !(this instanceof OakSluiceBlockEntity)) {
             return this.inventoryOptional.cast();
         }
 
