@@ -47,8 +47,10 @@ public class TheOneProbeProvider implements IProbeInfoProvider, Function<ITheOne
 
             iProbeInfo.tankSimple(entity.tank.getCapacity(), entity.tank.getFluid());
 
+            int progress = (entity.processed * 100) / entity.maxProcessed;
+
             if (entity.processed != 0 || !stackInSlot.isEmpty()) {
-                iProbeInfo.horizontal().item(stackInSlot).vertical().padding(0, 3).progress(entity.processed, entity.maxProcessed, iProbeInfo.defaultProgressStyle()
+                iProbeInfo.horizontal().item(stackInSlot).vertical().padding(0, 3).progress(progress, 100, iProbeInfo.defaultProgressStyle()
                         .suffix("%").width(78));
             }
         }
