@@ -45,7 +45,9 @@ public class TheOneProbeProvider implements IProbeInfoProvider, Function<ITheOne
                 iProbeInfo.horizontal().item(itemStack).vertical().padding(0, 5).itemLabel(itemStack);
             }
 
-            iProbeInfo.tankSimple(entity.tank.getCapacity(), entity.tank.getFluid());
+            if (entity instanceof SluiceBlockEntity.OakSluiceBlockEntity || entity instanceof SluiceBlockEntity.IronSluiceBlockEntity) {
+                iProbeInfo.tankSimple(entity.tank.getCapacity(), entity.tank.getFluid());
+            }
 
             int progress = (entity.processed * 100) / entity.maxProcessed;
 
