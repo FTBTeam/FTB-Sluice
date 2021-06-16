@@ -1,5 +1,8 @@
-package dev.ftb.mods.sluice.block;
+package dev.ftb.mods.sluice.block.sluice;
 
+import dev.ftb.mods.sluice.block.MeshType;
+import dev.ftb.mods.sluice.block.SluiceBlockEntities;
+import dev.ftb.mods.sluice.block.SluiceBlocks;
 import dev.ftb.mods.sluice.item.MeshItem;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import net.minecraft.core.BlockPos;
@@ -17,8 +20,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -34,6 +39,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -136,6 +142,7 @@ public class SluiceBlock extends Block {
         if (!(tileEntity instanceof SluiceBlockEntity)) {
             return InteractionResult.SUCCESS;
         }
+
 
         SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
 

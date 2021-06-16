@@ -3,7 +3,7 @@ package dev.ftb.mods.sluice;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.ftb.mods.sluice.block.MeshType;
-import dev.ftb.mods.sluice.block.SluiceBlock;
+import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.tags.SluiceTags;

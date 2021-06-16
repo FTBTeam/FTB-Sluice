@@ -1,5 +1,6 @@
-package dev.ftb.mods.sluice.block;
+package dev.ftb.mods.sluice.block.sluice;
 
+import dev.ftb.mods.sluice.block.SluiceBlocks;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Arrays;

@@ -1,6 +1,9 @@
-package dev.ftb.mods.sluice.block;
+package dev.ftb.mods.sluice.block.sluice;
 
+import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.SluiceConfig;
+import dev.ftb.mods.sluice.block.MeshType;
+import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.capabilities.Energy;
 import dev.ftb.mods.sluice.capabilities.Fluid;
 import dev.ftb.mods.sluice.capabilities.ItemsHandler;
@@ -9,8 +12,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -36,7 +45,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity {
+public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity, MenuProvider {
     public final ItemsHandler inventory;
     public final LazyOptional<ItemsHandler> inventoryOptional;
     public final Fluid tank;
@@ -111,6 +120,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         this.inventoryOptional = LazyOptional.of(() -> this.inventory);
     }
+
+
 
     @Override
     public void tick() {
@@ -311,6 +322,16 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         this.load(this.getBlockState(), pkt.getTag());
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return new TextComponent("Sluice");
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int i, Inventory arg, Player arg2) {
+        return FTBSluice.SLUICE_MENU.get().create(i, arg);
     }
 
     public static class OakSluiceBlockEntity extends SluiceBlockEntity {

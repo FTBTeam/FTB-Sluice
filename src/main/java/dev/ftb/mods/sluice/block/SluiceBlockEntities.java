@@ -6,7 +6,7 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static dev.ftb.mods.sluice.block.SluiceBlockEntity.*;
+import static dev.ftb.mods.sluice.block.sluice.SluiceBlockEntity.*;
 
 
 public class SluiceBlockEntities {
