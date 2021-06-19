@@ -16,6 +16,9 @@
   "item.ftbsluice.iron_hammer": "Iron Hammer",
   "item.ftbsluice.iron_mesh": "Iron Mesh",
   "item.ftbsluice.netherite_hammer": "Netherite Hammer",
+  "item.ftbsluice.sluice_consumption_upgrade": "Consumption Upgrade",
+  "item.ftbsluice.sluice_fortune_upgrade": "Fortune Upgrade",
+  "item.ftbsluice.sluice_speed_upgrade": "Speed Upgrade",
   "item.ftbsluice.stone_hammer": "Stone Hammer",
   "item.ftbsluice.wooden_hammer": "Wooden Hammer",
   "itemGroup.ftbsluice": "Sluice"

@@ -97,6 +97,9 @@ public class SluiceDataGen {
             this.addItem(SluiceModItems.GOLD_HAMMER, "Gold Hammer");
             this.addItem(SluiceModItems.DIAMOND_HAMMER, "Diamond Hammer");
             this.addItem(SluiceModItems.NETHERITE_HAMMER, "Netherite Hammer");
+            this.addItem(SluiceModItems.FORTUNE_UPGRADE, "Fortune Upgrade");
+            this.addItem(SluiceModItems.CONSUMPTION_UPGRADE, "Consumption Upgrade");
+            this.addItem(SluiceModItems.SPEED_UPGRADE, "Speed Upgrade");
             this.addBlock(SluiceBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
             this.addBlock(SluiceBlocks.CRUSHED_NETHERRACK, "Crushed Netherrack");
         }
@@ -170,6 +173,10 @@ public class SluiceDataGen {
             this.simpleItem(SluiceModItems.GOLD_HAMMER);
             this.simpleItem(SluiceModItems.DIAMOND_HAMMER);
             this.simpleItem(SluiceModItems.NETHERITE_HAMMER);
+
+            this.simpleItem(SluiceModItems.FORTUNE_UPGRADE);
+            this.simpleItem(SluiceModItems.CONSUMPTION_UPGRADE);
+            this.simpleItem(SluiceModItems.SPEED_UPGRADE);
         }
 
         private void simpleItem(Supplier<Item> item) {
