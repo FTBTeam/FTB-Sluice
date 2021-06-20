@@ -170,7 +170,7 @@ public class SluiceBlock extends Block {
             if (!world.isClientSide()) {
                 FluidUtil.interactWithFluidHandler(player, hand, sluice.tank);
             }
-        } else if (FTBSluiceRecipes.itemIsSluiceInput(state.getValue(MESH), itemStack)) {
+        } else if (FTBSluiceRecipes.itemIsSluiceInput(world, state.getValue(MESH), itemStack)) {
             if (!world.isClientSide()) {
                 if (sluice.inventory.getStackInSlot(0).isEmpty()) {
                     sluice.clearCache();

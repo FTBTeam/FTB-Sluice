@@ -16,7 +16,9 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Triple;
 
+import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class FTBSluiceRecipes {
@@ -42,14 +44,22 @@ public class FTBSluiceRecipes {
         // Mesh -> has -> Ingredients.
         for (SluiceRecipe e : sluiceRecipes) {
             for (MeshType a : e.meshes) {
-                if (sluiceInputCache.containsKey(a)) {
-                    sluiceInputCache.get(a).add(e.ingredient);
-                } else {
-                    HashSet<Ingredient> value = new HashSet<>();
-                    value.add(e.ingredient);
-                    sluiceInputCache.put(a, value);
-                }
+                sluiceInputCache.computeIfAbsent(a, (_0) -> new HashSet<>()).add(e.ingredient);
             }
+        }
+    }
+
+    public static void createHammerables(RecipeManager manager) {
+        hammerableCache.addAll(manager.getAllRecipesFor(HAMMER_TYPE).stream().map(e -> e.ingredient).collect(Collectors.toList()));
+    }
+
+    public static void refreshCaches(RecipeManager manager) {
+        if (sluiceInputCache.isEmpty()) {
+            createSluiceCaches(manager);
+        }
+
+        if (hammerableCache.isEmpty()) {
+            createHammerables(manager);
         }
     }
 
@@ -97,7 +107,13 @@ public class FTBSluiceRecipes {
         return !getSluiceRecipes(fluid, level, mesh, input).getItems().isEmpty();
     }
 
-    public static boolean itemIsSluiceInput(MeshType mesh, ItemStack input) {
+    public static boolean itemIsSluiceInput(@Nullable Level world, MeshType mesh, ItemStack input) {
+        if (world == null) {
+            return false;
+        }
+
+        refreshCaches(world.getRecipeManager());
+
         if (!sluiceInputCache.containsKey(mesh)) {
             return false;
         }
@@ -140,7 +156,9 @@ public class FTBSluiceRecipes {
         });
     }
 
-    public static boolean hammerable(BlockState state) {
+    public static boolean hammerable(Level world, BlockState state) {
+        refreshCaches(world.getRecipeManager());
+
         return hammerableCache.stream().anyMatch(e -> {
             ItemStack stack = new ItemStack(state.getBlock());
             return e.test(stack);
