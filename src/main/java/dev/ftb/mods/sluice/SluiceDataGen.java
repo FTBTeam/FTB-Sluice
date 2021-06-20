@@ -100,8 +100,9 @@ public class SluiceDataGen {
             this.addItem(SluiceModItems.FORTUNE_UPGRADE, "Fortune Upgrade");
             this.addItem(SluiceModItems.CONSUMPTION_UPGRADE, "Consumption Upgrade");
             this.addItem(SluiceModItems.SPEED_UPGRADE, "Speed Upgrade");
-            this.addBlock(SluiceBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
             this.addBlock(SluiceBlocks.CRUSHED_NETHERRACK, "Crushed Netherrack");
+            this.addBlock(SluiceBlocks.CRUSHED_BASALT, "Crushed Basalt");
+            this.addBlock(SluiceBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
         }
     }
 
@@ -141,6 +142,7 @@ public class SluiceDataGen {
 
             this.simpleBlock(SluiceBlocks.DUST_BLOCK.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_NETHERRACK.get());
+            this.simpleBlock(SluiceBlocks.CRUSHED_BASALT.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_ENDSTONE.get());
         }
     }
@@ -164,6 +166,7 @@ public class SluiceDataGen {
         protected void registerModels() {
             this.registerBlockModel(SluiceBlocks.DUST_BLOCK.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_NETHERRACK.get());
+            this.registerBlockModel(SluiceBlocks.CRUSHED_BASALT.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_ENDSTONE.get());
             this.simpleItem(SluiceModItems.CLAY_BUCKET);
             this.simpleItem(SluiceModItems.CLAY_WATER_BUCKET);

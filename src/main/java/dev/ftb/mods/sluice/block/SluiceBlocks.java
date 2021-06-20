@@ -4,7 +4,7 @@ import dev.ftb.mods.sluice.FTBSluice;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.ToolType;
@@ -30,9 +30,10 @@ public class SluiceBlocks {
     public static final RegistryObject<Block> TANK_CREATIVE = REGISTRY.register("tank_creative", () -> new Tank(true));
 
     // MISC
-    public static final RegistryObject<Block> DUST_BLOCK = REGISTRY.register("dust", () -> new FallingBlock(BlockBehaviour.Properties.of(Material.SAND).harvestTool(ToolType.SHOVEL).strength(0.5F).sound(SoundType.SAND)));
-    public static final RegistryObject<Block> CRUSHED_NETHERRACK = REGISTRY.register("crushed_netherrack", () -> new Block(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.NETHER).requiresCorrectToolForDrops().strength(0.4F).sound(SoundType.NETHERRACK)));
-    public static final RegistryObject<Block> CRUSHED_ENDSTONE = REGISTRY.register("crushed_endstone", () -> new Block(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.SAND).requiresCorrectToolForDrops().strength(3.0F, 9.0F)));
+    public static final RegistryObject<Block> DUST_BLOCK = REGISTRY.register("dust", () -> new FallingBlock(Properties.of(Material.SAND).harvestTool(ToolType.SHOVEL).strength(0.4F).sound(SoundType.SAND)));
+    public static final RegistryObject<Block> CRUSHED_NETHERRACK = REGISTRY.register("crushed_netherrack", () -> new FallingBlock(Properties.of(Material.SAND, MaterialColor.NETHER).requiresCorrectToolForDrops().strength(0.35F).sound(SoundType.NETHERRACK)));
+    public static final RegistryObject<Block> CRUSHED_BASALT = REGISTRY.register("crushed_basalt", () -> new FallingBlock(Properties.of(Material.SAND, MaterialColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(0.8F, 2.75F).sound(SoundType.BASALT)));
+    public static final RegistryObject<Block> CRUSHED_ENDSTONE = REGISTRY.register("crushed_endstone", () -> new FallingBlock(Properties.of(Material.SAND, MaterialColor.SAND).requiresCorrectToolForDrops().strength(2.0F, 6.0F)));
 
     public static final List<Pair<Supplier<Block>, String>> SLUICES = Arrays.asList(
             Pair.of(OAK_SLUICE, "oak"),
