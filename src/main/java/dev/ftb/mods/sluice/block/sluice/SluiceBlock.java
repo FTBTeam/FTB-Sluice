@@ -7,6 +7,7 @@ import dev.ftb.mods.sluice.item.MeshItem;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -146,7 +147,10 @@ public class SluiceBlock extends Block {
 
         SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
 
-        if (player.isCrouching()) {
+        if (itemStack.isEmpty() && !world.isClientSide() && !player.isCrouching() && sluice instanceof SluiceBlockEntity.NetheriteSluiceBlockEntity) {
+            NetworkHooks.openGui((ServerPlayer) player, sluice, pos);
+            return InteractionResult.SUCCESS;
+        } else if (player.isCrouching()) {
             if (state.getValue(MESH) != MeshType.NONE && itemStack.isEmpty()) {
                 ItemStack current = state.getValue(MESH).getItemStack();
                 world.setBlock(pos, state.setValue(MESH, MeshType.NONE), 3);

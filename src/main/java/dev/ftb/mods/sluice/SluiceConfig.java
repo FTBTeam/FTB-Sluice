@@ -16,6 +16,7 @@ public class SluiceConfig {
 
     public static class CategoryGeneral {
         public final ForgeConfigSpec.IntValue maxUpgradeStackSize;
+        public final ForgeConfigSpec.DoubleValue percentageCostPerUpgrade;
 
         public CategoryGeneral() {
             COMMON_BUILDER.push("general");
@@ -23,6 +24,10 @@ public class SluiceConfig {
             this.maxUpgradeStackSize = COMMON_BUILDER
                     .comment("Allows you to increase the amount of upgrades that can be put within a single stack. This is not something you should change as it can mess with math but if you opt too, good luck.")
                     .defineInRange("Max upgrade stack size", 18, 1, 64);
+
+            this.percentageCostPerUpgrade = COMMON_BUILDER
+                    .comment("The amount of power an upgrade will consume. This uses the base power as a base and uses the percentage to calculate how much power to consume.", "For example, If the Sluice uses 100FE per operation and your sluice had a single upgrade with this option set to 5.0. Your sluice now uses 5 extra FE per operation")
+                    .defineInRange("Percentage cost per upgrade", 2.0D, 0D, 100D);
 
             COMMON_BUILDER.pop();
         }
