@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
-import dev.ftb.mods.sluice.block.SluiceBlockEntity;
+import dev.ftb.mods.sluice.block.sluice.SluiceBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -39,7 +39,7 @@ public class SluiceRenderer extends TileEntityRendererAnimation<SluiceBlockEntit
         }
 
         int progress = (te.processed * 100) / te.maxProcessed;
-        float offset = !te.isProcessing ? 0 : 100 - progress;
+        float offset = te.processed < 0 ? 0 : progress;
 
         float v = te.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot();
         matrix.pushPose();

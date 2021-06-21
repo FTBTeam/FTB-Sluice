@@ -13,8 +13,12 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -80,6 +84,22 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
 
         itemStacks.set(ingredients);
         fluidStacks.set(ingredients);
+
+        itemStacks.addTooltipCallback((idx, input, stack, tooltip) -> {
+            if (idx == 1 && input) {
+                tooltip.add(new TranslatableComponent("ftbsluice.jei.processingTime",
+                        new TextComponent(sluiceRecipe.time + "").withStyle(style -> style.withColor(TextColor.fromRgb(0xfcb95b))))
+                        .withStyle(ChatFormatting.DARK_GRAY));
+            }
+        });
+
+        fluidStacks.addTooltipCallback((idx, input, stack, tooltip) -> {
+            if (idx == 0 && input) {
+                tooltip.add(new TranslatableComponent("ftbsluice.jei.fluidUsage",
+                        new TextComponent(sluiceRecipe.mb + "").withStyle(style -> style.withColor(TextColor.fromRgb(0xfcb95b))))
+                        .withStyle(ChatFormatting.DARK_GRAY));
+            }
+        });
     }
 
     @Override

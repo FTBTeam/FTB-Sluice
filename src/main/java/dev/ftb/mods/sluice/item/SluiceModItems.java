@@ -29,9 +29,9 @@ public class SluiceModItems {
     public static final RegistryObject<BlockItem> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", () -> new BlockItem(SluiceBlocks.NETHERITE_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
 
     // Upgrades
-    public static final RegistryObject<Item> FORTUNE_UPGRADE = REGISTRY.register("sluice_fortune_upgrade", () -> new UpgradeItem());
-    public static final RegistryObject<Item> SPEED_UPGRADE = REGISTRY.register("sluice_speed_upgrade", () -> new UpgradeItem());
-    public static final RegistryObject<Item> CONSUMPTION_UPGRADE = REGISTRY.register("sluice_consumption_upgrade", () -> new UpgradeItem());
+    public static final RegistryObject<Item> FORTUNE_UPGRADE = REGISTRY.register("sluice_fortune_upgrade", () -> new UpgradeItem(Upgrades.LUCK));
+    public static final RegistryObject<Item> SPEED_UPGRADE = REGISTRY.register("sluice_speed_upgrade", () -> new UpgradeItem(Upgrades.SPEED));
+    public static final RegistryObject<Item> CONSUMPTION_UPGRADE = REGISTRY.register("sluice_consumption_upgrade", () -> new UpgradeItem(Upgrades.CONSUMPTION));
 
     // MISC
     public static final RegistryObject<Item> DUST = REGISTRY.register("dust", () -> new BlockItem(SluiceBlocks.DUST_BLOCK.get(), new Item.Properties().tab(FTBSluice.group)));

@@ -7,6 +7,8 @@
   "block.ftbsluice.iron_sluice": "Iron Sluice",
   "block.ftbsluice.netherite_sluice": "Netherite Sluice",
   "block.ftbsluice.oak_sluice": "Oak Sluice",
+  "ftbsluice.jei.fluidUsage": "Uses %smB of Fluid",
+  "ftbsluice.jei.processingTime": "Processing Time: %s ticks",
   "item.ftbsluice.clay_bucket": "Clay Bucket",
   "item.ftbsluice.clay_water_bucket": "Clay Water Bucket",
   "item.ftbsluice.cloth_mesh": "Cloth Mesh",

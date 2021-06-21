@@ -31,7 +31,7 @@ public class FTBSluiceRecipes {
     public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(FTBSluice.MOD_ID + ":hammer");
     public static final List<Ingredient> hammerableCache = new ArrayList<>();
 
-    private static final Map<Triple<Fluid, Item, MeshType>, InputRecipeResult> sluiceCache = new HashMap<>();
+    private static final Map<Triple<Fluid, Item, MeshType>, SluiceRecipeInfo> sluiceCache = new HashMap<>();
 
     // Ignores the fluid requirement to check for valid insert actions
     private static final HashMap<MeshType, HashSet<Ingredient>> sluiceInputCache = new HashMap<>();
@@ -79,12 +79,13 @@ public class FTBSluiceRecipes {
      * @param input an input item to find results for
      * @return A list of items with the chances.
      */
-    public static InputRecipeResult getSluiceRecipes(Fluid fluid, Level world, MeshType mesh, ItemStack input) {
+    public static SluiceRecipeInfo getSluiceRecipes(Fluid fluid, Level world, MeshType mesh, ItemStack input) {
         return sluiceCache.computeIfAbsent(Triple.of(fluid, input.getItem(), mesh), key -> {
-            world.getRecipeManager().getRecipesFor(SLUICE_TYPE, NoInventory.INSTANCE, world).forEach(e -> System.out.println(e.fluid));
             List<ItemWithWeight> list = new ArrayList<>();
 
             int max = -1;
+            int time = -1;
+            int mb = -1;
             for (SluiceRecipe recipe : world.getRecipeManager().getRecipesFor(SLUICE_TYPE, NoInventory.INSTANCE, world)) {
                 if (recipe.meshes.contains(mesh) && recipe.ingredient.test(input) && fluid.isSame(recipe.fluid)) {
                     // Only set based on the first min max we see.
@@ -92,11 +93,19 @@ public class FTBSluiceRecipes {
                         max = recipe.max;
                     }
 
+                    if (time == -1) {
+                        time = recipe.time;
+                    }
+
+                    if (mb == -1) {
+                        mb = recipe.mb;
+                    }
+
                     recipe.results.forEach(e -> list.add(new ItemWithWeight(e.item, e.weight)));
                 }
             }
 
-            return new InputRecipeResult(list, max);
+            return new SluiceRecipeInfo(list, max, time, mb);
         });
     }
 
@@ -119,28 +128,6 @@ public class FTBSluiceRecipes {
         }
 
         return sluiceInputCache.get(mesh).stream().anyMatch(e -> e.test(input));
-    }
-
-    /**
-     * Computes a list of resulting output items based on an input. We get the outputting items from the
-     * custom recipe.
-     */
-    public static List<ItemStack> getRandomResult(Fluid fluid, Level world, MeshType mesh, ItemStack input) {
-        List<ItemStack> outputResults = new ArrayList<>();
-        InputRecipeResult recipe = getSluiceRecipes(fluid, world, mesh, input);
-
-        for (ItemWithWeight result : recipe.getItems()) {
-            float number = world.getRandom().nextFloat();
-            if (number <= result.weight) {
-                if (outputResults.size() >= recipe.getMaxDrops()) {
-                    break;
-                }
-
-                outputResults.add(result.item.copy());
-            }
-        }
-
-        return outputResults;
     }
 
     public static List<ItemStack> getHammerDrops(Level level, ItemStack input) {

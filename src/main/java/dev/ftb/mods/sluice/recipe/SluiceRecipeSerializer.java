@@ -12,8 +12,6 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
-import java.util.Objects;
-
 public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<SluiceRecipe> {
     @Override
     public SluiceRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
@@ -22,7 +20,9 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
         r.fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(json.get("fluid").getAsString()));
         r.ingredient = Ingredient.fromJson(json.get("ingredient"));
 
-        r.max = json.get("max").getAsInt();
+        r.max = GsonHelper.getAsInt(json, "max", 0);
+        r.mb = GsonHelper.getAsInt(json, "fluid_amount", 1000);
+        r.time = GsonHelper.getAsInt(json, "time", 100);
 
         for (JsonElement e : json.get("results").getAsJsonArray()) {
             JsonObject o = e.getAsJsonObject();
@@ -45,7 +45,10 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
         SluiceRecipe r = new SluiceRecipe(recipeId, buffer.readUtf(Short.MAX_VALUE));
         r.fluid = ForgeRegistries.FLUIDS.getValue(buffer.readResourceLocation());
         r.ingredient = Ingredient.fromNetwork(buffer);
+
         r.max = buffer.readVarInt();
+        r.mb = buffer.readVarInt();
+        r.time = buffer.readVarInt();
 
         int w = buffer.readVarInt();
 
@@ -72,6 +75,9 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
         r.ingredient.toNetwork(buffer);
 
         buffer.writeVarInt(r.max);
+        buffer.writeVarInt(r.mb);
+        buffer.writeVarInt(r.time);
+
         buffer.writeVarInt(r.results.size());
 
         for (ItemWithWeight i : r.results) {

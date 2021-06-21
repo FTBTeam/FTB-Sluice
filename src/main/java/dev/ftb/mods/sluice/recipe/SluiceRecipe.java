@@ -21,18 +21,22 @@ public class SluiceRecipe implements Recipe<NoInventory> {
     public String group;
     public Ingredient ingredient;
     public Fluid fluid;
+    public int mb;
     public List<ItemWithWeight> results;
     public HashSet<MeshType> meshes;
     public int max;
+    public int time;
 
     public SluiceRecipe(ResourceLocation i, String g) {
         this.id = i;
         this.group = g;
         this.fluid = Fluids.WATER;
+        this.mb = 1000;
         this.ingredient = Ingredient.EMPTY;
         this.results = new ArrayList<>();
         this.meshes = new HashSet<>();
         this.max = 0;
+        this.time = 100;
     }
 
     @Override

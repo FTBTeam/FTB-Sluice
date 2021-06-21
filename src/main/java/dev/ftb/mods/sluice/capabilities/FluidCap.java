@@ -11,10 +11,10 @@ import java.util.function.Predicate;
  * fluid cap. We also by default protect the IO of the cap unless we've stated
  * that the block entity can be public.
  */
-public class Fluid extends FluidTank {
+public class FluidCap extends FluidTank {
     private final boolean isProtected;
 
-    public Fluid(boolean isProtected, int capacity, Predicate<FluidStack> validator) {
+    public FluidCap(boolean isProtected, int capacity, Predicate<FluidStack> validator) {
         super(capacity, validator);
 
         this.isProtected = isProtected;

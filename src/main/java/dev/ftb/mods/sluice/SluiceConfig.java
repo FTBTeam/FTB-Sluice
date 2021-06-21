@@ -16,6 +16,7 @@ public class SluiceConfig {
 
     public static class CategoryGeneral {
         public final ForgeConfigSpec.IntValue maxUpgradeStackSize;
+        public final ForgeConfigSpec.DoubleValue percentageCostPerUpgrade;
 
         public CategoryGeneral() {
             COMMON_BUILDER.push("general");
@@ -24,6 +25,10 @@ public class SluiceConfig {
                     .comment("Allows you to increase the amount of upgrades that can be put within a single stack. This is not something you should change as it can mess with math but if you opt too, good luck.")
                     .defineInRange("Max upgrade stack size", 18, 1, 64);
 
+            this.percentageCostPerUpgrade = COMMON_BUILDER
+                    .comment("The amount of power an upgrade will consume. This uses the base power as a base and uses the percentage to calculate how much power to consume.", "For example, If the Sluice uses 100FE per operation and your sluice had a single upgrade with this option set to 5.0. Your sluice now uses 5 extra FE per operation")
+                    .defineInRange("Percentage cost per upgrade", 2.0D, 0D, 100D);
+
             COMMON_BUILDER.pop();
         }
     }
@@ -31,15 +36,15 @@ public class SluiceConfig {
     public static class CategorySluice {
         public final ForgeConfigSpec.IntValue tankStorage;
 
-        public final ForgeConfigSpec.IntValue oakSluiceProcessing;
-        public final ForgeConfigSpec.IntValue ironSluiceProcessing;
-        public final ForgeConfigSpec.IntValue diamondSluiceProcessing;
-        public final ForgeConfigSpec.IntValue netheriteSluiceProcessing;
+        public final ForgeConfigSpec.DoubleValue oakTimeMod;
+        public final ForgeConfigSpec.DoubleValue ironTimeMod;
+        public final ForgeConfigSpec.DoubleValue diamondTimeMod;
+        public final ForgeConfigSpec.DoubleValue netheriteTimeMod;
 
-        public final ForgeConfigSpec.IntValue oakSluiceFluid;
-        public final ForgeConfigSpec.IntValue ironSluiceFluid;
-        public final ForgeConfigSpec.IntValue diamondSluiceFluid;
-        public final ForgeConfigSpec.IntValue netheriteSluiceFluid;
+        public final ForgeConfigSpec.DoubleValue oakFluidMod;
+        public final ForgeConfigSpec.DoubleValue ironFluidMod;
+        public final ForgeConfigSpec.DoubleValue diamondFluidMod;
+        public final ForgeConfigSpec.DoubleValue netheriteFluidMod;
 
         public CategorySluice() {
             COMMON_BUILDER.push("sluices");
@@ -48,31 +53,31 @@ public class SluiceConfig {
                     .comment("How much fluid can be put into the sluices tank")
                     .defineInRange("tank storage", 10000, 2000, 100000);
 
-            this.oakSluiceProcessing = COMMON_BUILDER
-                    .comment("Defines how long it takes to process a resource in this sluice (in ticks)")
-                    .defineInRange("oak sluice processing time", 100, 0, 1000);
-            this.ironSluiceProcessing = COMMON_BUILDER
-                    .comment("Defines how long it takes to process a resource in this sluice (in ticks)")
-                    .defineInRange("iron sluice processing time", 80, 0, 1000);
-            this.diamondSluiceProcessing = COMMON_BUILDER
-                    .comment("Defines how long it takes to process a resource in this sluice (in ticks)")
-                    .defineInRange("diamond sluice processing time", 60, 0, 1000);
-            this.netheriteSluiceProcessing = COMMON_BUILDER
-                    .comment("Defines how long it takes to process a resource in this sluice (in ticks)")
-                    .defineInRange("netherite sluice processing time", 40, 0, 1000);
+            this.oakTimeMod = COMMON_BUILDER
+                    .comment("Defines how long it takes to process a resource in this Sluice (This is multiplied by the recipe base tick time)")
+                    .defineInRange("oak processing time multiplier", 1, 0.0, 1000.0);
+            this.ironTimeMod = COMMON_BUILDER
+                    .comment("Defines how long it takes to process a resource in this Sluice (This is multiplied by the recipe base tick time)")
+                    .defineInRange("iron processing time multiplier", .8, 0.0, 1000.0);
+            this.diamondTimeMod = COMMON_BUILDER
+                    .comment("Defines how long it takes to process a resource in this Sluice (This is multiplied by the recipe base tick time)")
+                    .defineInRange("diamond processing time multiplier", .6, 0.0, 1000.0);
+            this.netheriteTimeMod = COMMON_BUILDER
+                    .comment("Defines how long it takes to process a resource in this Sluice (This is multiplied by the recipe base tick time)")
+                    .defineInRange("netherite processing time multiplier", .4, 0.0, 1000.0);
 
-            this.oakSluiceFluid = COMMON_BUILDER
-                    .comment("Sets how much fluid the sluice uses per use")
-                    .defineInRange("oak sluice fluid consumption", 1000, 0, 10000);
-            this.ironSluiceFluid = COMMON_BUILDER
-                    .comment("Sets how much fluid the sluice uses per use")
-                    .defineInRange("iron sluice fluid consumption", 800, 0, 10000);
-            this.diamondSluiceFluid = COMMON_BUILDER
-                    .comment("Sets how much fluid the sluice uses per use")
-                    .defineInRange("diamond sluice fluid consumption", 600, 0, 10000);
-            this.netheriteSluiceFluid = COMMON_BUILDER
-                    .comment("Sets how much fluid the sluice uses per use")
-                    .defineInRange("netherite sluice fluid consumption", 400, 0, 10000);
+            this.oakFluidMod = COMMON_BUILDER
+                    .comment("Sets how much fluid is used per processed recipe (This is multiplied by the recipe's fluid consumption rate)")
+                    .defineInRange("oak fluid multiplier", 1, 0.0, 1000.0);
+            this.ironFluidMod = COMMON_BUILDER
+                    .comment("Sets how much fluid is used per processed recipe (This is multiplied by the recipe's fluid consumption rate)")
+                    .defineInRange("iron fluid multiplier", .8, 0.0, 1000.0);
+            this.diamondFluidMod = COMMON_BUILDER
+                    .comment("Sets how much fluid is used per processed recipe (This is multiplied by the recipe's fluid consumption rate)")
+                    .defineInRange("diamond fluid multiplier", .6, 0.0, 1000.0);
+            this.netheriteFluidMod = COMMON_BUILDER
+                    .comment("Sets how much fluid is used per processed recipe (This is multiplied by the recipe's fluid consumption rate)")
+                    .defineInRange("netherite fluid multiplier", .4, 0.0, 1000.0);
 
             COMMON_BUILDER.pop();
         }

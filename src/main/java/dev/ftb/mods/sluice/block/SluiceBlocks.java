@@ -1,6 +1,8 @@
 package dev.ftb.mods.sluice.block;
 
 import dev.ftb.mods.sluice.FTBSluice;
+import dev.ftb.mods.sluice.block.Tank;
+import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;

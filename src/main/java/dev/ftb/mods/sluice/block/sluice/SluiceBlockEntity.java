@@ -1,16 +1,28 @@
-package dev.ftb.mods.sluice.block;
+package dev.ftb.mods.sluice.block.sluice;
 
 import dev.ftb.mods.sluice.SluiceConfig;
+import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.capabilities.Energy;
-import dev.ftb.mods.sluice.capabilities.Fluid;
+import dev.ftb.mods.sluice.capabilities.FluidCap;
 import dev.ftb.mods.sluice.capabilities.ItemsHandler;
+import dev.ftb.mods.sluice.item.UpgradeItem;
+import dev.ftb.mods.sluice.item.Upgrades;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
+import dev.ftb.mods.sluice.recipe.ItemWithWeight;
+import dev.ftb.mods.sluice.recipe.SluiceRecipeInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.Mth;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -30,19 +42,41 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
-public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity {
+public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity, MenuProvider {
     public final ItemsHandler inventory;
     public final LazyOptional<ItemsHandler> inventoryOptional;
-    public final Fluid tank;
-    public final LazyOptional<Fluid> fluidOptional;
+    public final FluidCap tank;
+    public final LazyOptional<FluidCap> fluidOptional;
     private final SluiceProperties properties;
     private final boolean isNetherite;
+
+    public final ItemStackHandler upgradeInventory = new ItemStackHandler(3) {
+        @NotNull
+        @Override
+        public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            if (stack.getItem() instanceof UpgradeItem) {
+                return super.insertItem(slot, stack, simulate);
+            }
+
+            return stack;
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            SluiceBlockEntity.this.updateUpgradeCache(this);
+        }
+    };
 
     public Energy energy;
     public LazyOptional<Energy> energyOptional;
@@ -52,7 +86,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
      */
     public int processed;
     public int maxProcessed;
-    public boolean isProcessing = false;
+    private int fluidUsage;
+
+    // Upgrade type, multiplication
+    public final HashMap<Upgrades, Integer> upgradeCache = new HashMap<>();
 
     public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties) {
         this(type, properties, false);
@@ -76,10 +113,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         });
 
         this.energyOptional = LazyOptional.of(() -> this.energy);
-        this.maxProcessed = this.properties.processingTime.get();
+        this.maxProcessed = -1;
+        this.fluidUsage = -1;
 
         // Handles state changing
-        this.tank = new Fluid(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true);
+        this.tank = new FluidCap(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true);
         this.fluidOptional = LazyOptional.of(() -> this.tank);
 
         this.inventory = new ItemsHandler(type == SluiceBlockEntities.OAK_SLUICE.get(), 1) {
@@ -112,6 +150,38 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.inventoryOptional = LazyOptional.of(() -> this.inventory);
     }
 
+    /**
+     * Computes a list of resulting output items based on an input. We get the outputting items from the
+     * custom recipe.
+     */
+    public static List<ItemStack> getRandomResult(SluiceBlockEntity sluice, ItemStack input) {
+        List<ItemStack> outputResults = new ArrayList<>();
+        if (sluice.level == null) {
+            return outputResults;
+        }
+
+        SluiceRecipeInfo recipe = FTBSluiceRecipes.getSluiceRecipes(sluice.tank.getFluid().getFluid(), sluice.level, sluice.getBlockState().getValue(SluiceBlock.MESH), input);
+        int additional = 0;
+        if (sluice.upgradeCache.containsKey(Upgrades.LUCK)) {
+            additional += Upgrades.LUCK.effectedChange * sluice.upgradeCache.get(Upgrades.LUCK);
+        }
+
+        List<ItemWithWeight> items = recipe.getItems();
+        Collections.shuffle(items); // Spin the wheel to make it a little less predictable
+        for (ItemWithWeight result : items) {
+            float number = sluice.level.getRandom().nextFloat();
+            if (number <= Mth.clamp(result.weight + (additional / 100D), 0, 1)) {
+                if (outputResults.size() >= recipe.getMaxDrops()) {
+                    break;
+                }
+
+                outputResults.add(result.item.copy());
+            }
+        }
+
+        return outputResults;
+    }
+
     @Override
     public void tick() {
         if (this.level == null || this.level.isClientSide()) {
@@ -124,17 +194,21 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         }
 
         ItemStack input = this.inventory.getStackInSlot(0);
-        if (!this.isProcessing) {
+        if (this.maxProcessed < 0) {
             this.startProcessing(this.level, input);
         } else {
-            if (this.processed > 0) {
-                this.processed--;
+            if (this.processed < this.maxProcessed) {
+                this.processed++;
             } else {
                 this.finishProcessing(this.level, state, input);
             }
+            if (this.processed % 4 == 0) {
+                this.setChanged();
+                this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
+            }
         }
 
-        if (this.processed % 10 == 0) {
+        if (level.getGameTime() % 10L == 0) {
             this.setChanged();
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
         }
@@ -154,16 +228,21 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             return;
         }
 
+        System.out.println(computePowerCost());
+
+        SluiceRecipeInfo recipe = FTBSluiceRecipes.getSluiceRecipes(this.tank.getFluid().getFluid(), level, this.getBlockState().getValue(SluiceBlock.MESH), stack);
+
         // Throw items out if we don't have a recipe from them. It's simpler than giving the cap a world and mesh.
-        if (!FTBSluiceRecipes.itemHasSluiceResults(this.tank.getFluid().getFluid(), level, this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
+        if (recipe.getItems().isEmpty()) {
             this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
             this.inventory.setStackInSlot(0, ItemStack.EMPTY);
             this.setChanged();
             return;
         }
 
-        this.processed = this.properties.processingTime.get();
-        this.isProcessing = true;
+        this.processed = 0;
+        this.maxProcessed = (int) Math.ceil(recipe.getProcessingTime() * this.properties.processingTime.get());
+        this.fluidUsage = (int) Math.ceil(recipe.getFluidUsed() * this.properties.fluidUsage.get());
 
         this.setChanged();
         level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
@@ -175,16 +254,16 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
      * @param itemStack the input item from the start of the process.
      */
     private void finishProcessing(@Nonnull Level level, BlockState state, ItemStack itemStack) {
-        MeshType mesh = state.getValue(SluiceBlock.MESH);
-
         this.processed = 0;
-        this.isProcessing = false;
+        this.maxProcessed = -1;
 
-        FTBSluiceRecipes.getRandomResult(this.tank.getFluid().getFluid(), level, mesh, itemStack)
+        getRandomResult(this, itemStack)
                 .forEach(e -> this.ejectItem(level, state.getValue(BlockStateProperties.HORIZONTAL_FACING), e));
 
         this.inventory.setStackInSlot(0, ItemStack.EMPTY);
-        this.tank.internalDrain(this.properties.fluidUsage.get(), IFluidHandler.FluidAction.EXECUTE);
+        this.tank.internalDrain(this.fluidUsage, IFluidHandler.FluidAction.EXECUTE);
+
+        this.fluidUsage = -1;
 
         if (this.isNetherite) {
             this.energy.consumeEnergy(SluiceConfig.NETHERITE_SLUICE.costPerUse.get(), false);
@@ -192,6 +271,21 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         this.setChanged();
         level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
+    }
+
+    private int computePowerCost() {
+        int baseCost = SluiceConfig.NETHERITE_SLUICE.costPerUse.get();
+        if (upgradeCache.size() == 0) {
+            return baseCost;
+        }
+
+        int sum = 0;
+        for (Integer x : upgradeCache.values()) {
+            int i = x;
+            sum += i;
+        }
+
+        return (int) (baseCost + baseCost * (sum * SluiceConfig.GENERAL.percentageCostPerUpgrade.get()) / 100);
     }
 
     @Override
@@ -203,8 +297,9 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         compound.put("Fluid", fluidTag);
         compound.putInt("Processed", this.processed);
         compound.putInt("MaxProcessed", this.maxProcessed);
-        compound.putBoolean("IsProcessing", this.isProcessing);
+        compound.putInt("FluidUsage", this.fluidUsage);
         if (this.isNetherite) {
+            compound.put("Upgrades", upgradeInventory.serializeNBT());
             this.energyOptional.ifPresent(e -> compound.put("Energy", e.serializeNBT()));
         }
 
@@ -218,13 +313,28 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.inventory.deserializeNBT(compound.getCompound("Inventory"));
         this.processed = compound.getInt("Processed");
         this.maxProcessed = compound.getInt("MaxProcessed");
-        this.isProcessing = compound.getBoolean("IsProcessing");
+        this.fluidUsage = compound.getInt("FluidUsage");
 
         if (this.isNetherite) {
             this.energyOptional.ifPresent(e -> e.deserializeNBT(compound.getCompound("Energy")));
+            this.upgradeInventory.deserializeNBT(compound.getCompound("Upgrades"));
+            this.updateUpgradeCache(this.upgradeInventory);
         }
+
         if (compound.contains("Fluid")) {
             this.tank.readFromNBT(compound.getCompound("Fluid"));
+        }
+    }
+
+    private void updateUpgradeCache(ItemStackHandler handler) {
+        SluiceBlockEntity.this.upgradeCache.clear();
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            if (!(stack.getItem() instanceof UpgradeItem)) {
+                continue;
+            }
+
+            SluiceBlockEntity.this.upgradeCache.put(((UpgradeItem) stack.getItem()).getUpgrade(), Math.min(stack.getCount(), 18));
         }
     }
 
@@ -311,6 +421,16 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         this.load(this.getBlockState(), pkt.getTag());
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return new TextComponent("Sluice");
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int i, Inventory arg, Player arg2) {
+        return !(this instanceof NetheriteSluiceBlockEntity) ? null : new SluiceBlockContainer(i, arg, this);
     }
 
     public static class OakSluiceBlockEntity extends SluiceBlockEntity {

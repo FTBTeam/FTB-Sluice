@@ -1,8 +1,8 @@
 package dev.ftb.mods.sluice.integration;
 
 import dev.ftb.mods.sluice.FTBSluice;
-import dev.ftb.mods.sluice.block.SluiceBlock;
-import dev.ftb.mods.sluice.block.SluiceBlockEntity;
+import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
+import dev.ftb.mods.sluice.block.sluice.SluiceBlockEntity;
 import mcjty.theoneprobe.api.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
