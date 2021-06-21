@@ -86,16 +86,16 @@ public class SluiceConfig {
 
             this.oakTank = COMMON_BUILDER
                     .comment("Sets how much fluid this sluice's tank can carry (in mB)")
-                    .defineInRange("oak fluid multiplier", 10000, 0, 1000000);
+                    .defineInRange("oak tank capacity", 10000, 0, 1000000);
             this.ironTank = COMMON_BUILDER
                     .comment("Sets how much fluid this sluice's tank can carry (in mB)")
-                    .defineInRange("iron fluid multiplier", 10000, 0, 1000000);
+                    .defineInRange("iron tank capacity", 10000, 0, 1000000);
             this.diamondTank = COMMON_BUILDER
                     .comment("Sets how much fluid this sluice's tank can carry (in mB)")
-                    .defineInRange("diamond fluid multiplier", 10000, 0, 1000000);
+                    .defineInRange("diamond tank capacity", 10000, 0, 1000000);
             this.netheriteTank = COMMON_BUILDER
                     .comment("Sets how much fluid this sluice's tank can carry (in mB)")
-                    .defineInRange("netherite fluid multiplier", 10000, 0, 1000000);
+                    .defineInRange("netherite tank capacity", 10000, 0, 1000000);
 
             COMMON_BUILDER.pop();
         }
