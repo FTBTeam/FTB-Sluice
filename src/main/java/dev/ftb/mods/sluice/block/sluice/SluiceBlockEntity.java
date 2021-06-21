@@ -4,12 +4,13 @@ import dev.ftb.mods.sluice.SluiceConfig;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.capabilities.Energy;
-import dev.ftb.mods.sluice.capabilities.Fluid;
+import dev.ftb.mods.sluice.capabilities.FluidCap;
 import dev.ftb.mods.sluice.capabilities.ItemsHandler;
 import dev.ftb.mods.sluice.item.UpgradeItem;
 import dev.ftb.mods.sluice.item.Upgrades;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
-import dev.latvian.kubejs.item.ItemHandler;
+import dev.ftb.mods.sluice.recipe.InputRecipeResult;
+import dev.ftb.mods.sluice.recipe.ItemWithWeight;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +18,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -29,6 +31,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -44,17 +47,21 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.system.MathUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity, MenuProvider {
     public final ItemsHandler inventory;
     public final LazyOptional<ItemsHandler> inventoryOptional;
-    public final Fluid tank;
-    public final LazyOptional<Fluid> fluidOptional;
+    public final FluidCap tank;
+    public final LazyOptional<FluidCap> fluidOptional;
     private final SluiceProperties properties;
     private final boolean isNetherite;
 
@@ -113,7 +120,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.maxProcessed = this.properties.processingTime.get();
 
         // Handles state changing
-        this.tank = new Fluid(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true);
+        this.tank = new FluidCap(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true);
         this.fluidOptional = LazyOptional.of(() -> this.tank);
 
         this.inventory = new ItemsHandler(type == SluiceBlockEntities.OAK_SLUICE.get(), 1) {
@@ -144,6 +151,38 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         };
 
         this.inventoryOptional = LazyOptional.of(() -> this.inventory);
+    }
+
+    /**
+     * Computes a list of resulting output items based on an input. We get the outputting items from the
+     * custom recipe.
+     */
+    public static List<ItemStack> getRandomResult(SluiceBlockEntity sluice, ItemStack input) {
+        List<ItemStack> outputResults = new ArrayList<>();
+        if (sluice.level == null) {
+            return outputResults;
+        }
+
+        InputRecipeResult recipe = FTBSluiceRecipes.getSluiceRecipes(sluice.tank.getFluid().getFluid(), sluice.level, sluice.getBlockState().getValue(SluiceBlock.MESH), input);
+        int additional = 0;
+        if (sluice.upgradeCache.containsKey(Upgrades.LUCK)) {
+            additional += Upgrades.LUCK.effectedChange * sluice.upgradeCache.get(Upgrades.LUCK);
+        }
+
+        List<ItemWithWeight> items = recipe.getItems();
+        Collections.shuffle(items); // Spin the wheel to make it a little less predictable
+        for (ItemWithWeight result : items) {
+            float number = sluice.level.getRandom().nextFloat();
+            if (number <= Mth.clamp(result.weight + (additional / 100D), 0, 1)) {
+                if (outputResults.size() >= recipe.getMaxDrops()) {
+                    break;
+                }
+
+                outputResults.add(result.item.copy());
+            }
+        }
+
+        return outputResults;
     }
 
     @Override
@@ -210,12 +249,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
      * @param itemStack the input item from the start of the process.
      */
     private void finishProcessing(@Nonnull Level level, BlockState state, ItemStack itemStack) {
-        MeshType mesh = state.getValue(SluiceBlock.MESH);
-
         this.processed = 0;
         this.isProcessing = false;
 
-        FTBSluiceRecipes.getRandomResult(this.tank.getFluid().getFluid(), level, mesh, itemStack)
+        getRandomResult(this, itemStack)
                 .forEach(e -> this.ejectItem(level, state.getValue(BlockStateProperties.HORIZONTAL_FACING), e));
 
         this.inventory.setStackInSlot(0, ItemStack.EMPTY);
@@ -235,7 +272,13 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             return baseCost;
         }
 
-        return (int) (baseCost + baseCost * (upgradeCache.values().stream().mapToInt(x -> x).sum() * SluiceConfig.GENERAL.percentageCostPerUpgrade.get()) / 100);
+        int sum = 0;
+        for (Integer x : upgradeCache.values()) {
+            int i = x;
+            sum += i;
+        }
+
+        return (int) (baseCost + baseCost * (sum * SluiceConfig.GENERAL.percentageCostPerUpgrade.get()) / 100);
     }
 
     @Override
