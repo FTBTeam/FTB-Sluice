@@ -1,6 +1,7 @@
 package dev.ftb.mods.sluice.block.sluice;
 
 import dev.ftb.mods.sluice.SluiceConfig;
+import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.capabilities.Energy;
 import dev.ftb.mods.sluice.capabilities.FluidCap;
@@ -117,10 +118,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.fluidUsage = -1;
 
         // Handles state changing
-        this.tank = new FluidCap(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true);
+        this.tank = new FluidCap(true, properties.tankCap.get(), e -> true);
         this.fluidOptional = LazyOptional.of(() -> this.tank);
 
-        this.inventory = new ItemsHandler(type == SluiceBlockEntities.OAK_SLUICE.get(), 1) {
+        this.inventory = new ItemsHandler(!properties.allowsIO, 1) {
             @Override
             protected void onContentsChanged(int slot) {
                 SluiceBlockEntity.this.setChanged();
@@ -228,15 +229,19 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             return;
         }
 
+        // Throw out any residual stacks if the player has removed the mesh
+        if (getBlockState().getValue(SluiceBlock.MESH) == MeshType.NONE) {
+            cancelProcessing(level, stack);
+            return;
+        }
+
         System.out.println(computePowerCost());
 
         SluiceRecipeInfo recipe = FTBSluiceRecipes.getSluiceRecipes(this.tank.getFluid().getFluid(), level, this.getBlockState().getValue(SluiceBlock.MESH), stack);
 
         // Throw items out if we don't have a recipe from them. It's simpler than giving the cap a world and mesh.
         if (recipe.getItems().isEmpty()) {
-            this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
-            this.inventory.setStackInSlot(0, ItemStack.EMPTY);
-            this.setChanged();
+            cancelProcessing(level, stack);
             return;
         }
 
@@ -271,6 +276,12 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         this.setChanged();
         level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
+    }
+
+    private void cancelProcessing(Level level, ItemStack stack) {
+        this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
+        this.inventory.setStackInSlot(0, ItemStack.EMPTY);
+        this.setChanged();
     }
 
     private int computePowerCost() {
