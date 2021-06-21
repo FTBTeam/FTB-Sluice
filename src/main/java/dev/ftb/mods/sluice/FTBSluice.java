@@ -86,8 +86,7 @@ public class FTBSluice {
     @SubscribeEvent
     public void recipesSetup(RecipesUpdatedEvent event) {
         RecipeManager recipeManager = event.getRecipeManager();
-        FTBSluiceRecipes.createSluiceCaches(recipeManager);
-        FTBSluiceRecipes.hammerableCache.addAll(recipeManager.getAllRecipesFor(FTBSluiceRecipes.HAMMER_TYPE).stream().map(e -> e.ingredient).collect(Collectors.toList()));
+        FTBSluiceRecipes.refreshCaches(recipeManager);
     }
 
     public void sendIMC(InterModEnqueueEvent event) {

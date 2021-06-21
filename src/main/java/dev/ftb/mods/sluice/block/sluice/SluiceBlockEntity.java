@@ -129,7 +129,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
             @Override
             public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-                if (FTBSluiceRecipes.itemIsSluiceInput(SluiceBlockEntity.this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
+                if (FTBSluiceRecipes.itemIsSluiceInput(getLevel(), SluiceBlockEntity.this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
                     return super.insertItem(slot, stack, simulate);
                 }
 

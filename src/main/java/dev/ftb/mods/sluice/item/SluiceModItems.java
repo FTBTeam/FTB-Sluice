@@ -35,8 +35,9 @@ public class SluiceModItems {
 
     // MISC
     public static final RegistryObject<Item> DUST = REGISTRY.register("dust", () -> new BlockItem(SluiceBlocks.DUST_BLOCK.get(), new Item.Properties().tab(FTBSluice.group)));
-    public static final RegistryObject<Item> CRUSHED_ENDSTONE = REGISTRY.register("crushed_endstone", () -> new BlockItem(SluiceBlocks.CRUSHED_ENDSTONE.get(), new Item.Properties().tab(FTBSluice.group)));
     public static final RegistryObject<Item> CRUSHED_NETHERRACK = REGISTRY.register("crushed_netherrack", () -> new BlockItem(SluiceBlocks.CRUSHED_NETHERRACK.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<Item> CRUSHED_BASALT = REGISTRY.register("crushed_basalt", () -> new BlockItem(SluiceBlocks.CRUSHED_BASALT.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<Item> CRUSHED_ENDSTONE = REGISTRY.register("crushed_endstone", () -> new BlockItem(SluiceBlocks.CRUSHED_ENDSTONE.get(), new Item.Properties().tab(FTBSluice.group)));
 
     // Hammers
     public static final RegistryObject<Item> WOODEN_HAMMER = REGISTRY.register("wooden_hammer", () -> new HammerItem(Tiers.WOOD, 1, -2.8F));

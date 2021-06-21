@@ -14,19 +14,13 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.Objects;
 
-
 public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<SluiceRecipe> {
     @Override
     public SluiceRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
         SluiceRecipe r = new SluiceRecipe(recipeId, json.has("group") ? json.get("group").getAsString() : "");
 
         r.fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(json.get("fluid").getAsString()));
-
-        if (GsonHelper.isArrayNode(json, "ingredient")) {
-            r.ingredient = Ingredient.fromJson(GsonHelper.getAsJsonArray(json, "ingredient"));
-        } else {
-            r.ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"));
-        }
+        r.ingredient = Ingredient.fromJson(json.get("ingredient"));
 
         r.max = json.get("max").getAsInt();
 
@@ -49,7 +43,7 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
     @Override
     public SluiceRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
         SluiceRecipe r = new SluiceRecipe(recipeId, buffer.readUtf(Short.MAX_VALUE));
-        r.fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(buffer.readUtf(Short.MAX_VALUE)));
+        r.fluid = ForgeRegistries.FLUIDS.getValue(buffer.readResourceLocation());
         r.ingredient = Ingredient.fromNetwork(buffer);
         r.max = buffer.readVarInt();
 
@@ -73,11 +67,11 @@ public class SluiceRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
     @Override
     public void toNetwork(FriendlyByteBuf buffer, SluiceRecipe r) {
         buffer.writeUtf(r.getGroup(), Short.MAX_VALUE);
-        buffer.writeUtf(Objects.requireNonNull(r.fluid.getRegistryName()).toString(), Short.MAX_VALUE);
+        buffer.writeResourceLocation(r.fluid.getRegistryName());
 
         r.ingredient.toNetwork(buffer);
 
-        buffer.writeInt(r.max);
+        buffer.writeVarInt(r.max);
         buffer.writeVarInt(r.results.size());
 
         for (ItemWithWeight i : r.results) {
