@@ -24,8 +24,8 @@ public class SluiceBlockContainer extends AbstractContainerMenu {
         ItemStackHandler handler = tile.upgradeInventory;
 
         addSlot(new SlotItemHandler(handler, 0, 132, 18));
-        addSlot(new SlotItemHandler(handler, 1, 132, 30));
-        addSlot(new SlotItemHandler(handler, 2, 132, 63));
+        addSlot(new SlotItemHandler(handler, 1, 132, 36));
+        addSlot(new SlotItemHandler(handler, 2, 132, 54));
 
         // Slots for the hotbar
         for (int row = 0; row < 9; ++ row) {
