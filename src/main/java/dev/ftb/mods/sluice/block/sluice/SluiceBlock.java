@@ -51,7 +51,6 @@ import java.util.stream.Stream;
 public class SluiceBlock extends Block {
     public static final EnumProperty<MeshType> MESH = EnumProperty.create("mesh", MeshType.class);
     public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
-    public static final BooleanProperty WATER = BooleanProperty.create("water");
 
     private static final VoxelShape NORTH_BODY_SHAPE = Stream.of(Block.box(12.5, 0, 0, 14.5, 1, 1), Block.box(1.5, 0, 13.5, 3.5, 1, 15.5), Block.box(12.5, 0, 13.5, 14.5, 1, 15.5), Block.box(1.5, 0, 0, 3.5, 1, 1), Block.box(1, 1, 0, 15, 2, 16), Block.box(14, 2, 0, 15, 8, 16), Block.box(1, 2, 0, 2, 8, 16), Block.box(2, 5, 0, 14, 8, 1), Block.box(2, 2, 15, 14, 8, 16), Block.box(2, 2, 0, 14, 2.5, 1), Block.box(2, 7, 1, 14, 12, 2), Block.box(2, 7, 14, 14, 12, 15), Block.box(13, 7, 2, 14, 12, 14), Block.box(2, 7, 2, 3, 12, 14)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
     private static final VoxelShape EAST_BODY_SHAPE = Stream.of(Block.box(15, 0, 12.5, 16, 1, 14.5), Block.box(0.5, 0, 1.5, 2.5, 1, 3.5), Block.box(0.5, 0, 12.5, 2.5, 1, 14.5), Block.box(15, 0, 1.5, 16, 1, 3.5), Block.box(0, 1, 1, 16, 2, 15), Block.box(0, 2, 14, 16, 8, 15), Block.box(0, 2, 1, 16, 8, 2), Block.box(15, 5, 2, 16, 8, 14), Block.box(0, 2, 2, 1, 8, 14), Block.box(15, 2, 2, 16, 2.5, 14), Block.box(14, 7, 2, 15, 12, 14), Block.box(1, 7, 2, 2, 12, 14), Block.box(2, 7, 13, 14, 12, 14), Block.box(2, 7, 2, 14, 12, 3)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
@@ -77,7 +76,6 @@ public class SluiceBlock extends Block {
         super(Properties.of(Material.METAL).sound(SoundType.METAL).strength(0.9F));
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(MESH, MeshType.NONE)
-                .setValue(WATER, false)
                 .setValue(PART, Part.MAIN)
                 .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }
@@ -200,17 +198,15 @@ public class SluiceBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(MESH, WATER, PART, BlockStateProperties.HORIZONTAL_FACING);
+        builder.add(MESH, PART, BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockState facingState = context.getLevel().getBlockState(context.getClickedPos().above());
-
         BlockPos offsetPos = context.getClickedPos().relative(context.getHorizontalDirection().getOpposite());
         return context.getLevel().getBlockState(offsetPos).canBeReplaced(context)
-                ? this.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite()).setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER)).setValue(PART, Part.MAIN)
+                ? this.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite()).setValue(PART, Part.MAIN)
                 : null;
     }
 

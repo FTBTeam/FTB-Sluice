@@ -129,10 +129,7 @@ public class SluiceDataGen {
 
                 for (int d = 0; d < 4; d++) {
                     builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + p.getRight() + "_sluice_body"))).rotationY(dirsRot[d]).addModel().condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.MAIN);
-                    builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/sluice_waterflow_body"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.WATER, true).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.MAIN);
-
                     builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + p.getRight() + "_sluice_front"))).rotationY(dirsRot[d]).addModel().condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.FUNNEL);
-                    builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/sluice_waterflow_front"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.WATER, true).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.FUNNEL);
 
                     for (MeshType type : MeshType.REAL_VALUES) {
                         builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + type.getSerializedName() + "_mesh"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.MESH, type).condition(BlockStateProperties.HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.MAIN);
