@@ -9,18 +9,18 @@ import java.util.function.Supplier;
 import static dev.ftb.mods.sluice.SluiceConfig.SLUICES;
 
 public enum SluiceProperties {
-    OAK(false, false, SluiceBlocks.OAK_SLUICE.get(), SLUICES.oakSluiceProcessing::get, SLUICES.oakSluiceFluid::get),
-    IRON(true, false, SluiceBlocks.IRON_SLUICE.get(), SLUICES.ironSluiceProcessing::get, SLUICES.ironSluiceFluid::get),
-    DIAMOND(true, true, SluiceBlocks.DIAMOND_SLUICE.get(), SLUICES.diamondSluiceProcessing::get, SLUICES.diamondSluiceFluid::get),
-    NETHERITE(true, true, SluiceBlocks.NETHERITE_SLUICE.get(), SLUICES.netheriteSluiceProcessing::get, SLUICES.netheriteSluiceFluid::get);
+    OAK(false, false, SluiceBlocks.OAK_SLUICE.get(), SLUICES.oakTimeMod::get, SLUICES.oakFluidMod::get),
+    IRON(true, false, SluiceBlocks.IRON_SLUICE.get(), SLUICES.ironTimeMod::get, SLUICES.ironFluidMod::get),
+    DIAMOND(true, true, SluiceBlocks.DIAMOND_SLUICE.get(), SLUICES.diamondTimeMod::get, SLUICES.diamondFluidMod::get),
+    NETHERITE(true, true, SluiceBlocks.NETHERITE_SLUICE.get(), SLUICES.netheriteTimeMod::get, SLUICES.netheriteFluidMod::get);
 
     Block relatedBlock;
     boolean allowsIO;
     boolean allowsTank;
-    Supplier<Integer> processingTime;
-    Supplier<Integer> fluidUsage;
+    Supplier<Double> processingTime;
+    Supplier<Double> fluidUsage;
 
-    SluiceProperties(boolean allowsIO, boolean allowsTank, Block relatedBlock, Supplier<Integer> processingTime, Supplier<Integer> fluidUsage) {
+    SluiceProperties(boolean allowsIO, boolean allowsTank, Block relatedBlock, Supplier<Double> processingTime, Supplier<Double> fluidUsage) {
         this.relatedBlock = relatedBlock;
         this.processingTime = processingTime;
         this.fluidUsage = fluidUsage;

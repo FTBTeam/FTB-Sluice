@@ -46,6 +46,22 @@ public class SluiceRecipeJS extends RecipeJS {
         return this;
     }
 
+    public SluiceRecipeJS time(int ticks) {
+        this.json.addProperty("time", ticks);
+        this.save();
+        return this;
+    }
+
+    public SluiceRecipeJS mb(int mb) {
+        return fluidAmount(mb);
+    }
+
+    public SluiceRecipeJS fluidAmount(int mb) {
+        this.json.addProperty("fluid_amount", mb);
+        this.save();
+        return this;
+    }
+
     @Override
     public void deserialize() {
         this.inputItems.add(this.parseIngredientItem(this.json.get("ingredient")));

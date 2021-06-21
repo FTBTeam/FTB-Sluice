@@ -39,7 +39,7 @@ public class SluiceRenderer extends TileEntityRendererAnimation<SluiceBlockEntit
         }
 
         int progress = (te.processed * 100) / te.maxProcessed;
-        float offset = !te.isProcessing ? 0 : 100 - progress;
+        float offset = te.processed < 0 ? 0 : progress;
 
         float v = te.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot();
         matrix.pushPose();
