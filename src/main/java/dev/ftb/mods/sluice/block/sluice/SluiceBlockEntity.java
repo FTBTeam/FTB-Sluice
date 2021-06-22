@@ -199,6 +199,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             this.startProcessing(this.level, input);
         } else {
             if (this.processed < this.maxProcessed) {
+                if (getBlockState().getValue(SluiceBlock.MESH) == MeshType.NONE) {
+                    cancelProcessing(level, input);
+                    return;
+                }
                 this.processed++;
             } else {
                 this.finishProcessing(this.level, state, input);
@@ -225,13 +229,17 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             return;
         }
 
-        if (stack.isEmpty() || this.tank.isEmpty() || this.tank.getFluidAmount() < this.properties.fluidUsage.get()) {
+        if (stack.isEmpty()) {
             return;
         }
 
         // Throw out any residual stacks if the player has removed the mesh
         if (getBlockState().getValue(SluiceBlock.MESH) == MeshType.NONE) {
             cancelProcessing(level, stack);
+            return;
+        }
+
+        if(this.tank.isEmpty() || this.tank.getFluidAmount() < this.properties.fluidUsage.get()) {
             return;
         }
 
@@ -281,7 +289,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     private void cancelProcessing(Level level, ItemStack stack) {
         this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
         this.inventory.setStackInSlot(0, ItemStack.EMPTY);
+        this.processed = 0;
+        this.maxProcessed = -1;
+        this.fluidUsage = -1;
         this.setChanged();
+        level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
     }
 
     private int computePowerCost() {
