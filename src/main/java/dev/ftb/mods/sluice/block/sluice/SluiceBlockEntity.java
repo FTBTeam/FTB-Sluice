@@ -1,6 +1,7 @@
 package dev.ftb.mods.sluice.block.sluice;
 
 import dev.ftb.mods.sluice.SluiceConfig;
+import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.capabilities.Energy;
 import dev.ftb.mods.sluice.capabilities.FluidCap;
@@ -117,10 +118,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.fluidUsage = -1;
 
         // Handles state changing
-        this.tank = new FluidCap(true, SluiceConfig.SLUICES.tankStorage.get(), e -> true);
+        this.tank = new FluidCap(true, properties.tankCap.get(), e -> true);
         this.fluidOptional = LazyOptional.of(() -> this.tank);
 
-        this.inventory = new ItemsHandler(type == SluiceBlockEntities.OAK_SLUICE.get(), 1) {
+        this.inventory = new ItemsHandler(!properties.allowsIO, 1) {
             @Override
             protected void onContentsChanged(int slot) {
                 SluiceBlockEntity.this.setChanged();
@@ -198,6 +199,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             this.startProcessing(this.level, input);
         } else {
             if (this.processed < this.maxProcessed) {
+                if (getBlockState().getValue(SluiceBlock.MESH) == MeshType.NONE) {
+                    cancelProcessing(level, input);
+                    return;
+                }
                 this.processed++;
             } else {
                 this.finishProcessing(this.level, state, input);
@@ -224,7 +229,17 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             return;
         }
 
-        if (stack.isEmpty() || this.tank.isEmpty() || this.tank.getFluidAmount() < this.properties.fluidUsage.get()) {
+        if (stack.isEmpty()) {
+            return;
+        }
+
+        // Throw out any residual stacks if the player has removed the mesh
+        if (getBlockState().getValue(SluiceBlock.MESH) == MeshType.NONE) {
+            cancelProcessing(level, stack);
+            return;
+        }
+
+        if(this.tank.isEmpty() || this.tank.getFluidAmount() < this.properties.fluidUsage.get()) {
             return;
         }
 
@@ -234,9 +249,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         // Throw items out if we don't have a recipe from them. It's simpler than giving the cap a world and mesh.
         if (recipe.getItems().isEmpty()) {
-            this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
-            this.inventory.setStackInSlot(0, ItemStack.EMPTY);
-            this.setChanged();
+            cancelProcessing(level, stack);
             return;
         }
 
@@ -269,6 +282,16 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             this.energy.consumeEnergy(SluiceConfig.NETHERITE_SLUICE.costPerUse.get(), false);
         }
 
+        this.setChanged();
+        level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
+    }
+
+    private void cancelProcessing(Level level, ItemStack stack) {
+        this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
+        this.inventory.setStackInSlot(0, ItemStack.EMPTY);
+        this.processed = 0;
+        this.maxProcessed = -1;
+        this.fluidUsage = -1;
         this.setChanged();
         level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
     }

@@ -46,6 +46,11 @@ public class SluiceConfig {
         public final ForgeConfigSpec.DoubleValue diamondFluidMod;
         public final ForgeConfigSpec.DoubleValue netheriteFluidMod;
 
+        public final ForgeConfigSpec.IntValue oakTank;
+        public final ForgeConfigSpec.IntValue ironTank;
+        public final ForgeConfigSpec.IntValue diamondTank;
+        public final ForgeConfigSpec.IntValue netheriteTank;
+
         public CategorySluice() {
             COMMON_BUILDER.push("sluices");
 
@@ -78,6 +83,19 @@ public class SluiceConfig {
             this.netheriteFluidMod = COMMON_BUILDER
                     .comment("Sets how much fluid is used per processed recipe (This is multiplied by the recipe's fluid consumption rate)")
                     .defineInRange("netherite fluid multiplier", .4, 0.0, 1000.0);
+
+            this.oakTank = COMMON_BUILDER
+                    .comment("Sets how much fluid this sluice's tank can carry (in mB)")
+                    .defineInRange("oak tank capacity", 10000, 0, 1000000);
+            this.ironTank = COMMON_BUILDER
+                    .comment("Sets how much fluid this sluice's tank can carry (in mB)")
+                    .defineInRange("iron tank capacity", 10000, 0, 1000000);
+            this.diamondTank = COMMON_BUILDER
+                    .comment("Sets how much fluid this sluice's tank can carry (in mB)")
+                    .defineInRange("diamond tank capacity", 10000, 0, 1000000);
+            this.netheriteTank = COMMON_BUILDER
+                    .comment("Sets how much fluid this sluice's tank can carry (in mB)")
+                    .defineInRange("netherite tank capacity", 10000, 0, 1000000);
 
             COMMON_BUILDER.pop();
         }

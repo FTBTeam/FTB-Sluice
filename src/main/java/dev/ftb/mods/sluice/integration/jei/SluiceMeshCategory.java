@@ -89,7 +89,7 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
             if (idx == 1 && input) {
                 tooltip.add(new TranslatableComponent("ftbsluice.jei.processingTime",
                         new TextComponent(sluiceRecipe.time + "").withStyle(style -> style.withColor(TextColor.fromRgb(0xfcb95b))))
-                        .withStyle(ChatFormatting.DARK_GRAY));
+                        .withStyle(ChatFormatting.GRAY));
             }
         });
 
@@ -97,7 +97,7 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
             if (idx == 0 && input) {
                 tooltip.add(new TranslatableComponent("ftbsluice.jei.fluidUsage",
                         new TextComponent(sluiceRecipe.mb + "").withStyle(style -> style.withColor(TextColor.fromRgb(0xfcb95b))))
-                        .withStyle(ChatFormatting.DARK_GRAY));
+                        .withStyle(ChatFormatting.GRAY));
             }
         });
     }
