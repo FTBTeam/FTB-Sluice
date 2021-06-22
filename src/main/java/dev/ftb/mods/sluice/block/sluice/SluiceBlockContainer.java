@@ -24,24 +24,20 @@ public class SluiceBlockContainer extends AbstractContainerMenu {
 
         ItemStackHandler handler = tile.upgradeInventory;
 
-        addSlot(new SlotItemHandler(handler, 0, 132, 18));
-        addSlot(new SlotItemHandler(handler, 1, 132, 36));
-        addSlot(new SlotItemHandler(handler, 2, 132, 54));
-
-        // Slots for the hotbar
-        for (int row = 0; row < 9; ++row) {
-            int x = -12 + row * 18;
-            int y = 70 + 86;
-            addSlot(new Slot(inv, row, x, y));
+        // Yonk (Hopper)
+        int n;
+        for(n = 0; n < 3; ++n) {
+            addSlot(new SlotItemHandler(handler, n, 62 + n * 18, 20));
         }
 
-        // Slots for the main inventory
-        for (int row = 1; row < 4; ++row) {
-            for (int col = 0; col < 9; ++col) {
-                int x = -12 + col * 18;
-                int y = row * 18 + (70 + 10);
-                addSlot(new Slot(inv, col + row * 9, x, y));
+        for(n = 0; n < 3; ++n) {
+            for(int m = 0; m < 9; ++m) {
+                this.addSlot(new Slot(inv, m + n * 9 + 9, 8 + m * 18, n * 18 + 51));
             }
+        }
+
+        for(n = 0; n < 9; ++n) {
+            this.addSlot(new Slot(inv, n, 8 + n * 18, 109));
         }
     }
 
