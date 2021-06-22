@@ -4,6 +4,8 @@ import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlockEntity;
 import mcjty.theoneprobe.api.*;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -46,7 +48,13 @@ public class TheOneProbeProvider implements IProbeInfoProvider, Function<ITheOne
             }
 
             if (entity instanceof SluiceBlockEntity.OakSluiceBlockEntity || entity instanceof SluiceBlockEntity.IronSluiceBlockEntity) {
-                iProbeInfo.tankSimple(entity.tank.getCapacity(), entity.tank.getFluid());
+                iProbeInfo.tankSimple(entity.tank.getCapacity(), entity.tank.getFluid(), iProbeInfo.defaultProgressStyle()
+                        .numberFormat(NumberFormat.COMPACT)
+                        .prefix(entity.tank.getFluid().getDisplayName().getString() + ": ")
+                        .suffix("mB")
+                        .filledColor(0xff0000dd)
+                        .alternateFilledColor(0xff000043)
+                );
             }
 
             int progress = (entity.processed * 100) / entity.maxProcessed;

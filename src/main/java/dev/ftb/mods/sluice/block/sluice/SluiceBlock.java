@@ -213,7 +213,7 @@ public class SluiceBlock extends Block {
     @Override
     @Deprecated
     public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
-        return super.updateShape(state, facing, facingState, world, pos, facingPos); //facing == Direction.UP ? state.setValue(WATER, facingState.getBlock() == Blocks.WATER || facingState.getBlock() == this && facingState.getValue(WATER)) : state;
+        return super.updateShape(state, facing, facingState, world, pos, facingPos);
     }
 
     @Override
@@ -226,6 +226,7 @@ public class SluiceBlock extends Block {
                     : direction);
             BlockState endState = world.getBlockState(endPos);
 
+            // Don't act on the funnel
             if (state.getValue(PART) == Part.FUNNEL) {
                 if (endState.getBlock() instanceof SluiceBlock && endState.getValue(PART) == Part.MAIN) {
                     world.removeBlock(endPos, false);
@@ -234,8 +235,14 @@ public class SluiceBlock extends Block {
                 BlockEntity tileEntity = world.getBlockEntity(pos);
 
                 if (tileEntity instanceof SluiceBlockEntity) {
-                    popResource(world, pos, ((SluiceBlockEntity) tileEntity).inventory.getStackInSlot(0));
+                    SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
+                    popResource(world, pos, sluice.inventory.getStackInSlot(0));
                     world.updateNeighbourForOutputSignal(pos, this);
+
+                    // Drop the upgrade inventory
+                    for (int i = 0; i < sluice.upgradeInventory.getSlots(); i++) {
+                        popResource(world, pos, sluice.upgradeInventory.getStackInSlot(i));
+                    }
                 }
 
                 world.removeBlock(endPos, false);
