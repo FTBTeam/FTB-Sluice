@@ -62,15 +62,29 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     private final SluiceProperties properties;
     private final boolean isNetherite;
 
+    // Upgrade -> slot id
+    private static final HashMap<Upgrades, Integer> UPGRADE_SLOT_INDEX = new HashMap<>();
+
+    static {
+        UPGRADE_SLOT_INDEX.put(Upgrades.LUCK, 0);
+        UPGRADE_SLOT_INDEX.put(Upgrades.CONSUMPTION, 1);
+        UPGRADE_SLOT_INDEX.put(Upgrades.SPEED, 2);
+    }
+
     public final ItemStackHandler upgradeInventory = new ItemStackHandler(3) {
         @NotNull
         @Override
         public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            return stack.getItem() instanceof UpgradeItem ? super.insertItem(slot, stack, simulate) : stack;
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (stack.getItem() instanceof UpgradeItem) {
-                return super.insertItem(slot, stack, simulate);
+                return UPGRADE_SLOT_INDEX.get(((UpgradeItem) stack.getItem()).getUpgrade()) == slot;
             }
 
-            return stack;
+            return false;
         }
 
         @Override
@@ -162,6 +176,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         }
 
         SluiceRecipeInfo recipe = FTBSluiceRecipes.getSluiceRecipes(sluice.tank.getFluid().getFluid(), sluice.level, sluice.getBlockState().getValue(SluiceBlock.MESH), input);
+
+        // Luck calculation
         int additional = 0;
         if (sluice.upgradeCache.containsKey(Upgrades.LUCK)) {
             additional += Upgrades.LUCK.effectedChange * sluice.upgradeCache.get(Upgrades.LUCK);
@@ -243,7 +259,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             return;
         }
 
-        System.out.println(computePowerCost());
+        // Reject if we don't have enough power to process the resource
+        if (this.isNetherite && this.energy.getEnergyStored() < computePowerCost()) {
+            return;
+        }
 
         SluiceRecipeInfo recipe = FTBSluiceRecipes.getSluiceRecipes(this.tank.getFluid().getFluid(), level, this.getBlockState().getValue(SluiceBlock.MESH), stack);
 
@@ -254,8 +273,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         }
 
         this.processed = 0;
-        this.maxProcessed = (int) Math.ceil(recipe.getProcessingTime() * this.properties.processingTime.get());
-        this.fluidUsage = (int) Math.ceil(recipe.getFluidUsed() * this.properties.fluidUsage.get());
+        this.maxProcessed = Math.max(1, (int) Math.ceil(recipe.getProcessingTime() * this.properties.processingTime.get()) - computeEffectModifier(Upgrades.SPEED));
+        this.fluidUsage = Math.max(50, (int) Math.ceil(recipe.getFluidUsed() * this.properties.fluidUsage.get()) - computeEffectModifier(Upgrades.CONSUMPTION));
 
         this.setChanged();
         level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
@@ -279,7 +298,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.fluidUsage = -1;
 
         if (this.isNetherite) {
-            this.energy.consumeEnergy(SluiceConfig.NETHERITE_SLUICE.costPerUse.get(), false);
+            this.energy.consumeEnergy(computePowerCost(), false);
         }
 
         this.setChanged();
@@ -311,6 +330,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         return (int) (baseCost + baseCost * (sum * SluiceConfig.GENERAL.percentageCostPerUpgrade.get()) / 100);
     }
 
+    private int computeEffectModifier(Upgrades upgrade) {
+        return upgradeCache.containsKey(upgrade) ? upgrade.effectedChange * upgradeCache.get(upgrade) : 0;
+    }
+
     @Override
     public CompoundTag save(CompoundTag compound) {
         CompoundTag fluidTag = new CompoundTag();
@@ -323,6 +346,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         compound.putInt("FluidUsage", this.fluidUsage);
         if (this.isNetherite) {
             compound.put("Upgrades", upgradeInventory.serializeNBT());
+            this.updateUpgradeCache(this.upgradeInventory);
             this.energyOptional.ifPresent(e -> compound.put("Energy", e.serializeNBT()));
         }
 
