@@ -20,8 +20,8 @@ public class SluiceModItems {
     public static final RegistryObject<Item> GOLD_MESH = REGISTRY.register("gold_mesh", () -> new MeshItem(MeshType.GOLD));
     public static final RegistryObject<Item> DIAMOND_MESH = REGISTRY.register("diamond_mesh", () -> new MeshItem(MeshType.DIAMOND));
 
-    public static final RegistryObject<Item> TANK = REGISTRY.register("tank", () -> new BlockItem(SluiceBlocks.TANK.get(), new Item.Properties().tab(FTBSluice.group)));
-    public static final RegistryObject<Item> TANK_CREATIVE = REGISTRY.register("creative_tank", () -> new BlockItem(SluiceBlocks.TANK_CREATIVE.get(), new Item.Properties().tab(FTBSluice.group)));
+//    public static final RegistryObject<Item> TANK = REGISTRY.register("tank", () -> new BlockItem(SluiceBlocks.TANK.get(), new Item.Properties().tab(FTBSluice.group)));
+//    public static final RegistryObject<Item> TANK_CREATIVE = REGISTRY.register("creative_tank", () -> new BlockItem(SluiceBlocks.TANK_CREATIVE.get(), new Item.Properties().tab(FTBSluice.group)));
 
     public static final RegistryObject<BlockItem> OAK_SLUICE = REGISTRY.register("oak_sluice", () -> new BlockItem(SluiceBlocks.OAK_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
     public static final RegistryObject<BlockItem> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> new BlockItem(SluiceBlocks.IRON_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));

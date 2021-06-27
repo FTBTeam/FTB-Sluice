@@ -1,7 +1,6 @@
 package dev.ftb.mods.sluice.block;
 
 import dev.ftb.mods.sluice.FTBSluice;
-import dev.ftb.mods.sluice.block.Tank;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
@@ -28,8 +27,8 @@ public class SluiceBlocks {
     public static final RegistryObject<Block> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", SluiceBlock::new);
     public static final RegistryObject<Block> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", SluiceBlock::new);
 
-    public static final RegistryObject<Block> TANK = REGISTRY.register("tank", () -> new Tank(false));
-    public static final RegistryObject<Block> TANK_CREATIVE = REGISTRY.register("tank_creative", () -> new Tank(true));
+//    public static final RegistryObject<Block> TANK = REGISTRY.register("tank", () -> new Tank(false));
+//    public static final RegistryObject<Block> TANK_CREATIVE = REGISTRY.register("tank_creative", () -> new Tank(true));
 
     // MISC
     public static final RegistryObject<Block> DUST_BLOCK = REGISTRY.register("dust", () -> new FallingBlock(Properties.of(Material.SAND).harvestTool(ToolType.SHOVEL).strength(0.4F).sound(SoundType.SAND)));

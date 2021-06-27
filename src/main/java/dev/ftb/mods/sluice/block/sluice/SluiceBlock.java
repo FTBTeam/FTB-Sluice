@@ -165,10 +165,12 @@ public class SluiceBlock extends Block {
             if (state.getValue(MESH) != ((MeshItem) itemStack.getItem()).mesh) {
                 ItemStack current = state.getValue(MESH).getItemStack();
                 world.setBlock(pos, state.setValue(MESH, ((MeshItem) itemStack.getItem()).mesh), 3);
-                itemStack.shrink(1);
+                if (!player.abilities.instabuild) {
+                    itemStack.shrink(1);
 
-                if (!world.isClientSide()) {
-                    ItemHandlerHelper.giveItemToPlayer(player, current);
+                    if (!world.isClientSide()) {
+                        ItemHandlerHelper.giveItemToPlayer(player, current);
+                    }
                 }
 
                 sluice.clearCache();

@@ -17,6 +17,6 @@ public class SluiceBlockEntities {
     public static final RegistryObject<BlockEntityType<DiamondSluiceBlockEntity>> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", () -> BlockEntityType.Builder.of(DiamondSluiceBlockEntity::new, SluiceBlocks.DIAMOND_SLUICE.get()).build(null));
     public static final RegistryObject<BlockEntityType<NetheriteSluiceBlockEntity>> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", () -> BlockEntityType.Builder.of(NetheriteSluiceBlockEntity::new, SluiceBlocks.NETHERITE_SLUICE.get()).build(null));
 
-    public static final RegistryObject<BlockEntityType<TankBlockEntity>> TANK = REGISTRY.register("tank", () -> BlockEntityType.Builder.of(TankBlockEntity::new, SluiceBlocks.TANK.get()).build(null));
-    public static final RegistryObject<BlockEntityType<TankBlockEntity.CreativeTankBlockEntity>> CREATIVE_TANK = REGISTRY.register("creative_tank", () -> BlockEntityType.Builder.of(TankBlockEntity.CreativeTankBlockEntity::new, SluiceBlocks.TANK_CREATIVE.get()).build(null));
+//    public static final RegistryObject<BlockEntityType<TankBlockEntity>> TANK = REGISTRY.register("tank", () -> BlockEntityType.Builder.of(TankBlockEntity::new, SluiceBlocks.TANK.get()).build(null));
+//    public static final RegistryObject<BlockEntityType<TankBlockEntity.CreativeTankBlockEntity>> CREATIVE_TANK = REGISTRY.register("creative_tank", () -> BlockEntityType.Builder.of(TankBlockEntity.CreativeTankBlockEntity::new, SluiceBlocks.TANK_CREATIVE.get()).build(null));
 }

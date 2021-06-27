@@ -30,6 +30,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.client.model.generators.*;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeLootTableProvider;
 import net.minecraftforge.common.data.LanguageProvider;
@@ -281,6 +282,33 @@ public class SluiceDataGen {
             this.hammer(SluiceModItems.GOLD_HAMMER.get(), Items.GOLD_INGOT, consumer);
             this.hammer(SluiceModItems.DIAMOND_HAMMER.get(), this.DIAMOND_GEM, consumer);
             this.hammer(SluiceModItems.NETHERITE_HAMMER.get(), Items.NETHERITE_INGOT, consumer);
+
+            ShapedRecipeBuilder.shaped(SluiceModItems.CONSUMPTION_UPGRADE.get())
+                    .unlockedBy("has_item", has(Items.SPONGE))
+                    .pattern("III")
+                    .pattern("ISI")
+                    .pattern("III")
+                    .define('I', Tags.Items.INGOTS_IRON)
+                    .define('S', Items.SPONGE)
+                    .save(consumer);
+
+            ShapedRecipeBuilder.shaped(SluiceModItems.SPEED_UPGRADE.get())
+                    .unlockedBy("has_item", has(Items.BLAZE_ROD))
+                    .pattern("III")
+                    .pattern("IBI")
+                    .pattern("III")
+                    .define('I', Tags.Items.INGOTS_IRON)
+                    .define('B', Items.BLAZE_ROD)
+                    .save(consumer);
+
+            ShapedRecipeBuilder.shaped(SluiceModItems.FORTUNE_UPGRADE.get())
+                    .unlockedBy("has_item", has(Tags.Items.GEMS_EMERALD))
+                    .pattern("III")
+                    .pattern("IEI")
+                    .pattern("III")
+                    .define('I', Tags.Items.INGOTS_IRON)
+                    .define('E', Tags.Items.GEMS_EMERALD)
+                    .save(consumer);
         }
 
         private void hammer(ItemLike output, Tag<Item> head, Consumer<FinishedRecipe> consumer) {
@@ -324,7 +352,7 @@ public class SluiceDataGen {
 
         @Override
         protected void addTables() {
-            this.dropSelf(SluiceBlocks.TANK.get());
+//            this.dropSelf(SluiceBlocks.TANK.get());
             this.dropSelf(SluiceBlocks.DUST_BLOCK.get());
             SluiceBlocks.SLUICES.forEach(e -> this.dropSelf(e.getKey().get()));
         }
