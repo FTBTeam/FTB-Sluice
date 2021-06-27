@@ -8,7 +8,7 @@ import dev.ftb.mods.sluice.integration.kubejs.KubeJSIntegration;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.loot.HammerModifier;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
-import net.minecraft.world.MenuProvider;
+import dev.ftb.mods.sluice.util.RecipeReloader;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +19,7 @@ import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
@@ -32,8 +33,6 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.stream.Collectors;
 
 
 @Mod(FTBSluice.MOD_ID)
@@ -81,6 +80,10 @@ public class FTBSluice {
 
     private void clientSetup(FMLClientSetupEvent event) {
         SluiceClient.init();
+    }
+
+    private void reloadListeners(AddReloadListenerEvent event) {
+        event.addListener(new RecipeReloader(event.getDataPackRegistries()));
     }
 
     @SubscribeEvent
