@@ -16,7 +16,7 @@ public class SluiceConfig {
 
     public static class CategoryGeneral {
         public final ForgeConfigSpec.IntValue maxUpgradeStackSize;
-        public final ForgeConfigSpec.DoubleValue percentageCostPerUpgrade;
+        public final ForgeConfigSpec.DoubleValue exponentialCostBaseN;
 
         public CategoryGeneral() {
             COMMON_BUILDER.push("general");
@@ -25,9 +25,9 @@ public class SluiceConfig {
                     .comment("Allows you to increase the amount of upgrades that can be put within a single stack. This is not something you should change as it can mess with math but if you opt too, good luck.")
                     .defineInRange("Max upgrade stack size", 18, 1, 64);
 
-            this.percentageCostPerUpgrade = COMMON_BUILDER
-                    .comment("The amount of power an upgrade will consume. This uses the base power as a base and uses the percentage to calculate how much power to consume.", "For example, If the Sluice uses 100FE per operation and your sluice had a single upgrade with this option set to 5.0. Your sluice now uses 5 extra FE per operation")
-                    .defineInRange("Percentage cost per upgrade", 2.0D, 0D, 100D);
+            this.exponentialCostBaseN = COMMON_BUILDER
+                    .comment("Exponential cost N amount. We start with 1.35 as it's a good max number at around 10M RF per operation")
+                    .defineInRange("Exponential cost base N value", 1.35D, 1D, 2D);
 
             COMMON_BUILDER.pop();
         }
@@ -102,15 +102,10 @@ public class SluiceConfig {
     }
 
     public static class CategoryNetheriteSluice {
-        public ForgeConfigSpec.IntValue energyStorage;
         public ForgeConfigSpec.IntValue costPerUse;
 
         public CategoryNetheriteSluice() {
             COMMON_BUILDER.push("netherite sluice");
-
-            this.energyStorage = COMMON_BUILDER
-                    .comment("How much FE the netherite sluice can store")
-                    .defineInRange("fe storage", 10000, 0, 5000000);
 
             this.costPerUse = COMMON_BUILDER
                     .comment("FE cost per use")

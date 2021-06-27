@@ -6,6 +6,7 @@ import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.capabilities.Energy;
 import dev.ftb.mods.sluice.capabilities.FluidCap;
 import dev.ftb.mods.sluice.capabilities.ItemsHandler;
+import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.item.UpgradeItem;
 import dev.ftb.mods.sluice.item.Upgrades;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -49,10 +51,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity, MenuProvider {
     public final ItemsHandler inventory;
@@ -119,7 +118,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         this.energy = new Energy(!isNetherite
                 ? 0
-                : SluiceConfig.NETHERITE_SLUICE.energyStorage.get(), e -> {
+                : (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), SluiceConfig.GENERAL.maxUpgradeStackSize.get() * 3 + 1), Integer.MAX_VALUE), e -> {
             // Shouldn't be needed but it's better safe.
             if (!this.isNetherite) {
                 return;
@@ -273,8 +272,12 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         }
 
         this.processed = 0;
-        this.maxProcessed = Math.max(1, (int) Math.ceil(recipe.getProcessingTime() * this.properties.processingTime.get()) - computeEffectModifier(Upgrades.SPEED));
-        this.fluidUsage = Math.max(50, (int) Math.ceil(recipe.getFluidUsed() * this.properties.fluidUsage.get()) - computeEffectModifier(Upgrades.CONSUMPTION));
+
+        double baseProcessingTime = recipe.getProcessingTime() * this.properties.processingTime.get();
+        double baseFluidUsage = recipe.getFluidUsed() * this.properties.fluidUsage.get();
+
+        this.maxProcessed = Math.max(1, (int) Math.round(baseProcessingTime - (baseProcessingTime * (computeEffectModifier(Upgrades.SPEED) / 100f))));
+        this.fluidUsage = Math.max(40, (int) Math.round(baseFluidUsage - (baseFluidUsage * (computeEffectModifier(Upgrades.CONSUMPTION) / 100f))));
 
         this.setChanged();
         level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
@@ -327,7 +330,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             sum += i;
         }
 
-        return (int) (baseCost + baseCost * (sum * SluiceConfig.GENERAL.percentageCostPerUpgrade.get()) / 100);
+        return (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), sum), Integer.MAX_VALUE);
     }
 
     private int computeEffectModifier(Upgrades upgrade) {
