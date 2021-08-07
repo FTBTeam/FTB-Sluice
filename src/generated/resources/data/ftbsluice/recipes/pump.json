@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "www",
+    "sss",
+    "bbb"
+  ],
+  "key": {
+    "w": {
+      "item": "minecraft:water_bucket"
+    },
+    "s": {
+      "item": "minecraft:smooth_stone"
+    },
+    "b": {
+      "item": "minecraft:oak_planks"
+    }
+  },
+  "result": {
+    "item": "ftbsluice:pump"
+  }
+}

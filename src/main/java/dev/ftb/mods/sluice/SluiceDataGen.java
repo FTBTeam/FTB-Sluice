@@ -24,6 +24,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -56,15 +57,17 @@ public class SluiceDataGen {
         DataGenerator gen = event.getGenerator();
 
         if (event.includeClient()) {
-            gen.addProvider(new SMLang(gen, MODID, "en_us"));
             SMBlockModels blockModels = new SMBlockModels(gen, MODID, event.getExistingFileHelper());
+
             gen.addProvider(blockModels);
+            gen.addProvider(new SMLang(gen, MODID, "en_us"));
             gen.addProvider(new SMItemModels(gen, MODID, event.getExistingFileHelper()));
             gen.addProvider(new SMBlockStateModels(gen, MODID, event.getExistingFileHelper(), blockModels));
         }
 
         if (event.includeServer()) {
             SMBlockTags blockTags = new SMBlockTags(gen);
+
             gen.addProvider(blockTags);
             gen.addProvider(new SMItemTags(gen, blockTags, event.getExistingFileHelper()));
             gen.addProvider(new SMRecipes(gen));
@@ -89,7 +92,12 @@ public class SluiceDataGen {
                 this.addBlock(p.getLeft(), p.getRight().substring(0, 1).toUpperCase() + p.getRight().substring(1) + " Sluice");
             }
 
+            this.addBlock(SluiceBlocks.PUMP, "Pump (hand holder)");
             this.addBlock(SluiceBlocks.DUST_BLOCK, "Dust");
+            this.addBlock(SluiceBlocks.CRUSHED_NETHERRACK, "Crushed Netherrack");
+            this.addBlock(SluiceBlocks.CRUSHED_BASALT, "Crushed Basalt");
+            this.addBlock(SluiceBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
+
             this.addItem(SluiceModItems.CLAY_BUCKET, "Clay Bucket");
             this.addItem(SluiceModItems.CLAY_WATER_BUCKET, "Clay Water Bucket");
             this.addItem(SluiceModItems.WOODEN_HAMMER, "Wooden Hammer");
@@ -101,9 +109,6 @@ public class SluiceDataGen {
             this.addItem(SluiceModItems.FORTUNE_UPGRADE, "Fortune Upgrade");
             this.addItem(SluiceModItems.CONSUMPTION_UPGRADE, "Consumption Upgrade");
             this.addItem(SluiceModItems.SPEED_UPGRADE, "Speed Upgrade");
-            this.addBlock(SluiceBlocks.CRUSHED_NETHERRACK, "Crushed Netherrack");
-            this.addBlock(SluiceBlocks.CRUSHED_BASALT, "Crushed Basalt");
-            this.addBlock(SluiceBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
 
             this.add(MODID + ".jei.processingTime", "Processing Time: %s ticks");
             this.add(MODID + ".jei.fluidUsage", "Uses %smB of Fluid");
@@ -142,6 +147,7 @@ public class SluiceDataGen {
             }
 
             this.simpleBlock(SluiceBlocks.DUST_BLOCK.get());
+            this.simpleBlock(SluiceBlocks.PUMP.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_NETHERRACK.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_BASALT.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_ENDSTONE.get());
@@ -166,9 +172,11 @@ public class SluiceDataGen {
         @Override
         protected void registerModels() {
             this.registerBlockModel(SluiceBlocks.DUST_BLOCK.get());
+            this.registerBlockModel(SluiceBlocks.PUMP.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_NETHERRACK.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_BASALT.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_ENDSTONE.get());
+
             this.simpleItem(SluiceModItems.CLAY_BUCKET);
             this.simpleItem(SluiceModItems.CLAY_WATER_BUCKET);
             this.simpleItem(SluiceModItems.WOODEN_HAMMER);
@@ -177,7 +185,6 @@ public class SluiceDataGen {
             this.simpleItem(SluiceModItems.GOLD_HAMMER);
             this.simpleItem(SluiceModItems.DIAMOND_HAMMER);
             this.simpleItem(SluiceModItems.NETHERITE_HAMMER);
-
             this.simpleItem(SluiceModItems.FORTUNE_UPGRADE);
             this.simpleItem(SluiceModItems.CONSUMPTION_UPGRADE);
             this.simpleItem(SluiceModItems.SPEED_UPGRADE);
@@ -247,8 +254,26 @@ public class SluiceDataGen {
                         .save(consumer);
             }
 
+            ShapedRecipeBuilder.shaped(SluiceModItems.CLAY_BUCKET.get())
+                    .unlockedBy("has_item", has(Items.CLAY_BALL))
+                    .pattern("   ")
+                    .pattern("c c")
+                    .pattern(" c ")
+                    .define('c', Items.CLAY_BALL)
+                    .save(consumer);
+
+            ShapedRecipeBuilder.shaped(SluiceModItems.PUMP.get())
+                    .unlockedBy("has_item", has(Items.CLAY_BALL))
+                    .pattern("www")
+                    .pattern("sss")
+                    .pattern("bbb")
+                    .define('w', Items.WATER_BUCKET)
+                    .define('s', Items.SMOOTH_STONE)
+                    .define('b', Items.OAK_PLANKS)
+                    .save(consumer);
+
             ShapedRecipeBuilder.shaped(SluiceModItems.OAK_SLUICE.get())
-                    .unlockedBy("has_item", has(this.STRING))
+                    .unlockedBy("has_item", has(this.STICK))
                     .pattern("WS")
                     .pattern("WW")
                     .define('S', this.STICK)
@@ -256,7 +281,7 @@ public class SluiceDataGen {
                     .save(consumer);
 
             ShapedRecipeBuilder.shaped(SluiceModItems.IRON_SLUICE.get())
-                    .unlockedBy("has_item", has(this.STRING))
+                    .unlockedBy("has_item", has(this.IRON_INGOT))
                     .pattern("IC")
                     .pattern("SI")
                     .define('S', SluiceModItems.OAK_SLUICE.get())
@@ -354,6 +379,7 @@ public class SluiceDataGen {
         protected void addTables() {
 //            this.dropSelf(SluiceBlocks.TANK.get());
             this.dropSelf(SluiceBlocks.DUST_BLOCK.get());
+            this.dropSelf(SluiceBlocks.PUMP.get());
             SluiceBlocks.SLUICES.forEach(e -> this.dropSelf(e.getKey().get()));
         }
 

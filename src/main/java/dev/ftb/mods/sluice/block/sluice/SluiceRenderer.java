@@ -1,4 +1,4 @@
-package dev.ftb.mods.sluice.renderer;
+package dev.ftb.mods.sluice.block.sluice;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

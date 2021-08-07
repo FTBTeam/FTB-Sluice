@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ftbsluice:tank"
+          "name": "ftbsluice:pump"
         }
       ],
       "conditions": [
