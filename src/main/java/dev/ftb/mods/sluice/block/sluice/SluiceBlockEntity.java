@@ -6,7 +6,6 @@ import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.capabilities.Energy;
 import dev.ftb.mods.sluice.capabilities.FluidCap;
 import dev.ftb.mods.sluice.capabilities.ItemsHandler;
-import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.item.UpgradeItem;
 import dev.ftb.mods.sluice.item.Upgrades;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
@@ -25,7 +24,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -51,7 +49,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity, MenuProvider {
     public final ItemsHandler inventory;
@@ -147,7 +148,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
             @Override
             public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-                if (FTBSluiceRecipes.itemIsSluiceInput(getLevel(), SluiceBlockEntity.this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
+                if (FTBSluiceRecipes.itemIsSluiceInput(SluiceBlockEntity.this.getBlockState().getValue(SluiceBlock.MESH), stack)) {
                     return super.insertItem(slot, stack, simulate);
                 }
 
@@ -254,7 +255,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             return;
         }
 
-        if(this.tank.isEmpty() || this.tank.getFluidAmount() < this.properties.fluidUsage.get()) {
+        if (this.tank.isEmpty() || this.tank.getFluidAmount() < this.properties.fluidUsage.get()) {
             return;
         }
 

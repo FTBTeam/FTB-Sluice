@@ -1,6 +1,7 @@
 package dev.ftb.mods.sluice.block;
 
 import dev.ftb.mods.sluice.FTBSluice;
+import dev.ftb.mods.sluice.block.pump.PumpBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
@@ -26,6 +27,8 @@ public class SluiceBlocks {
     public static final RegistryObject<Block> IRON_SLUICE = REGISTRY.register("iron_sluice", SluiceBlock::new);
     public static final RegistryObject<Block> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", SluiceBlock::new);
     public static final RegistryObject<Block> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", SluiceBlock::new);
+
+    public static final RegistryObject<Block> PUMP = REGISTRY.register("pump", PumpBlock::new);
 
 //    public static final RegistryObject<Block> TANK = REGISTRY.register("tank", () -> new Tank(false));
 //    public static final RegistryObject<Block> TANK_CREATIVE = REGISTRY.register("tank_creative", () -> new Tank(true));

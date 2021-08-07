@@ -16,7 +16,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Triple;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -116,13 +115,7 @@ public class FTBSluiceRecipes {
         return !getSluiceRecipes(fluid, level, mesh, input).getItems().isEmpty();
     }
 
-    public static boolean itemIsSluiceInput(@Nullable Level world, MeshType mesh, ItemStack input) {
-        if (world == null) {
-            return false;
-        }
-
-        refreshCaches(world.getRecipeManager());
-
+    public static boolean itemIsSluiceInput(MeshType mesh, ItemStack input) {
         if (!sluiceInputCache.containsKey(mesh)) {
             return false;
         }
@@ -143,9 +136,7 @@ public class FTBSluiceRecipes {
         });
     }
 
-    public static boolean hammerable(Level world, BlockState state) {
-        refreshCaches(world.getRecipeManager());
-
+    public static boolean hammerable(BlockState state) {
         return hammerableCache.stream().anyMatch(e -> {
             ItemStack stack = new ItemStack(state.getBlock());
             return e.test(stack);
