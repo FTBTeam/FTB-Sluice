@@ -82,7 +82,8 @@ public class FTBSluice {
         SluiceClient.init();
     }
 
-    private void reloadListeners(AddReloadListenerEvent event) {
+    @SubscribeEvent
+    public void reloadListeners(AddReloadListenerEvent event) {
         event.addListener(new RecipeReloader(event.getDataPackRegistries()));
     }
 
