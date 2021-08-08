@@ -26,6 +26,9 @@ loom {
     launches {
         data {
             arg "--existing", file("src/main/resources").absolutePath
+            arg "--assetIndex", "1.16.5-1.16"
+            arg "--assetsDir", "C:\\Users\\Mikey\\.gradle\\caches\\fabric-loom\\assets"
+//            arg "--existing", file("src/main/resources").absolutePath
         }
     }
 }
