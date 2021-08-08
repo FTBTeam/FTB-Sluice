@@ -46,8 +46,8 @@ public class PumpBlock extends Block {
                 if (player.getHealth() - 1 <= 0) {
                     LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(level);
                     if (lightning != null) {
-                        Vec3 position = player.getPosition(1f);
-                        lightning.moveTo(Vec3.atBottomCenterOf(new Vec3i(position.x, position.y, position.z)));
+                        BlockPos position = player.blockPosition();
+                        lightning.moveTo(Vec3.atBottomCenterOf(new Vec3i(position.getX(), position.getY(), position.getZ())));
                         lightning.setVisualOnly(false);
                         level.addFreshEntity(lightning);
                     }
