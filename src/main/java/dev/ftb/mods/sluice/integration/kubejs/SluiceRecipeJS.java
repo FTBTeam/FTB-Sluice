@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.UtilsJS;
 
 public class SluiceRecipeJS extends RecipeJS {
     private int max = 0;
@@ -14,12 +15,10 @@ public class SluiceRecipeJS extends RecipeJS {
     @Override
     public void create(ListJS args) {
         this.meshes(args.get(0));
-        this.json.addProperty("fluid", (String) args.get(1));
         this.inputItems.add(this.parseIngredientItem(args.get(2)));
-        this.json.addProperty("max", (Number) args.get(3));
 
         this.fluid = (String) args.get(1);
-        this.max = ((Number) args.get(3)).intValue();
+        this.max = UtilsJS.parseInt(args.get(3), 0);
 
         for (Object o : ListJS.orSelf(args.get(4))) {
             ListJS l = ListJS.orSelf(o);
@@ -27,7 +26,7 @@ public class SluiceRecipeJS extends RecipeJS {
             ItemStackJS i = this.parseResultItem(l.get(0));
 
             if (l.size() >= 2) {
-                i = i.withChance(((Number) l.get(1)).doubleValue());
+                i = i.withChance(UtilsJS.parseDouble(l.get(1), 1));
             }
 
             this.outputItems.add(i);
