@@ -16,9 +16,7 @@ group = project.maven_group
 loom {
     silentMojangMappingsLicense()
 
-    mixinConfigs = [
-    ]
-
+    mixinConfigs = []
     useFabricMixin = true
 
     dataGen {
@@ -46,18 +44,18 @@ repositories {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings minecraft.officialMojangMappings()
+
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 
     modImplementation "curse.maven:jei-238222:${jei_file}"
     modImplementation "me.shedaniel:architectury-forge:${arch_version}"
     modImplementation "dev.latvian.mods:kubejs-forge:${kubejs_version}"
     modImplementation "dev.latvian.mods:rhino:${rhino_version}"
-
     modImplementation "mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api"
-    modRuntime "mcjty.theoneprobe:TheOneProbe-1.16:${top_version}"
 
+    modRuntime "mcjty.theoneprobe:TheOneProbe-1.16:${top_version}"
     modRuntime "curse.maven:powah-352656:3232535"
     modRuntime "curse.maven:lollipop-347954:3232534"
     modRuntime "curse.maven:pipez-443900:3273405"
