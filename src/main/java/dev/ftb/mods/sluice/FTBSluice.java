@@ -4,7 +4,6 @@ import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlockContainer;
 import dev.ftb.mods.sluice.integration.TheOneProbeProvider;
-import dev.ftb.mods.sluice.integration.kubejs.KubeJSIntegration;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.loot.HammerModifier;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
@@ -72,10 +71,6 @@ public class FTBSluice {
         bus.addListener(this::sendIMC);
 
         MinecraftForge.EVENT_BUS.register(this);
-
-        if (ModList.get().isLoaded("kubejs")) {
-            KubeJSIntegration.init();
-        }
     }
 
     private void clientSetup(FMLClientSetupEvent event) {

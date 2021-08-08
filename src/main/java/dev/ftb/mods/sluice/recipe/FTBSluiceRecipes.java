@@ -53,13 +53,9 @@ public class FTBSluiceRecipes {
     }
 
     public static void refreshCaches(RecipeManager manager) {
-        if (sluiceInputCache.isEmpty()) {
-            createSluiceCaches(manager);
-        }
-
-        if (hammerableCache.isEmpty()) {
-            createHammerables(manager);
-        }
+        clearCache();
+        createSluiceCaches(manager);
+        createHammerables(manager);
     }
 
     public static void clearCache() {

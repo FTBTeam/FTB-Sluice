@@ -1,12 +1,7 @@
 package dev.ftb.mods.sluice.block.pump;
 
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -46,8 +41,7 @@ public class PumpBlock extends Block {
                 if (player.getHealth() - 1 <= 0) {
                     LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(level);
                     if (lightning != null) {
-                        BlockPos position = player.blockPosition();
-                        lightning.moveTo(Vec3.atBottomCenterOf(new Vec3i(position.getX(), position.getY(), position.getZ())));
+                        lightning.moveTo(Vec3.atBottomCenterOf(player.blockPosition()));
                         lightning.setVisualOnly(false);
                         level.addFreshEntity(lightning);
                     }
