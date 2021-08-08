@@ -21,10 +21,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.util.Constants;
 import org.jetbrains.annotations.Nullable;
 
 public class PumpBlock extends Block {
-    public static final DamageSource STATIC_ELECTRIC = new DamageSource("static").bypassArmor().bypassMagic();
+    public static final DamageSource STATIC_ELECTRIC = new DamageSource("static_electric").bypassArmor().bypassMagic();
 
     public PumpBlock() {
         super(Properties.of(Material.STONE).instabreak());
@@ -37,11 +38,14 @@ public class PumpBlock extends Block {
             return InteractionResult.PASS;
         }
 
-        PumpBlockEntity pump = ((PumpBlockEntity) blockEntity);
-        pump.timeLeft += 9;
+        if (!level.isClientSide) {
+            PumpBlockEntity pump = ((PumpBlockEntity) blockEntity);
+            pump.timeLeft += 12;
 
-        if (pump.timeLeft > 6000) {
-            if (!level.isClientSide) {
+            blockEntity.setChanged();
+            level.sendBlockUpdated(pos, state, state, Constants.BlockFlags.DEFAULT);
+
+            if (pump.timeLeft > 6000) {
                 player.hurt(STATIC_ELECTRIC, 1);
                 if (player.getHealth() - 1 <= 0) {
                     LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(level);
@@ -54,8 +58,6 @@ public class PumpBlock extends Block {
                 }
             }
         }
-
-        blockEntity.setChanged();
 
         return InteractionResult.SUCCESS;
     }
