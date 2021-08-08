@@ -114,9 +114,8 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
 
     @Override
     public void load(BlockState state, CompoundTag compound) {
-        super.load(state, compound);
-
         this.timeLeft = compound.getInt("time_left");
+        super.load(state, compound);
     }
 
     @Override
@@ -138,7 +137,7 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
     @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return new ClientboundBlockEntityDataPacket(this.worldPosition, 0, this.save(new CompoundTag()));
+        return new ClientboundBlockEntityDataPacket(this.getBlockPos(), 0, this.save(new CompoundTag()));
     }
 
     @Override
