@@ -4,8 +4,6 @@ import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlockEntity;
 import mcjty.theoneprobe.api.*;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
