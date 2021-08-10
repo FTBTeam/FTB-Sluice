@@ -113,6 +113,9 @@ public class SluiceDataGen {
             this.add(MODID + ".jei.processingTime", "Processing Time: %s ticks");
             this.add(MODID + ".jei.fluidUsage", "Uses %smB of Fluid");
             this.add("death.attack.static_electric", "%1$s was killed by static electricity!");
+
+            this.add("fluid.ftbsluice.lava", "Lava");
+            this.add("fluid.ftbsluice.water", "Water");
         }
     }
 

@@ -2,6 +2,9 @@ package dev.ftb.mods.sluice.block.pump;
 
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,7 +26,7 @@ public class PumpBlock extends Block {
     public static final DamageSource STATIC_ELECTRIC = new DamageSource("static_electric").bypassArmor().bypassMagic();
 
     public PumpBlock() {
-        super(Properties.of(Material.STONE).instabreak());
+        super(Properties.of(Material.STONE).strength(1f, 1f));
     }
 
     @Override
@@ -35,18 +38,28 @@ public class PumpBlock extends Block {
 
         if (!level.isClientSide) {
             PumpBlockEntity pump = ((PumpBlockEntity) blockEntity);
-            pump.timeLeft += 12;
+            if (pump.creative) {
+                return InteractionResult.PASS;
+            }
 
-            blockEntity.setChanged();
-            level.sendBlockUpdated(pos, state, state, Constants.BlockFlags.DEFAULT);
+            if (pump.timeLeft < 6000) {
+                pump.timeLeft += 14;
+                if (pump.timeLeft > 6000) {
+                    pump.timeLeft = 6000;
+                }
 
-            if (pump.timeLeft > 6000) {
-                player.hurt(STATIC_ELECTRIC, 1);
-                if (player.getHealth() - 1 <= 0) {
+                blockEntity.setChanged();
+                level.sendBlockUpdated(pos, state, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
+            } else {
+                player.hurt(STATIC_ELECTRIC, 2);
+                if (player.getHealth() - 2 < 0) {
                     LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(level);
                     if (lightning != null) {
                         lightning.moveTo(Vec3.atBottomCenterOf(player.blockPosition()));
-                        lightning.setVisualOnly(false);
+                        lightning.setVisualOnly(true);
+                        lightning.setSilent(true);
+                        player.playSound(SoundEvents.LIGHTNING_BOLT_IMPACT, 1F, 1F);
+                        player.playSound(SoundEvents.LIGHTNING_BOLT_THUNDER, 1F, 1F);
                         level.addFreshEntity(lightning);
                     }
                 }
