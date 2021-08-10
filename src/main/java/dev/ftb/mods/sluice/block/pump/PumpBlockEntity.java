@@ -49,25 +49,10 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
             return;
         }
 
-        // Just do it
-        if (this.creative) {
-            this.getTargetPos().ifPresent(e -> {
-                BlockEntity blockEntity = level.getBlockEntity(e);
-                if (blockEntity == null) {
-                    return;
-                }
-
-                this.provideFluidToSluice(blockEntity);
-            });
-
-            // Don't do anything else, creative means creative
-            return;
-        }
-
         FluidState fluidState = level.getBlockState(this.getBlockPos().below()).getFluidState();
 
         // No valid fluid source
-        if (fluidState.isEmpty() || !fluidState.isSource() || !fluidState.is(FluidTags.WATER)) {
+        if (!this.creative && fluidState.isEmpty() || !fluidState.isSource() || !fluidState.is(FluidTags.WATER)) {
             return;
         }
 
@@ -87,6 +72,21 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
             }
 
             checkTimeout ++;
+            return;
+        }
+
+        // Just do it
+        if (this.creative) {
+            this.getTargetPos().ifPresent(e -> {
+                BlockEntity blockEntity = level.getBlockEntity(e);
+                if (blockEntity == null) {
+                    return;
+                }
+
+                this.provideFluidToSluice(blockEntity);
+            });
+
+            // Don't do anything else, creative means creative
             return;
         }
 
