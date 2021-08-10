@@ -8,10 +8,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
@@ -19,8 +21,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 
 public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity {
@@ -30,6 +34,8 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
     private int checkTimeout = 0;
     private boolean foundValidBlock = false;
     private int lastTick = 0;
+    boolean creative = false;
+    Fluid creativeFluid = Fluids.WATER;
 
     private BlockPos targetPos = null;
 
@@ -39,7 +45,22 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
 
     @Override
     public void tick() {
-        if (this.level == null || this.timeLeft <= 0) {
+        if (this.level == null || (this.timeLeft <= 0 && !this.creative)) {
+            return;
+        }
+
+        // Just do it
+        if (this.creative) {
+            this.getTargetPos().ifPresent(e -> {
+                BlockEntity blockEntity = level.getBlockEntity(e);
+                if (blockEntity == null) {
+                    return;
+                }
+
+                this.provideFluidToSluice(blockEntity);
+            });
+
+            // Don't do anything else, creative means creative
             return;
         }
 
@@ -78,19 +99,11 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
 
         this.getTargetPos().ifPresent(e -> {
             BlockEntity blockEntity = level.getBlockEntity(e);
-
-            // It's gone! Poof
-            if (!(blockEntity instanceof SluiceBlockEntity)) {
-                this.foundValidBlock = false;
-                this.targetPos = null;
+            if (blockEntity == null) {
                 return;
             }
 
-            // Give it water!
-            FluidCap tank = ((SluiceBlockEntity) blockEntity).tank;
-            if (tank.getFluidAmount() < tank.getCapacity()) {
-                tank.internalFill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
-            }
+            this.provideFluidToSluice(blockEntity);
 
             this.timeLeft -= 20;
             if (this.timeLeft < 0) {
@@ -101,6 +114,21 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
         });
     }
 
+    private void provideFluidToSluice(BlockEntity blockEntity) {
+        // It's gone! Poof
+        if (!(blockEntity instanceof SluiceBlockEntity)) {
+            this.foundValidBlock = false;
+            this.targetPos = null;
+            return;
+        }
+
+        // Give it water!
+        FluidCap tank = ((SluiceBlockEntity) blockEntity).tank;
+        if (tank.getFluidAmount() < tank.getCapacity()) {
+            tank.internalFill(new FluidStack(this.creative ? this.creativeFluid : Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
+        }
+    }
+
     public Optional<BlockPos> getTargetPos() {
         return Optional.ofNullable(targetPos);
     }
@@ -108,6 +136,11 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
     @Override
     public CompoundTag save(CompoundTag compound) {
         compound.putInt("time_left", this.timeLeft);
+        compound.putBoolean("is_creative", this.creative);
+
+        if (this.creativeFluid != Fluids.WATER) {
+            compound.putString("creative_fluid", Objects.requireNonNull(this.creativeFluid.getRegistryName()).toString());
+        }
 
         return super.save(compound);
     }
@@ -115,6 +148,13 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
     @Override
     public void load(BlockState state, CompoundTag compound) {
         this.timeLeft = compound.getInt("time_left");
+        this.creative = compound.getBoolean("is_creative");
+
+        if (compound.contains("creative_fluid")) {
+            Fluid creativeFluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(compound.getString("creative_fluid")));
+            this.creativeFluid = creativeFluid == null ? Fluids.WATER : creativeFluid;
+        }
+
         super.load(state, compound);
     }
 

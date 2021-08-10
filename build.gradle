@@ -1,5 +1,5 @@
 plugins {
-    id 'dev.architectury.loom' version '0.7.2-SNAPSHOT'
+    id 'dev.architectury.loom' version '0.7.3-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -43,13 +43,21 @@ repositories {
             includeGroup 'mcjty.theoneprobe'
         }
     }
+
+    maven {
+        name = "parchmentmc"
+        url = "https://maven.parchmentmc.org"
+    }
 }
 
 dependencies {
-    mappings minecraft.officialMojangMappings()
-
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.16.5:2021.08.08")
+    }
 
     modImplementation "curse.maven:jei-238222:${jei_file}"
     modImplementation "me.shedaniel:architectury-forge:${arch_version}"

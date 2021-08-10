@@ -9,6 +9,8 @@
   "block.ftbsluice.oak_sluice": "Oak Sluice",
   "block.ftbsluice.pump": "Pump (hand holder)",
   "death.attack.static_electric": "%1$s was killed by static electricity!",
+  "fluid.ftbsluice.lava": "Lava",
+  "fluid.ftbsluice.water": "Water",
   "ftbsluice.jei.fluidUsage": "Uses %smB of Fluid",
   "ftbsluice.jei.processingTime": "Processing Time: %s ticks",
   "item.ftbsluice.clay_bucket": "Clay Bucket",
