@@ -57,9 +57,6 @@ public class PumpBlock extends Block {
                     if (lightning != null) {
                         lightning.moveTo(Vec3.atBottomCenterOf(player.blockPosition()));
                         lightning.setVisualOnly(true);
-                        lightning.setSilent(true);
-                        player.playSound(SoundEvents.LIGHTNING_BOLT_IMPACT, 1F, 1F);
-                        player.playSound(SoundEvents.LIGHTNING_BOLT_THUNDER, 1F, 1F);
                         level.addFreshEntity(lightning);
                     }
                 }
