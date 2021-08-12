@@ -1,7 +1,65 @@
 {
-  "variants": {
-    "": {
-      "model": "ftbsluice:block/pump"
+  "multipart": [
+    {
+      "when": {
+        "on_off": "false"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_off"
+      }
+    },
+    {
+      "when": {
+        "on_off": "true"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_on"
+      }
+    },
+    {
+      "when": {
+        "on_off": "true",
+        "progress": "twenty"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_20"
+      }
+    },
+    {
+      "when": {
+        "on_off": "true",
+        "progress": "forty"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_40"
+      }
+    },
+    {
+      "when": {
+        "on_off": "true",
+        "progress": "sixty"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_60"
+      }
+    },
+    {
+      "when": {
+        "on_off": "true",
+        "progress": "eighty"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_80"
+      }
+    },
+    {
+      "when": {
+        "on_off": "true",
+        "progress": "hundred"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_100"
+      }
     }
-  }
+  ]
 }

@@ -3,6 +3,7 @@ package dev.ftb.mods.sluice.block.pump;
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlockEntity;
 import dev.ftb.mods.sluice.capabilities.FluidCap;
+import dev.ftb.mods.sluice.capabilities.ItemsHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -10,6 +11,8 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,6 +39,7 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
     private int lastTick = 0;
     boolean creative = false;
     Fluid creativeFluid = Fluids.WATER;
+    Item creativeItem = null;
 
     private BlockPos targetPos = null;
 
@@ -84,6 +88,12 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
                 }
 
                 this.provideFluidToSluice(blockEntity);
+                if (this.creativeItem != null && blockEntity instanceof SluiceBlockEntity) {
+                    ItemsHandler inventory = ((SluiceBlockEntity) blockEntity).inventory;
+                    if (inventory.getStackInSlot(0).isEmpty()) {
+                        inventory.internalInsert(0, new ItemStack(this.creativeItem, 1), false);
+                    }
+                }
             });
 
             // Don't do anything else, creative means creative
@@ -106,8 +116,11 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
             this.provideFluidToSluice(blockEntity);
 
             this.timeLeft -= 20;
+            PumpBlock.computeStateForProgress(this.getBlockState(), this.getBlockPos(), this.level, this.timeLeft);
             if (this.timeLeft < 0) {
                 this.timeLeft = 0;
+
+                level.setBlock(this.getBlockPos(), this.getBlockState().setValue(PumpBlock.ON_OFF, false).setValue(PumpBlock.PROGRESS, PumpBlock.Progress.ZERO), 3);
             }
 
             blockEntity.setChanged();
@@ -142,6 +155,10 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
             compound.putString("creative_fluid", Objects.requireNonNull(this.creativeFluid.getRegistryName()).toString());
         }
 
+        if (this.creativeItem != null) {
+            compound.putString("creative_item", Objects.requireNonNull(this.creativeItem.getRegistryName()).toString());
+        }
+
         return super.save(compound);
     }
 
@@ -153,6 +170,10 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
         if (compound.contains("creative_fluid")) {
             Fluid creativeFluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(compound.getString("creative_fluid")));
             this.creativeFluid = creativeFluid == null ? Fluids.WATER : creativeFluid;
+        }
+
+        if (compound.contains("creative_item")) {
+            this.creativeItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(compound.getString("creative_item")));
         }
 
         super.load(state, compound);

@@ -3,6 +3,7 @@ package dev.ftb.mods.sluice.integration.jei;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
+import dev.ftb.mods.sluice.recipe.ItemWithWeight;
 import dev.ftb.mods.sluice.recipe.SluiceRecipe;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -22,13 +23,14 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
     public static final ResourceLocation ID = new ResourceLocation(FTBSluice.MOD_ID, "sluice_jei");
     public static final ResourceLocation BACKGROUND = new ResourceLocation(FTBSluice.MOD_ID, "textures/gui/sluice_jei_background.png");
+
+    private final static Comparator<ItemWithWeight> COMPARATOR = (a, b) -> (int) ((b.weight * 100) - (a.weight * 100));
 
     private final IDrawableStatic background;
 
@@ -65,7 +67,11 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
     public void setIngredients(SluiceRecipe sluiceRecipe, IIngredients iIngredients) {
         iIngredients.setInputLists(VanillaTypes.ITEM, Arrays.asList(Arrays.asList(sluiceRecipe.ingredient.getItems()), sluiceRecipe.meshes.stream().map(MeshType::getItemStack).collect(Collectors.toList())));
         iIngredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(Collections.singletonList(new FluidStack(sluiceRecipe.fluid, 1000))));
-        iIngredients.setOutputs(VanillaTypes.ITEM, sluiceRecipe.results.stream().map(e -> e.item).collect(Collectors.toList()));
+
+        List<ItemWithWeight> results = new ArrayList<>(sluiceRecipe.results);
+        results.sort(COMPARATOR);
+
+        iIngredients.setOutputs(VanillaTypes.ITEM, results.stream().map(e -> e.item).collect(Collectors.toList()));
     }
 
     @Override
@@ -76,7 +82,10 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
         itemStacks.init(0, true, 4, 4);
         itemStacks.init(1, true, 4, 23);
 
-        for (int i = 0; i < sluiceRecipe.results.size(); i++) {
+        ArrayList<ItemWithWeight> itemWithWeights = new ArrayList<>(sluiceRecipe.results);
+        itemWithWeights.sort(COMPARATOR);
+
+        for (int i = 0; i < itemWithWeights.size(); i++) {
             itemStacks.init(2 + i, false, 27 + (i % 7 * 18), 4 + i / 7 * 24);
         }
 
@@ -106,15 +115,18 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
     public void draw(SluiceRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         IRecipeCategory.super.draw(recipe, matrixStack, mouseX, mouseY);
 
+        ArrayList<ItemWithWeight> itemWithWeights = new ArrayList<>(recipe.results);
+        itemWithWeights.sort(COMPARATOR);
+
         int row = 0;
-        for (int i = 0; i < recipe.results.size(); i++) {
+        for (int i = 0; i < itemWithWeights.size(); i++) {
             if (i > 0 && i % 7 == 0) {
                 row++;
             }
             matrixStack.pushPose();
             matrixStack.translate(36 + (i % 7 * 18), 23.5f + (row * 24), 100);
             matrixStack.scale(.5F, .5F, 8000F);
-            Gui.drawCenteredString(matrixStack, Minecraft.getInstance().font, Math.round(recipe.results.get(i).weight * 100) + "%", 0, 0, 0xFFFFFF);
+            Gui.drawCenteredString(matrixStack, Minecraft.getInstance().font, Math.round(itemWithWeights.get(i).weight * 100) + "%", 0, 0, 0xFFFFFF);
             matrixStack.popPose();
         }
     }

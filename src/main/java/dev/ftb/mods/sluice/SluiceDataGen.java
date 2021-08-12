@@ -4,9 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
+import dev.ftb.mods.sluice.block.pump.PumpBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.tags.SluiceTags;
+import dev.latvian.kubejs.text.Text;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
@@ -25,6 +27,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.GlassBlock;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -116,6 +119,30 @@ public class SluiceDataGen {
 
             this.add("fluid.ftbsluice.lava", "Lava");
             this.add("fluid.ftbsluice.water", "Water");
+
+            this.add("ftbsluice.tooltip.sluice_1_oak", "Rather basic, but it gets the job done.");
+            this.add("ftbsluice.tooltip.sluice_2_oak", "Cannot be automated.");
+
+            this.add("ftbsluice.tooltip.sluice_1_iron", "A bit on the slow side still, but it seems to use a lot less fluid than before.");
+            this.add("ftbsluice.tooltip.sluice_2_iron", "Item in-/output can be automated.");
+
+            this.add("ftbsluice.tooltip.sluice_1_diamond", "Significantly faster than the iron one, but also a bit less fluid-efficient.");
+            this.add("ftbsluice.tooltip.sluice_2_diamond", "Can be fully automated.");
+
+            this.add("ftbsluice.tooltip.sluice_1_netherite", "Forged from Netherite, this sluice proves itself to be both efficient and modular.");
+            this.add("ftbsluice.tooltip.sluice_2_netherite", "Can be fully automated, as well as upgraded to further increase efficiency.");
+
+            this.add("ftbsluice.tooltip.processing_time", "Processing Time: §6%s§rx");
+            this.add("ftbsluice.tooltip.fluid_usage", "Fluid Usage Multiplier: §6%s§rx");
+            this.add("ftbsluice.tooltip.can_hold", "Can hold §6%s§r mB of fluid");
+            this.add("ftbsluice.tooltip.hold_shift", "Hold Shift for more information");
+
+            this.add("ftbsluice.tooltip.upgrade_fortune", "Increases drop chance by 3% per upgrade");
+            this.add("ftbsluice.tooltip.upgrade_speed", "Increases the speed of the sluice by 5% per upgrade");
+            this.add("ftbsluice.tooltip.upgrade_fluid", "Reduces the fluid cost by 5% per upgrade.");
+            this.add("ftbsluice.tooltip.upgrade_meta", "Each upgrade increase the power cost exponentially: base cost + (%s ^ upgrades)");
+
+            this.add("ftbsluice.power_cost", "Cost: %s");
         }
     }
 
@@ -150,8 +177,16 @@ public class SluiceDataGen {
                 }
             }
 
+            MultiPartBlockStateBuilder builder = this.getMultipartBuilder(SluiceBlocks.PUMP.get());
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_off"))).addModel().condition(PumpBlock.ON_OFF, false);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_on"))).addModel().condition(PumpBlock.ON_OFF, true);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_20"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.TWENTY);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_40"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.FORTY);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_60"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.SIXTY);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_80"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.EIGHTY);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_100"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.HUNDRED);
+
             this.simpleBlock(SluiceBlocks.DUST_BLOCK.get());
-            this.simpleBlock(SluiceBlocks.PUMP.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_NETHERRACK.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_BASALT.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_ENDSTONE.get());
@@ -201,7 +236,7 @@ public class SluiceDataGen {
 
         private void registerBlockModel(Block block) {
             String path = block.getRegistryName().getPath();
-            this.getBuilder(path).parent(new ModelFile.UncheckedModelFile(this.modLoc("block/" + path)));
+            this.getBuilder(path).parent(new ModelFile.UncheckedModelFile(this.modLoc("block/" + path + "_on")));
         }
     }
 

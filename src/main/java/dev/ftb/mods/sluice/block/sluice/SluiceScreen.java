@@ -3,8 +3,10 @@ package dev.ftb.mods.sluice.block.sluice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ftb.mods.sluice.FTBSluice;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -21,6 +23,10 @@ public class SluiceScreen extends AbstractContainerScreen<SluiceBlockContainer> 
     public void render(PoseStack pose, int x, int y, float partialTicks) {
         this.renderBackground(pose);
         super.render(pose, x, y, partialTicks);
+
+        String string = new TranslatableComponent("ftbsluice.power_cost", String.format("%,d", this.menu.tile.lastPowerCost) + "FE").getString();
+        Minecraft.getInstance().font.draw(pose, string, (width / 2f) - Minecraft.getInstance().font.width(string) + 80, (height / 2f) - 60, 0x4B4A4A);
+
         this.renderTooltip(pose, x, y);
     }
 

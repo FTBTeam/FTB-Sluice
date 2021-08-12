@@ -76,7 +76,7 @@ public class SluiceBlock extends Block {
                 .setValue(PART, Part.MAIN)
                 .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }
-
+    
     @Override
     public boolean hasTileEntity(BlockState state) {
         return state.getValue(PART) != Part.FUNNEL;
