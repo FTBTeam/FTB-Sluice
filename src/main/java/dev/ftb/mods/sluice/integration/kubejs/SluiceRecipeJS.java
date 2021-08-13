@@ -9,18 +9,15 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 
 public class SluiceRecipeJS extends RecipeJS {
-    private int max = 0;
-    private String fluid;
-
     @Override
     public void create(ListJS args) {
+        this.json.addProperty("fluid", "minecraft:water");
+        this.json.addProperty("max", 3);
+
         this.meshes(args.get(0));
-        this.inputItems.add(this.parseIngredientItem(args.get(2)));
+        this.inputItems.add(this.parseIngredientItem(args.get(1)));
 
-        this.fluid = (String) args.get(1);
-        this.max = UtilsJS.parseInt(args.get(3), 0);
-
-        for (Object o : ListJS.orSelf(args.get(4))) {
+        for (Object o : ListJS.orSelf(args.get(2))) {
             ListJS l = ListJS.orSelf(o);
 
             ItemStackJS i = this.parseResultItem(l.get(0));
@@ -61,11 +58,21 @@ public class SluiceRecipeJS extends RecipeJS {
         return this;
     }
 
+    public SluiceRecipeJS fluid(String fluid) {
+        this.json.addProperty("fluid", fluid);
+        this.save();
+        return this;
+    }
+
+    public SluiceRecipeJS max(int max) {
+        this.json.addProperty("max", max);
+        this.save();
+        return this;
+    }
+
     @Override
     public void deserialize() {
         this.inputItems.add(this.parseIngredientItem(this.json.get("ingredient")));
-        this.max = this.json.get("max").getAsInt();
-        this.fluid = this.json.get("fluid").getAsString();
 
         for (JsonElement e : this.json.get("results").getAsJsonArray()) {
             JsonObject o = e.getAsJsonObject();
@@ -87,8 +94,6 @@ public class SluiceRecipeJS extends RecipeJS {
 
         if (this.serializeInputs) {
             this.json.add("ingredient", this.inputItems.get(0).toJson());
-            this.json.addProperty("max", this.max);
-            this.json.addProperty("fluid", this.fluid);
         }
     }
 }

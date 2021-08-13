@@ -344,12 +344,13 @@ public class SluiceDataGen {
             this.hammer(SluiceModItems.NETHERITE_HAMMER.get(), Items.NETHERITE_INGOT, consumer);
 
             ShapedRecipeBuilder.shaped(SluiceModItems.CONSUMPTION_UPGRADE.get())
-                    .unlockedBy("has_item", has(Items.SPONGE))
+                    .unlockedBy("has_item", has(Items.LAVA_BUCKET))
                     .pattern("III")
-                    .pattern("ISI")
+                    .pattern("GSG")
                     .pattern("III")
                     .define('I', Tags.Items.INGOTS_IRON)
-                    .define('S', Items.SPONGE)
+                    .define('G', Tags.Items.INGOTS_GOLD)
+                    .define('S', Items.LAVA_BUCKET)
                     .save(consumer);
 
             ShapedRecipeBuilder.shaped(SluiceModItems.SPEED_UPGRADE.get())
