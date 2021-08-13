@@ -290,8 +290,7 @@ public class SluiceBlock extends Block {
                 tooltip.add(new TranslatableComponent("ftbsluice.properties.upgradeable").withStyle(TextUtil.COLOUR_INFO));
             }
         } else {
-            tooltip.add(new TranslatableComponent("ftbsluice.tooltip.sluice_1_" + this.props.name().toLowerCase()).withStyle(ChatFormatting.GRAY));
-            tooltip.add(new TranslatableComponent("ftbsluice.tooltip.sluice_2_" + this.props.name().toLowerCase()).withStyle(this.props == SluiceProperties.OAK ? ChatFormatting.RED : ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(new TranslatableComponent("ftbsluice.tooltip.sluice_" + this.props.name().toLowerCase()).withStyle(ChatFormatting.GRAY));
         }
     }
 

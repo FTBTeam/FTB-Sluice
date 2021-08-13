@@ -335,7 +335,6 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         int cost = (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), sum), Integer.MAX_VALUE);
         this.lastPowerCost = cost;
-        System.out.println(cost);
         return cost;
     }
 

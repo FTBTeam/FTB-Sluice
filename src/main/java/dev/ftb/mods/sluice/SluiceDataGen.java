@@ -93,7 +93,7 @@ public class SluiceDataGen {
                 this.addBlock(p.getLeft(), p.getRight().substring(0, 1).toUpperCase() + p.getRight().substring(1) + " Sluice");
             }
 
-            this.addBlock(SluiceBlocks.PUMP, "Pump (hand holder)");
+            this.addBlock(SluiceBlocks.PUMP, "Manual pump");
             this.addBlock(SluiceBlocks.DUST_BLOCK, "Dust");
             this.addBlock(SluiceBlocks.CRUSHED_NETHERRACK, "Crushed Netherrack");
             this.addBlock(SluiceBlocks.CRUSHED_BASALT, "Crushed Basalt");
@@ -116,17 +116,10 @@ public class SluiceDataGen {
             this.add("fluid.ftbsluice.lava", "Lava");
             this.add("fluid.ftbsluice.water", "Water");
 
-            this.add("ftbsluice.tooltip.sluice_1_oak", "Rather basic, but it gets the job done.");
-            this.add("ftbsluice.tooltip.sluice_2_oak", "Cannot be automated.");
-
-            this.add("ftbsluice.tooltip.sluice_1_iron", "A bit on the slow side still, but it seems to use a lot less fluid than before.");
-            this.add("ftbsluice.tooltip.sluice_2_iron", "Item in-/output can be automated.");
-
-            this.add("ftbsluice.tooltip.sluice_1_diamond", "Significantly faster than the iron one, but also a bit less fluid-efficient.");
-            this.add("ftbsluice.tooltip.sluice_2_diamond", "Can be fully automated.");
-
-            this.add("ftbsluice.tooltip.sluice_1_netherite", "Forged from Netherite, this sluice proves itself to be both efficient and modular.");
-            this.add("ftbsluice.tooltip.sluice_2_netherite", "Can be fully automated, as well as upgraded to further increase efficiency.");
+            this.add("ftbsluice.tooltip.sluice_oak", "Rather basic, but it gets the job done.");
+            this.add("ftbsluice.tooltip.sluice_iron", "A bit on the slow side still, but it seems to use a lot less fluid than before.");
+            this.add("ftbsluice.tooltip.sluice_diamond", "Significantly faster than the iron one, but also a bit less fluid-efficient.");
+            this.add("ftbsluice.tooltip.sluice_netherite", "Forged from Netherite, this sluice proves itself to be both efficient and modular.");
 
             this.add("ftbsluice.tooltip.upgrade_fortune", "Increases drop chance by 3% per upgrade");
             this.add("ftbsluice.tooltip.upgrade_speed", "Increases the speed of the sluice by 5% per upgrade");
@@ -211,8 +204,10 @@ public class SluiceDataGen {
 
         @Override
         protected void registerModels() {
+            String path = SluiceBlocks.PUMP.get().getRegistryName().getPath();
+            this.getBuilder(path).parent(new ModelFile.UncheckedModelFile(this.modLoc("block/" + path + "_on")));
+
             this.registerBlockModel(SluiceBlocks.DUST_BLOCK.get());
-            this.registerBlockModel(SluiceBlocks.PUMP.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_NETHERRACK.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_BASALT.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_ENDSTONE.get());
@@ -237,7 +232,7 @@ public class SluiceDataGen {
 
         private void registerBlockModel(Block block) {
             String path = block.getRegistryName().getPath();
-            this.getBuilder(path).parent(new ModelFile.UncheckedModelFile(this.modLoc("block/" + path + "_on")));
+            this.getBuilder(path).parent(new ModelFile.UncheckedModelFile(this.modLoc("block/" + path)));
         }
     }
 
