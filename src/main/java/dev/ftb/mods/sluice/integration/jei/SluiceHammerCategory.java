@@ -35,7 +35,7 @@ public class SluiceHammerCategory implements IRecipeCategory<HammerRecipe> {
 
     @Override
     public String getTitle() {
-        return "Hammers";
+        return "Hammering";
     }
 
     @Override

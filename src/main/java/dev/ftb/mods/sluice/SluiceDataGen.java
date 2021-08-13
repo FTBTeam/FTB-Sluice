@@ -4,9 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
+import dev.ftb.mods.sluice.block.pump.PumpBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.tags.SluiceTags;
+import dev.latvian.kubejs.text.Text;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
@@ -24,7 +26,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -92,7 +93,7 @@ public class SluiceDataGen {
                 this.addBlock(p.getLeft(), p.getRight().substring(0, 1).toUpperCase() + p.getRight().substring(1) + " Sluice");
             }
 
-            this.addBlock(SluiceBlocks.PUMP, "Pump (hand holder)");
+            this.addBlock(SluiceBlocks.PUMP, "Manual pump");
             this.addBlock(SluiceBlocks.DUST_BLOCK, "Dust");
             this.addBlock(SluiceBlocks.CRUSHED_NETHERRACK, "Crushed Netherrack");
             this.addBlock(SluiceBlocks.CRUSHED_BASALT, "Crushed Basalt");
@@ -110,12 +111,32 @@ public class SluiceDataGen {
             this.addItem(SluiceModItems.CONSUMPTION_UPGRADE, "Consumption Upgrade");
             this.addItem(SluiceModItems.SPEED_UPGRADE, "Speed Upgrade");
 
-            this.add(MODID + ".jei.processingTime", "Processing Time: %s ticks");
-            this.add(MODID + ".jei.fluidUsage", "Uses %smB of Fluid");
             this.add("death.attack.static_electric", "%1$s was killed by static electricity!");
 
             this.add("fluid.ftbsluice.lava", "Lava");
             this.add("fluid.ftbsluice.water", "Water");
+
+            this.add("ftbsluice.tooltip.sluice_oak", "Rather basic, but it gets the job done.");
+            this.add("ftbsluice.tooltip.sluice_iron", "A bit on the slow side still, but it seems to use a lot less fluid than before.");
+            this.add("ftbsluice.tooltip.sluice_diamond", "Significantly faster than the iron one, but also a bit less fluid-efficient.");
+            this.add("ftbsluice.tooltip.sluice_netherite", "Forged from Netherite, this sluice proves itself to be both efficient and modular.");
+
+            this.add("ftbsluice.tooltip.upgrade_fortune", "Increases drop chance by 3% per upgrade");
+            this.add("ftbsluice.tooltip.upgrade_speed", "Increases the speed of the sluice by 5% per upgrade");
+            this.add("ftbsluice.tooltip.upgrade_fluid", "Reduces the fluid cost by 5% per upgrade.");
+            this.add("ftbsluice.tooltip.upgrade_meta", "Each upgrade increase the power cost exponentially: base cost + (%s ^ upgrades)");
+
+            this.add("ftbsluice.power_cost", "Cost: %s");
+
+            this.add(MODID + ".jei.processingTime", "Processing Time: %s ticks");
+            this.add(MODID + ".jei.fluidUsage", "Uses %smB of Fluid");
+            this.add(MODID + ".properties.processing_time", "Processing Time: %sx");
+            this.add(MODID + ".properties.fluid_usage", "Fluid Usage Multiplier: %sx");
+            this.add(MODID + ".properties.tank", "Can hold %s mB of Fluid");
+            this.add(MODID + ".properties.auto", "Allows automation of: %s | %s");
+            this.add(MODID + ".properties.auto.item", "Items");
+            this.add(MODID + ".properties.auto.fluid", "Fluids");
+            this.add(MODID + ".properties.upgradeable", "Can be upgraded to further increase efficiency; requires RF to function");
         }
     }
 
@@ -150,8 +171,16 @@ public class SluiceDataGen {
                 }
             }
 
+            MultiPartBlockStateBuilder builder = this.getMultipartBuilder(SluiceBlocks.PUMP.get());
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_off"))).addModel().condition(PumpBlock.ON_OFF, false);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_on"))).addModel().condition(PumpBlock.ON_OFF, true);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_20"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.TWENTY);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_40"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.FORTY);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_60"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.SIXTY);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_80"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.EIGHTY);
+            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_100"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.HUNDRED);
+
             this.simpleBlock(SluiceBlocks.DUST_BLOCK.get());
-            this.simpleBlock(SluiceBlocks.PUMP.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_NETHERRACK.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_BASALT.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_ENDSTONE.get());
@@ -175,8 +204,10 @@ public class SluiceDataGen {
 
         @Override
         protected void registerModels() {
+            String path = SluiceBlocks.PUMP.get().getRegistryName().getPath();
+            this.getBuilder(path).parent(new ModelFile.UncheckedModelFile(this.modLoc("block/" + path + "_on")));
+
             this.registerBlockModel(SluiceBlocks.DUST_BLOCK.get());
-            this.registerBlockModel(SluiceBlocks.PUMP.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_NETHERRACK.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_BASALT.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_ENDSTONE.get());
@@ -313,12 +344,13 @@ public class SluiceDataGen {
             this.hammer(SluiceModItems.NETHERITE_HAMMER.get(), Items.NETHERITE_INGOT, consumer);
 
             ShapedRecipeBuilder.shaped(SluiceModItems.CONSUMPTION_UPGRADE.get())
-                    .unlockedBy("has_item", has(Items.SPONGE))
+                    .unlockedBy("has_item", has(Items.LAVA_BUCKET))
                     .pattern("III")
-                    .pattern("ISI")
+                    .pattern("GSG")
                     .pattern("III")
                     .define('I', Tags.Items.INGOTS_IRON)
-                    .define('S', Items.SPONGE)
+                    .define('G', Tags.Items.INGOTS_GOLD)
+                    .define('S', Items.LAVA_BUCKET)
                     .save(consumer);
 
             ShapedRecipeBuilder.shaped(SluiceModItems.SPEED_UPGRADE.get())

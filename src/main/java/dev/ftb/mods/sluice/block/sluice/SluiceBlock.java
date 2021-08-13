@@ -5,8 +5,14 @@ import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
 import dev.ftb.mods.sluice.item.MeshItem;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
+import dev.ftb.mods.sluice.util.TextUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -15,6 +21,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -43,6 +50,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class SluiceBlock extends Block {
@@ -69,14 +77,18 @@ public class SluiceBlock extends Block {
         SHAPES.put(Direction.WEST, Pair.of(WEST_BODY_SHAPE, WEST_FRONT_SHAPE));
     }
 
-    public SluiceBlock() {
+    private final SluiceProperties props;
+
+    public SluiceBlock(SluiceProperties props) {
         super(Properties.of(Material.METAL).sound(SoundType.METAL).strength(0.9F));
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(MESH, MeshType.NONE)
                 .setValue(PART, Part.MAIN)
                 .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
-    }
 
+        this.props = props;
+    }
+    
     @Override
     public boolean hasTileEntity(BlockState state) {
         return state.getValue(PART) != Part.FUNNEL;
@@ -249,6 +261,36 @@ public class SluiceBlock extends Block {
 
                 super.onRemove(state, world, pos, newState, isMoving);
             }
+        }
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable  BlockGetter level, List<Component> tooltip, TooltipFlag flag) {
+        boolean isShift = Screen.hasShiftDown();
+
+        tooltip.add(new TextComponent("" + TextUtil.INFO)
+                .append(new TextComponent(" (Shift)").withStyle(isShift ? ChatFormatting.DARK_GRAY : ChatFormatting.GRAY))
+                .withStyle(ChatFormatting.BLUE));
+
+        if (isShift) {
+            tooltip.add(new TranslatableComponent("ftbsluice.properties.processing_time",
+                    new TextComponent(props.processingTime.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent("ftbsluice.properties.fluid_usage",
+                    new TextComponent(props.fluidUsage.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent("ftbsluice.properties.tank",
+                    new TextComponent(props.tankCap.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+
+            tooltip.add(new TranslatableComponent("ftbsluice.properties.auto",
+                    new TranslatableComponent("ftbsluice.properties.auto.item").withStyle(props.allowsIO ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE),
+                    new TranslatableComponent("ftbsluice.properties.auto.fluid").withStyle(props.allowsTank ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE)
+            ).withStyle(ChatFormatting.GRAY));
+
+            if (props.upgradeable) {
+                tooltip.add(new TranslatableComponent("ftbsluice.properties.upgradeable").withStyle(TextUtil.COLOUR_INFO));
+            }
+        } else {
+            tooltip.add(new TranslatableComponent("ftbsluice.tooltip.sluice_" + this.props.name().toLowerCase()).withStyle(ChatFormatting.GRAY));
         }
     }
 

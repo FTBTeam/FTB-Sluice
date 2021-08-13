@@ -105,6 +105,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
     // Upgrade type, multiplication
     public final HashMap<Upgrades, Integer> upgradeCache = new HashMap<>();
+    public int lastPowerCost = 0;
 
     public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties) {
         this(type, properties, false);
@@ -223,6 +224,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             } else {
                 this.finishProcessing(this.level, state, input);
             }
+
             if (this.processed % 4 == 0) {
                 this.setChanged();
                 this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
@@ -331,7 +333,9 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             sum += i;
         }
 
-        return (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), sum), Integer.MAX_VALUE);
+        int cost = (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), sum), Integer.MAX_VALUE);
+        this.lastPowerCost = cost;
+        return cost;
     }
 
     private int computeEffectModifier(Upgrades upgrade) {
@@ -348,6 +352,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         compound.putInt("Processed", this.processed);
         compound.putInt("MaxProcessed", this.maxProcessed);
         compound.putInt("FluidUsage", this.fluidUsage);
+        compound.putInt("LastPowerCost", this.lastPowerCost);
         if (this.isNetherite) {
             compound.put("Upgrades", upgradeInventory.serializeNBT());
             this.updateUpgradeCache(this.upgradeInventory);
@@ -365,6 +370,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.processed = compound.getInt("Processed");
         this.maxProcessed = compound.getInt("MaxProcessed");
         this.fluidUsage = compound.getInt("FluidUsage");
+        this.lastPowerCost = compound.getInt("LastPowerCost");
 
         if (this.isNetherite) {
             this.energyOptional.ifPresent(e -> e.deserializeNBT(compound.getCompound("Energy")));
@@ -423,7 +429,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
             double my = 0.14D * (w.random.nextFloat() * 0.4D);
 
-            ItemEntity itemEntity = new ItemEntity(w, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, stack);
+            QuickDropItemEntity itemEntity = new QuickDropItemEntity(w, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, stack, (this instanceof OakSluiceBlockEntity || this instanceof IronSluiceBlockEntity ? 60 : 10) * 20);
+
             itemEntity.setNoPickUpDelay();
             itemEntity.setDeltaMovement(0, my, 0);
             w.addFreshEntity(itemEntity);

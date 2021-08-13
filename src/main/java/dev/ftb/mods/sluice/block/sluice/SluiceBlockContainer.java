@@ -8,12 +8,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.HopperBlock;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import java.util.Objects;
 
 public class SluiceBlockContainer extends AbstractContainerMenu {
+
+    public final SluiceBlockEntity tile;
 
     public static SluiceBlockContainer fromNetwork(int windowId, Inventory inv, FriendlyByteBuf data) {
         return new SluiceBlockContainer(windowId, inv, (SluiceBlockEntity) Objects.requireNonNull(inv.player.level.getBlockEntity(data.readBlockPos())));
@@ -23,6 +26,7 @@ public class SluiceBlockContainer extends AbstractContainerMenu {
         super(FTBSluice.SLUICE_MENU.get(), id);
 
         ItemStackHandler handler = tile.upgradeInventory;
+        this.tile = tile;
 
         // Yonk (Hopper)
         int n;

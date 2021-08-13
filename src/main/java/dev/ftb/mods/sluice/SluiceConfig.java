@@ -34,8 +34,6 @@ public class SluiceConfig {
     }
 
     public static class CategorySluice {
-        public final ForgeConfigSpec.IntValue tankStorage;
-
         public final ForgeConfigSpec.DoubleValue oakTimeMod;
         public final ForgeConfigSpec.DoubleValue ironTimeMod;
         public final ForgeConfigSpec.DoubleValue diamondTimeMod;
@@ -53,10 +51,6 @@ public class SluiceConfig {
 
         public CategorySluice() {
             COMMON_BUILDER.push("sluices");
-
-            this.tankStorage = COMMON_BUILDER
-                    .comment("How much fluid can be put into the sluices tank")
-                    .defineInRange("tank storage", 10000, 2000, 100000);
 
             this.oakTimeMod = COMMON_BUILDER
                     .comment("Defines how long it takes to process a resource in this Sluice (This is multiplied by the recipe base tick time)")
