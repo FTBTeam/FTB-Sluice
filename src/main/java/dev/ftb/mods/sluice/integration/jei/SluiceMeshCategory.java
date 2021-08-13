@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.recipe.SluiceRecipe;
+import dev.ftb.mods.sluice.util.TextUtil;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -16,7 +17,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +49,7 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
 
     @Override
     public String getTitle() {
-        return "Meshes";
+        return "Sluicing";
     }
 
     @Override
@@ -88,7 +89,7 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
         itemStacks.addTooltipCallback((idx, input, stack, tooltip) -> {
             if (idx == 1 && input) {
                 tooltip.add(new TranslatableComponent("ftbsluice.jei.processingTime",
-                        new TextComponent(sluiceRecipe.time + "").withStyle(style -> style.withColor(TextColor.fromRgb(0xfcb95b))))
+                        new TextComponent(sluiceRecipe.time + "").withStyle(TextUtil.COLOUR_HIGHLIGHT))
                         .withStyle(ChatFormatting.GRAY));
             }
         });
@@ -96,7 +97,7 @@ public class SluiceMeshCategory implements IRecipeCategory<SluiceRecipe> {
         fluidStacks.addTooltipCallback((idx, input, stack, tooltip) -> {
             if (idx == 0 && input) {
                 tooltip.add(new TranslatableComponent("ftbsluice.jei.fluidUsage",
-                        new TextComponent(sluiceRecipe.mb + "").withStyle(style -> style.withColor(TextColor.fromRgb(0xfcb95b))))
+                        new TextComponent(sluiceRecipe.mb + "").withStyle(TextUtil.COLOUR_HIGHLIGHT))
                         .withStyle(ChatFormatting.GRAY));
             }
         });

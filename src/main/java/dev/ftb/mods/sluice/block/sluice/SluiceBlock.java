@@ -5,8 +5,15 @@ import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
 import dev.ftb.mods.sluice.item.MeshItem;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
+import dev.ftb.mods.sluice.util.TextUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -15,6 +22,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -43,6 +51,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class SluiceBlock extends Block {
@@ -260,6 +269,35 @@ public class SluiceBlock extends Block {
             level.setBlock(lv, state.setValue(PART, Part.FUNNEL), 3);
             level.blockUpdated(pos, Blocks.AIR);
             state.updateNeighbourShapes(level, pos, 3);
+        }
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter bg, List<Component> tooltip, TooltipFlag flag) {
+        SluiceProperties props = SluiceProperties.getFromBlock(this);
+        boolean isShift = Screen.hasShiftDown();
+
+        tooltip.add(new TextComponent("" + TextUtil.INFO)
+                .append(new TextComponent(" (Shift)").withStyle(isShift ? ChatFormatting.DARK_GRAY : ChatFormatting.GRAY))
+                .withStyle(ChatFormatting.BLUE));
+
+        if (isShift) {
+            tooltip.add(new TranslatableComponent("ftbsluice.properties.processing_time",
+                    new TextComponent(props.processingTime.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent("ftbsluice.properties.fluid_usage",
+                    new TextComponent(props.fluidUsage.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent("ftbsluice.properties.tank",
+                    new TextComponent(props.tankCap.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+
+            tooltip.add(new TranslatableComponent("ftbsluice.properties.auto",
+                    new TranslatableComponent("ftbsluice.properties.auto.item").withStyle(props.allowsIO ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE),
+                    new TranslatableComponent("ftbsluice.properties.auto.fluid").withStyle(props.allowsTank ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE)
+            ).withStyle(ChatFormatting.GRAY));
+
+            if (props.upgradeable) {
+                tooltip.add(new TranslatableComponent("ftbsluice.properties.upgradeable").withStyle(TextUtil.COLOUR_INFO));
+            }
         }
     }
 

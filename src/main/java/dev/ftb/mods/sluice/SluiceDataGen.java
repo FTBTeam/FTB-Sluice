@@ -24,7 +24,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -114,8 +113,14 @@ public class SluiceDataGen {
             this.add(MODID + ".jei.fluidUsage", "Uses %smB of Fluid");
             this.add("death.attack.static_electric", "%1$s was killed by static electricity!");
 
-            this.add("fluid.ftbsluice.lava", "Lava");
-            this.add("fluid.ftbsluice.water", "Water");
+            this.add(MODID + ".properties.processing_time", "Processing Time: %sx");
+            this.add(MODID + ".properties.fluid_usage", "Fluid Usage Multiplier: %sx");
+            this.add(MODID + ".properties.tank", "Can hold %s mB of Fluid");
+
+            this.add(MODID + ".properties.auto", "Allows automation of: %s | %s");
+            this.add(MODID + ".properties.auto.item", "Items");
+            this.add(MODID + ".properties.auto.fluid", "Fluids");
+            this.add(MODID + ".properties.upgradeable", "Can be upgraded to further increase efficiency; requires RF to function");
         }
     }
 
