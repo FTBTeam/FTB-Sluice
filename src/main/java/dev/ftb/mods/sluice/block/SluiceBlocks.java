@@ -3,6 +3,7 @@ package dev.ftb.mods.sluice.block;
 import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.pump.PumpBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
+import dev.ftb.mods.sluice.block.sluice.SluiceProperties;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -23,10 +24,10 @@ import java.util.function.Supplier;
 public class SluiceBlocks {
     public static final DeferredRegister<Block> REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, FTBSluice.MOD_ID);
 
-    public static final RegistryObject<Block> OAK_SLUICE = REGISTRY.register("oak_sluice", SluiceBlock::new);
-    public static final RegistryObject<Block> IRON_SLUICE = REGISTRY.register("iron_sluice", SluiceBlock::new);
-    public static final RegistryObject<Block> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", SluiceBlock::new);
-    public static final RegistryObject<Block> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", SluiceBlock::new);
+    public static final RegistryObject<Block> OAK_SLUICE = REGISTRY.register("oak_sluice", () -> new SluiceBlock(SluiceProperties.OAK));
+    public static final RegistryObject<Block> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> new SluiceBlock(SluiceProperties.IRON));
+    public static final RegistryObject<Block> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", () -> new SluiceBlock(SluiceProperties.DIAMOND));
+    public static final RegistryObject<Block> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", () -> new SluiceBlock(SluiceProperties.NETHERITE));
 
     public static final RegistryObject<Block> PUMP = REGISTRY.register("pump", PumpBlock::new);
 

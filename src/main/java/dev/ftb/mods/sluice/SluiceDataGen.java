@@ -26,8 +26,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.GlassBlock;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -113,8 +111,6 @@ public class SluiceDataGen {
             this.addItem(SluiceModItems.CONSUMPTION_UPGRADE, "Consumption Upgrade");
             this.addItem(SluiceModItems.SPEED_UPGRADE, "Speed Upgrade");
 
-            this.add(MODID + ".jei.processingTime", "Processing Time: %s ticks");
-            this.add(MODID + ".jei.fluidUsage", "Uses %smB of Fluid");
             this.add("death.attack.static_electric", "%1$s was killed by static electricity!");
 
             this.add("fluid.ftbsluice.lava", "Lava");
@@ -132,17 +128,22 @@ public class SluiceDataGen {
             this.add("ftbsluice.tooltip.sluice_1_netherite", "Forged from Netherite, this sluice proves itself to be both efficient and modular.");
             this.add("ftbsluice.tooltip.sluice_2_netherite", "Can be fully automated, as well as upgraded to further increase efficiency.");
 
-            this.add("ftbsluice.tooltip.processing_time", "Processing Time: §6%s§rx");
-            this.add("ftbsluice.tooltip.fluid_usage", "Fluid Usage Multiplier: §6%s§rx");
-            this.add("ftbsluice.tooltip.can_hold", "Can hold §6%s§r mB of fluid");
-            this.add("ftbsluice.tooltip.hold_shift", "Hold Shift for more information");
-
             this.add("ftbsluice.tooltip.upgrade_fortune", "Increases drop chance by 3% per upgrade");
             this.add("ftbsluice.tooltip.upgrade_speed", "Increases the speed of the sluice by 5% per upgrade");
             this.add("ftbsluice.tooltip.upgrade_fluid", "Reduces the fluid cost by 5% per upgrade.");
             this.add("ftbsluice.tooltip.upgrade_meta", "Each upgrade increase the power cost exponentially: base cost + (%s ^ upgrades)");
 
             this.add("ftbsluice.power_cost", "Cost: %s");
+
+            this.add(MODID + ".jei.processingTime", "Processing Time: %s ticks");
+            this.add(MODID + ".jei.fluidUsage", "Uses %smB of Fluid");
+            this.add(MODID + ".properties.processing_time", "Processing Time: %sx");
+            this.add(MODID + ".properties.fluid_usage", "Fluid Usage Multiplier: %sx");
+            this.add(MODID + ".properties.tank", "Can hold %s mB of Fluid");
+            this.add(MODID + ".properties.auto", "Allows automation of: %s | %s");
+            this.add(MODID + ".properties.auto.item", "Items");
+            this.add(MODID + ".properties.auto.fluid", "Fluids");
+            this.add(MODID + ".properties.upgradeable", "Can be upgraded to further increase efficiency; requires RF to function");
         }
     }
 
