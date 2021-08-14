@@ -20,7 +20,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -133,7 +132,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.fluidUsage = -1;
 
         // Handles state changing
-        this.tank = new FluidCap(true, properties.tankCap.get(), e -> true);
+        this.tank = new FluidCap(true, properties.config.tankCap.get(), e -> true);
         this.fluidOptional = LazyOptional.of(() -> this.tank);
 
         this.inventory = new ItemsHandler(!properties.allowsIO, 1) {
@@ -257,12 +256,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             return;
         }
 
-        if (this.tank.isEmpty() || this.tank.getFluidAmount() < this.properties.fluidUsage.get()) {
-            return;
-        }
-
         // Reject if we don't have enough power to process the resource
-        if (this.isNetherite && this.energy.getEnergyStored() < computePowerCost()) {
+        if (this.tank.isEmpty() || this.isNetherite && this.energy.getEnergyStored() < computePowerCost()) {
             return;
         }
 
@@ -276,8 +271,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         this.processed = 0;
 
-        double baseProcessingTime = recipe.getProcessingTime() * this.properties.processingTime.get();
-        double baseFluidUsage = recipe.getFluidUsed() * this.properties.fluidUsage.get();
+        double baseProcessingTime = recipe.getProcessingTime() * this.properties.config.timeMod.get();
+        double baseFluidUsage = recipe.getFluidUsed() * this.properties.config.fluidMod.get();
 
         this.maxProcessed = Math.max(1, (int) Math.round(baseProcessingTime - (baseProcessingTime * (computeEffectModifier(Upgrades.SPEED) / 100f))));
         this.fluidUsage = Math.max(40, (int) Math.round(baseFluidUsage - (baseFluidUsage * (computeEffectModifier(Upgrades.CONSUMPTION) / 100f))));
@@ -322,7 +317,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     }
 
     private int computePowerCost() {
-        int baseCost = SluiceConfig.NETHERITE_SLUICE.costPerUse.get();
+        int baseCost = SluiceConfig.SLUICES.NETHERITE.costPerUse.get();
         if (upgradeCache.size() == 0) {
             return baseCost;
         }
