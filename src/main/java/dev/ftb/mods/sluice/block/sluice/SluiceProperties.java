@@ -1,32 +1,25 @@
 package dev.ftb.mods.sluice.block.sluice;
 
-import dev.ftb.mods.sluice.block.SluiceBlocks;
-import net.minecraft.world.level.block.Block;
-
-import java.util.Arrays;
-import java.util.function.Supplier;
+import dev.ftb.mods.sluice.SluiceConfig.CategorySluice;
 
 import static dev.ftb.mods.sluice.SluiceConfig.SLUICES;
 
 public enum SluiceProperties {
-    OAK(false, false, false, SLUICES.oakTimeMod::get, SLUICES.oakFluidMod::get, SLUICES.oakTank::get),
-    IRON(true, false, false, SLUICES.ironTimeMod::get, SLUICES.ironFluidMod::get, SLUICES.ironTank::get),
-    DIAMOND(true, true, false, SLUICES.diamondTimeMod::get, SLUICES.diamondFluidMod::get, SLUICES.diamondTank::get),
-    NETHERITE(true, true, true, SLUICES.netheriteTimeMod::get, SLUICES.netheriteFluidMod::get, SLUICES.netheriteTank::get);
+    OAK(false, false, false, SLUICES.OAK),
+    IRON(true, false, false, SLUICES.IRON),
+    DIAMOND(true, true, false, SLUICES.DIAMOND),
+    NETHERITE(true, true, true, SLUICES.NETHERITE);
 
-    boolean allowsIO;
-    boolean allowsTank;
-    boolean upgradeable;
-    Supplier<Double> processingTime;
-    Supplier<Double> fluidUsage;
-    Supplier<Integer> tankCap;
+    final boolean allowsIO;
+    final boolean allowsTank;
+    final boolean upgradeable;
+    final CategorySluice config;
 
-    SluiceProperties(boolean allowsIO, boolean allowsTank, boolean upgradeable, Supplier<Double> processingTime, Supplier<Double> fluidUsage, Supplier<Integer> tankCap) {
-        this.processingTime = processingTime;
-        this.upgradeable = upgradeable;
-        this.fluidUsage = fluidUsage;
+
+    SluiceProperties(boolean allowsIO, boolean allowsTank, boolean upgradeable, CategorySluice config) {
         this.allowsIO = allowsIO;
         this.allowsTank = allowsTank;
-        this.tankCap = tankCap;
+        this.upgradeable = upgradeable;
+        this.config = config;
     }
 }

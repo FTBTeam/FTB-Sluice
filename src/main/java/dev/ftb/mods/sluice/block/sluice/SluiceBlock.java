@@ -275,11 +275,11 @@ public class SluiceBlock extends Block {
 
         if (isShift) {
             tooltip.add(new TranslatableComponent("ftbsluice.properties.processing_time",
-                    new TextComponent(props.processingTime.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+                    new TextComponent(props.config.timeMod.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
             tooltip.add(new TranslatableComponent("ftbsluice.properties.fluid_usage",
-                    new TextComponent(props.fluidUsage.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+                    new TextComponent(props.config.fluidMod.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
             tooltip.add(new TranslatableComponent("ftbsluice.properties.tank",
-                    new TextComponent(props.tankCap.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+                    new TextComponent(props.config.tankCap.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
 
             tooltip.add(new TranslatableComponent("ftbsluice.properties.auto",
                     new TranslatableComponent("ftbsluice.properties.auto.item").withStyle(props.allowsIO ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE),
