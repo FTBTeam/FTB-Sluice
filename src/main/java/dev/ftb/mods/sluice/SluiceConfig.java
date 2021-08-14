@@ -66,7 +66,7 @@ public class SluiceConfig {
 
             this.tankCap = COMMON_BUILDER
                     .comment("Sets how much fluid this sluice's tank can carry (in mB)")
-                    .defineInRange("processing time multiplier", tankCap, 0, 1000000);
+                    .defineInRange("tank capacity", tankCap, 0, 1000000);
 
             addOtherValues();
 
