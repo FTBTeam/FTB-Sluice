@@ -27,7 +27,7 @@ public class HammerRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<
             // allow for stack sizes greater than 64 by splitting into multiple stacks
             int i = GsonHelper.getAsInt(o, "count", 1);
             while (i > 0) {
-                int j = Math.max(i, 64);
+                int j = Math.min(i, 64);
                 o.addProperty("count", j);
                 r.results.add(ShapedRecipe.itemFromJson(o));
                 i -= j;
