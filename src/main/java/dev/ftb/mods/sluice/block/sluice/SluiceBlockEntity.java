@@ -11,6 +11,8 @@ import dev.ftb.mods.sluice.item.Upgrades;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import dev.ftb.mods.sluice.recipe.ItemWithWeight;
 import dev.ftb.mods.sluice.recipe.SluiceRecipeInfo;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -50,7 +52,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity, MenuProvider {
@@ -62,7 +63,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     private final boolean isNetherite;
 
     // Upgrade -> slot id
-    private static final HashMap<Upgrades, Integer> UPGRADE_SLOT_INDEX = new HashMap<>();
+    private static final Object2IntMap<Upgrades> UPGRADE_SLOT_INDEX = new Object2IntOpenHashMap<>();
 
     static {
         UPGRADE_SLOT_INDEX.put(Upgrades.LUCK, 0);
@@ -80,7 +81,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (stack.getItem() instanceof UpgradeItem) {
-                return UPGRADE_SLOT_INDEX.get(((UpgradeItem) stack.getItem()).getUpgrade()) == slot;
+                return UPGRADE_SLOT_INDEX.getInt(((UpgradeItem) stack.getItem()).getUpgrade()) == slot;
             }
 
             return false;
@@ -103,7 +104,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     private int fluidUsage;
 
     // Upgrade type, multiplication
-    public final HashMap<Upgrades, Integer> upgradeCache = new HashMap<>();
+    public final Object2IntMap<Upgrades> upgradeCache = new Object2IntOpenHashMap<>();
     public int lastPowerCost = 0;
 
     public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties) {
@@ -119,7 +120,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         this.energy = new Energy(!isNetherite
                 ? 0
-                : (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), SluiceConfig.GENERAL.maxUpgradeStackSize.get() * 3 + 1), Integer.MAX_VALUE), e -> {
+                : (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), SluiceConfig.GENERAL.maxUpgradeStackSize.get() * 3 + 1)
+                * SluiceConfig.SLUICES.NETHERITE.costPerUse.get(), Integer.MAX_VALUE), e -> {
             // Shouldn't be needed but it's better safe.
             if (!this.isNetherite) {
                 return;
@@ -180,7 +182,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         // Luck calculation
         int additional = 0;
         if (sluice.upgradeCache.containsKey(Upgrades.LUCK)) {
-            additional += Upgrades.LUCK.effectedChange * sluice.upgradeCache.get(Upgrades.LUCK);
+            additional += Upgrades.LUCK.effectedChange * sluice.upgradeCache.getInt(Upgrades.LUCK);
         }
 
         List<ItemWithWeight> items = recipe.getItems();
@@ -317,24 +319,21 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     }
 
     private int computePowerCost() {
-        int baseCost = SluiceConfig.SLUICES.NETHERITE.costPerUse.get();
-        if (upgradeCache.size() == 0) {
-            return baseCost;
-        }
+        int cost = SluiceConfig.SLUICES.NETHERITE.costPerUse.get();
+        if (!upgradeCache.isEmpty()) {
+            int sum = 0;
+            for (int i : upgradeCache.values()) {
+                sum += i;
+            }
 
-        int sum = 0;
-        for (Integer x : upgradeCache.values()) {
-            int i = x;
-            sum += i;
+            cost = (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), sum) * cost, Integer.MAX_VALUE);
         }
-
-        int cost = (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), sum), Integer.MAX_VALUE);
         this.lastPowerCost = cost;
         return cost;
     }
 
     private int computeEffectModifier(Upgrades upgrade) {
-        return upgradeCache.containsKey(upgrade) ? upgrade.effectedChange * upgradeCache.get(upgrade) : 0;
+        return upgradeCache.getOrDefault(upgrade, 0) * upgrade.effectedChange;
     }
 
     @Override
