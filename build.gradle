@@ -70,9 +70,10 @@ dependencies {
     modRuntime "curse.maven:lollipop-347954:3232534"
     modRuntime "curse.maven:pipez-443900:3273405"
     modRuntime "curse.maven:ceramics-250617:3234775"
-    modRuntime "curse.maven:mantle-74924:3326538"
+    modRuntime "curse.maven:mantle-74924:3439180"
     modRuntime "curse.maven:building-gadgets-298187:3205295"
     modRuntime "curse.maven:mekanism-268560:3206392"
+    modRuntime "curse.maven:tinkers-construct-74072:3439200"
 }
 
 processResources {

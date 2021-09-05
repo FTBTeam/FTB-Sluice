@@ -27,21 +27,23 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity {
     public int timeLeft = 0;
 
     private final int checkInterval = 50;
     private int checkTimeout = 0;
-    private boolean foundValidBlock = false;
+    private boolean foundValidBlocks = false;
     private int lastTick = 0;
     boolean creative = false;
     Fluid creativeFluid = Fluids.WATER;
     Item creativeItem = null;
 
-    private BlockPos targetPos = null;
+    private Set<BlockPos> targetBlocks = new HashSet<>();
 
     public PumpBlockEntity() {
         super(SluiceBlockEntities.PUMP.get());
@@ -61,14 +63,14 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
         }
 
         // Try and find a valid block;
-        if (!foundValidBlock) {
+        if (!foundValidBlocks) {
             // Time to check
             if (checkTimeout > checkInterval) {
                 for (Direction direction : Direction.values()) {
                     BlockEntity blockEntity = level.getBlockEntity(this.getBlockPos().relative(direction));
                     if (blockEntity instanceof SluiceBlockEntity) {
-                        this.targetPos = this.getBlockPos().relative(direction);
-                        this.foundValidBlock = true;
+                        this.targetBlocks.add(this.getBlockPos().relative(direction));
+                        this.foundValidBlocks = true;
                     }
                 }
 
@@ -81,8 +83,8 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
 
         // Just do it
         if (this.creative) {
-            this.getTargetPos().ifPresent(e -> {
-                BlockEntity blockEntity = level.getBlockEntity(e);
+            for (BlockPos pos : this.getTargetBlocks()) {
+                BlockEntity blockEntity = level.getBlockEntity(pos);
                 if (blockEntity == null) {
                     return;
                 }
@@ -94,7 +96,7 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
                         inventory.internalInsert(0, new ItemStack(this.creativeItem, 1), false);
                     }
                 }
-            });
+            }
 
             // Don't do anything else, creative means creative
             return;
@@ -107,8 +109,8 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
 
         this.lastTick = 0;
 
-        this.getTargetPos().ifPresent(e -> {
-            BlockEntity blockEntity = level.getBlockEntity(e);
+        for (BlockPos pos : this.getTargetBlocks()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity == null) {
                 return;
             }
@@ -124,14 +126,14 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
             }
 
             blockEntity.setChanged();
-        });
+        }
     }
 
     private void provideFluidToSluice(BlockEntity blockEntity) {
         // It's gone! Poof
         if (!(blockEntity instanceof SluiceBlockEntity)) {
-            this.foundValidBlock = false;
-            this.targetPos = null;
+            this.foundValidBlocks = false; // flag to update cache
+            this.targetBlocks.clear();
             return;
         }
 
@@ -142,8 +144,8 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
         }
     }
 
-    public Optional<BlockPos> getTargetPos() {
-        return Optional.ofNullable(targetPos);
+    public Set<BlockPos> getTargetBlocks() {
+        return this.targetBlocks;
     }
 
     @Override

@@ -9,6 +9,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -25,6 +27,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
@@ -81,12 +85,42 @@ public class PumpBlock extends Block {
             return InteractionResult.PASS;
         }
 
-        if (!level.isClientSide) {
-            PumpBlockEntity pump = ((PumpBlockEntity) blockEntity);
-            if (pump.creative) {
-                return InteractionResult.PASS;
+        PumpBlockEntity pump = ((PumpBlockEntity) blockEntity);
+
+        if (pump.creative) {
+            ItemStack itemInHand = player.getItemInHand(hand);
+            if (itemInHand.isEmpty()) return InteractionResult.PASS;
+
+            InteractionResult result;
+
+            // Try a normal bucket
+            if (itemInHand.getItem() instanceof BucketItem) {
+                BucketItem bucketItem = (BucketItem) itemInHand.getItem();
+                pump.creativeFluid = bucketItem.getFluid();
+                sendTileUpdate(level, pos, state, pump);
+                result = InteractionResult.SUCCESS;
+            } else {
+                result = itemInHand.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(e -> {
+                    // Take the first one
+                    pump.creativeFluid = e.getFluidInTank(0).getFluid();
+                    sendTileUpdate(level, pos, state, pump);
+                    return InteractionResult.SUCCESS;
+                }).orElse(InteractionResult.FAIL);
             }
 
+            if (result.consumesAction()) {
+                return result;
+            }
+
+            pump.creativeItem = itemInHand.getItem();
+            if (!level.isClientSide) {
+                sendTileUpdate(level, pos, state, pump);
+            }
+
+            return InteractionResult.SUCCESS;
+        }
+
+        if (!level.isClientSide) {
             if (pump.timeLeft < 6000) {
                 pump.timeLeft += 14;
                 if (pump.timeLeft > 6000) {
@@ -94,9 +128,7 @@ public class PumpBlock extends Block {
                 }
 
                 computeStateForProgress(state, pos, level, pump.timeLeft);
-
-                blockEntity.setChanged();
-                level.sendBlockUpdated(pos, state, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
+                sendTileUpdate(level, pos, state, pump);
             } else {
                 player.hurt(STATIC_ELECTRIC, 2);
                 if (player.getHealth() - 2 < 0) {
@@ -111,6 +143,11 @@ public class PumpBlock extends Block {
         }
 
         return InteractionResult.SUCCESS;
+    }
+
+    private void sendTileUpdate(Level level, BlockPos pos, BlockState state, PumpBlockEntity tile) {
+        tile.setChanged();
+        level.sendBlockUpdated(pos, state, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
     }
 
     public static void computeStateForProgress(BlockState state, BlockPos pos, Level level, int timeLeft) {

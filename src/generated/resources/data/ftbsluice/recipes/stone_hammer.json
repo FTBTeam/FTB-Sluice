@@ -7,7 +7,7 @@
   ],
   "key": {
     "h": {
-      "item": "minecraft:stone"
+      "item": "minecraft:cobblestone"
     },
     "r": {
       "tag": "forge:rods/wooden"
