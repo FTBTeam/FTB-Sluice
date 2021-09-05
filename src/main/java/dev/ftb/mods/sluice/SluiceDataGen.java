@@ -99,6 +99,8 @@ public class SluiceDataGen {
             this.addBlock(SluiceBlocks.CRUSHED_BASALT, "Crushed Basalt");
             this.addBlock(SluiceBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
 
+            this.addItem(SluiceModItems.DAMAGED_CANTEEN, "Damaged Canteen");
+//            this.addItem(SluiceModItems.CANTEEN, "Canteen");
             this.addItem(SluiceModItems.CLAY_BUCKET, "Clay Bucket");
             this.addItem(SluiceModItems.CLAY_WATER_BUCKET, "Clay Water Bucket");
             this.addItem(SluiceModItems.WOODEN_HAMMER, "Wooden Hammer");
@@ -125,6 +127,9 @@ public class SluiceDataGen {
             this.add("ftbsluice.tooltip.upgrade_speed", "Increases the speed of the sluice by 5% per upgrade");
             this.add("ftbsluice.tooltip.upgrade_fluid", "Reduces the fluid cost by 5% per upgrade.");
             this.add("ftbsluice.tooltip.upgrade_meta", "Each upgrade increase the power cost exponentially: base cost + (%s ^ upgrades)");
+
+            this.add("ftbsluice.tooltip.damaged_canteen", "Hmm, looks broken, maybe good for emptying my sluice?");
+            this.add("ftbsluice.tooltip.canteen", "Can store multiple fluids at once up to 16MB worth of each");
 
             this.add("ftbsluice.power_cost", "Cost: %s");
 
@@ -212,6 +217,8 @@ public class SluiceDataGen {
             this.registerBlockModel(SluiceBlocks.CRUSHED_BASALT.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_ENDSTONE.get());
 
+            this.simpleItem(SluiceModItems.DAMAGED_CANTEEN);
+//            this.simpleItem(SluiceModItems.CANTEEN);
             this.simpleItem(SluiceModItems.CLAY_BUCKET);
             this.simpleItem(SluiceModItems.CLAY_WATER_BUCKET);
             this.simpleItem(SluiceModItems.WOODEN_HAMMER);
@@ -261,6 +268,13 @@ public class SluiceDataGen {
                     SluiceModItems.DIAMOND_HAMMER.get(),
                     SluiceModItems.NETHERITE_HAMMER.get()
             );
+
+            this.tag(SluiceTags.Items.MESHES).add(
+                    SluiceModItems.CLOTH_MESH.get(),
+                    SluiceModItems.IRON_MESH.get(),
+                    SluiceModItems.GOLD_MESH.get(),
+                    SluiceModItems.DIAMOND_MESH.get()
+            );
         }
     }
 
@@ -296,6 +310,31 @@ public class SluiceDataGen {
                     .pattern(" c ")
                     .define('c', Items.CLAY_BALL)
                     .save(consumer);
+
+            ShapedRecipeBuilder.shaped(SluiceModItems.DAMAGED_CANTEEN.get())
+                    .unlockedBy("has_item", has(Tags.Items.LEATHER))
+                    .pattern("lil")
+                    .pattern("sbs")
+                    .pattern("lml")
+                    .define('l', Tags.Items.LEATHER)
+                    .define('i', Tags.Items.INGOTS_IRON)
+                    .define('m', SluiceModItems.CLOTH_MESH.get())
+                    .define('s', Tags.Items.STRING)
+                    .define('b', Items.BUCKET)
+                    .save(consumer);
+
+//            ShapedRecipeBuilder.shaped(SluiceModItems.CANTEEN.get())
+//                    .unlockedBy("has_item", has(Items.LEATHER))
+//                    .pattern("lnl")
+//                    .pattern("sbs")
+//                    .pattern("dmd")
+//                    .define('l', Tags.Items.LEATHER)
+//                    .define('n', Tags.Items.INGOTS_NETHERITE)
+//                    .define('m', SluiceModItems.CLOTH_MESH.get())
+//                    .define('d', Tags.Items.GEMS_DIAMOND)
+//                    .define('s', Tags.Items.STRING)
+//                    .define('b', Items.BUCKET)
+//                    .save(consumer);
 
             ShapedRecipeBuilder.shaped(SluiceModItems.PUMP.get())
                     .unlockedBy("has_item", has(Items.CLAY_BALL))
@@ -337,7 +376,7 @@ public class SluiceDataGen {
                     .save(consumer, FTBSluice.MOD_ID + ":netherite_sluice");
 
             this.hammer(SluiceModItems.WOODEN_HAMMER.get(), ItemTags.PLANKS, consumer);
-            this.hammer(SluiceModItems.STONE_HAMMER.get(), Items.STONE, consumer);
+            this.hammer(SluiceModItems.STONE_HAMMER.get(), Items.COBBLESTONE, consumer);
             this.hammer(SluiceModItems.IRON_HAMMER.get(), this.IRON_INGOT, consumer);
             this.hammer(SluiceModItems.GOLD_HAMMER.get(), Items.GOLD_INGOT, consumer);
             this.hammer(SluiceModItems.DIAMOND_HAMMER.get(), this.DIAMOND_GEM, consumer);

@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "ftbsluice:stone_hammer"
+      "ftbsluice:damaged_canteen"
     ]
   },
   "criteria": {
@@ -11,7 +11,7 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:cobblestone"
+            "tag": "forge:leather"
           }
         ]
       }
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "ftbsluice:stone_hammer"
+        "recipe": "ftbsluice:damaged_canteen"
       }
     }
   },

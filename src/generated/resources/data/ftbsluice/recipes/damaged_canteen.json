@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "lil",
+    "sbs",
+    "lml"
+  ],
+  "key": {
+    "l": {
+      "tag": "forge:leather"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
+    },
+    "m": {
+      "item": "ftbsluice:cloth_mesh"
+    },
+    "s": {
+      "tag": "forge:string"
+    },
+    "b": {
+      "item": "minecraft:bucket"
+    }
+  },
+  "result": {
+    "item": "ftbsluice:damaged_canteen"
+  }
+}
