@@ -70,7 +70,7 @@ public class ClayBucketFluidHandler implements IFluidHandlerItem, ICapabilityPro
     }
 
     public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-        return true;
+        return stack.getFluid() == Fluids.WATER;
     }
 
     public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
