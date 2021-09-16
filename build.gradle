@@ -129,34 +129,39 @@ publishing {
     }
 
     repositories {
-        maven {
-            url "${ENV.CI_API_V4_URL}/projects/${ENV.CI_PROJECT_ID}/packages/maven"
-            credentials(HttpHeaderCredentials) {
-                name = 'Job-Token'
-                value = ENV.CI_JOB_TOKEN
+        if (ENV.CI_API_V4_URL) {
+            maven {
+                url "${ENV.CI_API_V4_URL}/projects/${ENV.CI_PROJECT_ID}/packages/maven"
+                credentials(HttpHeaderCredentials) {
+                    name = 'Job-Token'
+                    value = ENV.CI_JOB_TOKEN
+                }
+                authentication {
+                    header(HttpHeaderAuthentication)
+                }
             }
-            authentication {
-                header(HttpHeaderAuthentication)
+        }
+
+        if (ENV.SAPS_TOKEN) {
+            maven {
+                url "https://maven.saps.dev/minecraft"
+                credentials {
+                    username = "ftb"
+                    password = "${ENV.SAPS_TOKEN}"
+                }
+            }
+        }
+
+        if (ENV.FTB_MAVEN_TOKEN) {
+            maven {
+                url "https://maven.ftb.dev/release"
+                credentials {
+                    username = "ftb"
+                    password = "${ENV.FTB_MAVEN_TOKEN}"
+                }
             }
         }
     }
-//	repositories {
-////		if (ENV.LOCAL_MAVEN) {
-////			maven {
-////				url = "file://${ENV.LOCAL_MAVEN}"
-////			}
-////		}
-////
-////		if (ENV.SAPS_TOKEN) {
-////			maven {
-////				url "https://maven.saps.dev/minecraft"
-////				credentials {
-////					username = "ftb"
-////					password = "${ENV.SAPS_TOKEN}"
-////				}
-////			}
-////		}
-//	}
 }
 
 if (ENV.CURSEFORGE_KEY) {
