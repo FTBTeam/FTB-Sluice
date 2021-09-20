@@ -123,7 +123,7 @@ publishing {
         mavenJava(MavenPublication) {
             artifact(remapJar) {
                 builtBy remapJar
-                artifactId = archivesBaseName + "-forge"
+                artifactId = archivesBaseName
                 classifier null
             }
         }
