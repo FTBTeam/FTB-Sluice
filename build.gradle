@@ -63,7 +63,7 @@ dependencies {
     modImplementation "curse.maven:jei-238222:${jei_file}"
     modImplementation "me.shedaniel:architectury-forge:${arch_version}"
     modImplementation "dev.latvian.mods:kubejs-forge:${kubejs_version}"
-    modImplementation "dev.latvian.mods:rhino:${rhino_version}"
+    modImplementation "dev.latvian.mods:rhino-forge:${rhino_version}"
     modImplementation "mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api"
 
     modRuntime "mcjty.theoneprobe:TheOneProbe-1.16:${top_version}"
