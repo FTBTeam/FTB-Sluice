@@ -54,6 +54,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+
 public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntity, MenuProvider {
     public final ItemsHandler inventory;
     public final LazyOptional<ItemsHandler> inventoryOptional;
@@ -293,7 +295,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.maxProcessed = -1;
 
         getRandomResult(this, itemStack)
-                .forEach(e -> this.ejectItem(level, state.getValue(BlockStateProperties.HORIZONTAL_FACING), e));
+                .forEach(e -> this.ejectItem(level, state.getValue(HORIZONTAL_FACING), e));
 
         this.inventory.setStackInSlot(0, ItemStack.EMPTY);
         this.tank.internalDrain(this.fluidUsage, IFluidHandler.FluidAction.EXECUTE);
@@ -309,7 +311,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     }
 
     private void cancelProcessing(Level level, ItemStack stack) {
-        this.ejectItem(level, this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), stack);
+        this.ejectItem(level, this.getBlockState().getValue(HORIZONTAL_FACING), stack);
         this.inventory.setStackInSlot(0, ItemStack.EMPTY);
         this.processed = 0;
         this.maxProcessed = -1;
@@ -436,7 +438,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
      * @return A valid IItemHandler or a empty optional
      */
     private LazyOptional<IItemHandler> seekNearestInventory(Level level) {
-        BlockPos pos = this.getBlockPos().relative(this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING), 2);
+        BlockPos pos = this.getBlockPos().relative(this.getBlockState().getValue(HORIZONTAL_FACING), 2);
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null && !(blockEntity instanceof SluiceBlockEntity)) {
             LazyOptional<IItemHandler> capability = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);

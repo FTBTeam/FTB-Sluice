@@ -70,11 +70,16 @@ dependencies {
     modRuntime "curse.maven:powah-352656:3232535"
     modRuntime "curse.maven:lollipop-347954:3232534"
     modRuntime "curse.maven:pipez-443900:3273405"
-    modRuntime "curse.maven:ceramics-250617:3234775"
     modRuntime "curse.maven:mantle-74924:3439180"
     modRuntime "curse.maven:building-gadgets-298187:3205295"
     modRuntime "curse.maven:mekanism-268560:3206392"
     modRuntime "curse.maven:tinkers-construct-74072:3439200"
+    modRuntime "curse.maven:ftb-jar-mod-forge-388285:3460409"
+    modRuntime "curse.maven:ftb-library-forge-404465:3456644"
+    modRuntime "curse.maven:architectury-forge-419699:3462013"
+    modRuntime "curse.maven:miniutilities-460341:3457112"
+    modRuntime "curse.maven:lemon-lib-471136:3335288"
+    modRuntime "curse.maven:curios-309927:3456953"
 }
 
 processResources {
