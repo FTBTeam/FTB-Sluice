@@ -4,35 +4,38 @@ import dev.ftb.mods.sluice.FTBSluice;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
@@ -106,6 +109,47 @@ public class ClayBucket extends BucketItem {
         }
     }
 
+    public boolean emptyBucket(@Nullable Player p_180616_1_, Level p_180616_2_, BlockPos p_180616_3_, @Nullable BlockHitResult p_180616_4_) {
+        if (!(this.content instanceof FlowingFluid)) {
+            return false;
+        } else {
+            BlockState blockstate = p_180616_2_.getBlockState(p_180616_3_);
+            Block block = blockstate.getBlock();
+            Material material = blockstate.getMaterial();
+            boolean flag = blockstate.canBeReplaced(this.content);
+            boolean flag1 = blockstate.isAir() || flag || block instanceof LiquidBlockContainer && ((LiquidBlockContainer)block).canPlaceLiquid(p_180616_2_, p_180616_3_, blockstate, this.content);
+            if (!flag1) {
+                return p_180616_4_ != null && this.emptyBucket(p_180616_1_, p_180616_2_, p_180616_4_.getBlockPos().relative(p_180616_4_.getDirection()), (BlockHitResult)null);
+            } else if (p_180616_2_.dimensionType().ultraWarm() && this.content.is(FluidTags.WATER)) {
+                int i = p_180616_3_.getX();
+                int j = p_180616_3_.getY();
+                int k = p_180616_3_.getZ();
+                p_180616_2_.playSound(p_180616_1_, p_180616_3_, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F + (p_180616_2_.random.nextFloat() - p_180616_2_.random.nextFloat()) * 0.8F);
+
+                for(int l = 0; l < 8; ++l) {
+                    p_180616_2_.addParticle(ParticleTypes.LARGE_SMOKE, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0D, 0.0D, 0.0D);
+                }
+
+                return true;
+            } else if (block instanceof LiquidBlockContainer && ((LiquidBlockContainer)block).canPlaceLiquid(p_180616_2_, p_180616_3_, blockstate, this.content)) {
+                ((LiquidBlockContainer)block).placeLiquid(p_180616_2_, p_180616_3_, blockstate, ((FlowingFluid)this.content).getSource(false));
+                this.playEmptySound(p_180616_1_, p_180616_2_, p_180616_3_);
+                return true;
+            } else {
+                if (!p_180616_2_.isClientSide && flag && !material.isLiquid()) {
+                    p_180616_2_.destroyBlock(p_180616_3_, true);
+                }
+
+                if (!p_180616_2_.setBlock(p_180616_3_, this.content.defaultFluidState().createLegacyBlock(), 11) && !blockstate.getFluidState().isSource()) {
+                    return false;
+                } else {
+                    this.playEmptySound(p_180616_1_, p_180616_2_, p_180616_3_);
+                    return true;
+                }
+            }
+        }
+    }
+
     private boolean canBlockContainFluid(Level worldIn, BlockPos posIn, BlockState blockstate) {
         return blockstate.getBlock() instanceof LiquidBlockContainer && ((LiquidBlockContainer) blockstate.getBlock()).canPlaceLiquid(worldIn, posIn, blockstate, this.content);
     }
@@ -124,4 +168,14 @@ public class ClayBucket extends BucketItem {
     public Fluid getFluid() {
         return this.content;
     }
+
+    protected void playEmptySound(@Nullable Player p_203791_1_, LevelAccessor p_203791_2_, BlockPos p_203791_3_) {
+        SoundEvent soundevent = this.content.getAttributes().getEmptySound();
+        if (soundevent == null) {
+            soundevent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
+        }
+
+        p_203791_2_.playSound(p_203791_1_, p_203791_3_, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
+    }
+
 }

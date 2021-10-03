@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -26,15 +27,16 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -49,9 +51,13 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 public class SluiceBlock extends Block {
     public static final EnumProperty<MeshType> MESH = EnumProperty.create("mesh", MeshType.class);
@@ -84,7 +90,7 @@ public class SluiceBlock extends Block {
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(MESH, MeshType.NONE)
                 .setValue(PART, Part.MAIN)
-                .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+                .setValue(HORIZONTAL_FACING, Direction.NORTH));
 
         this.props = props;
     }
@@ -112,9 +118,14 @@ public class SluiceBlock extends Block {
     }
 
     @Override
+    public List<ItemStack> getDrops(BlockState p_220076_1_, LootContext.Builder p_220076_2_) {
+        return p_220076_1_.getValue(PART) == Part.FUNNEL ? new ArrayList<>() : super.getDrops(p_220076_1_, p_220076_2_);
+    }
+
+    @Override
     @Deprecated
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-        Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+        Direction direction = state.getValue(HORIZONTAL_FACING);
         if (!SHAPES.containsKey(direction)) {
             // HOW?!
             return Shapes.empty();
@@ -209,7 +220,7 @@ public class SluiceBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(MESH, PART, BlockStateProperties.HORIZONTAL_FACING);
+        builder.add(MESH, PART, HORIZONTAL_FACING);
     }
 
     @Nullable
@@ -217,7 +228,7 @@ public class SluiceBlock extends Block {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos offsetPos = context.getClickedPos().relative(context.getHorizontalDirection().getOpposite());
         return context.getLevel().getBlockState(offsetPos).canBeReplaced(context)
-                ? this.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite()).setValue(PART, Part.MAIN)
+                ? this.defaultBlockState().setValue(HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite()).setValue(PART, Part.MAIN)
                 : null;
     }
 
@@ -228,10 +239,25 @@ public class SluiceBlock extends Block {
     }
 
     @Override
+    public BlockState rotate(BlockState p_185499_1_, Rotation p_185499_2_) {
+        return p_185499_1_;
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation direction) {
+        return state;
+    }
+
+    @Override
+    public BlockState mirror(BlockState p_185471_1_, Mirror p_185471_2_) {
+        return p_185471_1_;
+    }
+
+    @Override
     @Deprecated
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+            Direction direction = state.getValue(HORIZONTAL_FACING);
             BlockPos endPos = pos.relative(state.getValue(PART) == Part.FUNNEL
                     ? direction.getOpposite()
                     : direction);
@@ -241,6 +267,10 @@ public class SluiceBlock extends Block {
             if (state.getValue(PART) == Part.FUNNEL) {
                 if (endState.getBlock() instanceof SluiceBlock && endState.getValue(PART) == Part.MAIN) {
                     world.removeBlock(endPos, false);
+                    if (world instanceof ServerLevel) {
+                        List<ItemStack> drops = getDrops(state.setValue(PART, Part.MAIN), (ServerLevel) world, pos, null);
+                        drops.forEach(e -> popResource(world, pos, e));
+                    }
                 }
             } else {
                 BlockEntity tileEntity = world.getBlockEntity(pos);
@@ -261,6 +291,8 @@ public class SluiceBlock extends Block {
 
                 super.onRemove(state, world, pos, newState, isMoving);
             }
+        } else {
+            super.onRemove(state, world, pos, newState, isMoving);
         }
     }
 
@@ -298,7 +330,7 @@ public class SluiceBlock extends Block {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack item) {
         super.setPlacedBy(level, pos, state, entity, item);
         if (!level.isClientSide) {
-            BlockPos lv = pos.relative(state.getValue(BlockStateProperties.HORIZONTAL_FACING));
+            BlockPos lv = pos.relative(state.getValue(HORIZONTAL_FACING));
             level.setBlock(lv, state.setValue(PART, Part.FUNNEL), 3);
             level.blockUpdated(pos, Blocks.AIR);
             state.updateNeighbourShapes(level, pos, 3);

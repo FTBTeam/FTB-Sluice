@@ -21,6 +21,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import static net.minecraft.core.Direction.AxisDirection.NEGATIVE;
 import static net.minecraft.core.Direction.AxisDirection.POSITIVE;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 public class SluiceRenderer extends TileEntityRendererAnimation<SluiceBlockEntity> {
     public SluiceRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
@@ -41,7 +42,7 @@ public class SluiceRenderer extends TileEntityRendererAnimation<SluiceBlockEntit
         int progress = (te.processed * 100) / te.maxProcessed;
         float offset = te.processed < 0 ? 0 : progress;
 
-        float v = te.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot();
+        float v = te.getBlockState().getValue(HORIZONTAL_FACING).toYRot();
         matrix.pushPose();
         matrix.translate(.5F, .85F - (offset / 250F), .5F);
         matrix.scale(1.4F, 1.4F, 1.4F);
@@ -77,7 +78,7 @@ public class SluiceRenderer extends TileEntityRendererAnimation<SluiceBlockEntit
         float u1top = sprite.getU(13D);
         float v1top = sprite.getV(13D);
 
-        Direction value = te.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        Direction value = te.getBlockState().getValue(HORIZONTAL_FACING);
         float v = value.toYRot();
 
         matrix.pushPose();
