@@ -52,7 +52,9 @@ public class ClayBucketFluidHandler implements IFluidHandlerItem, ICapabilityPro
         if (fluidStack.isEmpty()) {
             this.container = new ItemStack(SluiceModItems.CLAY_BUCKET.get());
         } else {
-            this.container = new ItemStack(SluiceModItems.CLAY_WATER_BUCKET.get());
+            if (fluidStack.getFluid() == Fluids.WATER) {
+                this.container = new ItemStack(SluiceModItems.CLAY_WATER_BUCKET.get());
+            }
         }
     }
 
@@ -74,7 +76,7 @@ public class ClayBucketFluidHandler implements IFluidHandlerItem, ICapabilityPro
     }
 
     public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
-        if (this.container.getCount() == 1 && resource.getAmount() >= 1000 && this.getFluid().isEmpty() && this.canFillFluidType(resource)) {
+        if (this.container.getCount() == 1 && resource.getAmount() >= 1000 && this.getFluid().isEmpty() && this.canFillFluidType(resource) && resource.getFluid() == Fluids.WATER) {
             if (action.execute()) {
                 this.setFluid(resource);
             }
