@@ -109,39 +109,53 @@ public class PumpBlockEntity extends BlockEntity implements TickableBlockEntity 
 
         this.lastTick = 0;
 
+        boolean wasUsed = false;
         for (BlockPos pos : this.getTargetBlocks()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity == null) {
                 return;
             }
 
-            this.provideFluidToSluice(blockEntity);
-
-            this.timeLeft -= 20;
-            PumpBlock.computeStateForProgress(this.getBlockState(), this.getBlockPos(), this.level, this.timeLeft);
-            if (this.timeLeft < 0) {
-                this.timeLeft = 0;
-
-                level.setBlock(this.getBlockPos(), this.getBlockState().setValue(PumpBlock.ON_OFF, false).setValue(PumpBlock.PROGRESS, PumpBlock.Progress.ZERO), 3);
+            boolean filled = this.provideFluidToSluice(blockEntity);
+            if (!wasUsed && filled) {
+                wasUsed = true;
             }
+        }
 
-            blockEntity.setChanged();
+        if (!wasUsed) {
+            return;
+        }
+
+        this.timeLeft -= 20;
+        PumpBlock.computeStateForProgress(this.getBlockState(), this.getBlockPos(), this.level, this.timeLeft);
+        if (this.timeLeft < 0) {
+            this.timeLeft = 0;
+
+            level.setBlock(this.getBlockPos(), this.getBlockState().setValue(PumpBlock.ON_OFF, false).setValue(PumpBlock.PROGRESS, PumpBlock.Progress.ZERO), 3);
         }
     }
 
-    private void provideFluidToSluice(BlockEntity blockEntity) {
+    private boolean provideFluidToSluice(BlockEntity blockEntity) {
+        boolean didFill = false;
+
         // It's gone! Poof
         if (!(blockEntity instanceof SluiceBlockEntity)) {
             this.foundValidBlocks = false; // flag to update cache
             this.targetBlocks.clear();
-            return;
+            return false;
         }
 
         // Give it water!
         FluidCap tank = ((SluiceBlockEntity) blockEntity).tank;
         if (tank.getFluidAmount() < tank.getCapacity()) {
-            tank.internalFill(new FluidStack(this.creative ? this.creativeFluid : Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
+            int i = tank.internalFill(new FluidStack(this.creative ? this.creativeFluid : Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
+            if (i > 0) {
+                didFill = true;
+            }
+            blockEntity.setChanged();
         }
+
+        return didFill;
     }
 
     public Set<BlockPos> getTargetBlocks() {

@@ -7,10 +7,10 @@
   ],
   "key": {
     "w": {
-      "item": "minecraft:water_bucket"
+      "tag": "ftbsluice:water_buckets"
     },
     "s": {
-      "item": "minecraft:smooth_stone"
+      "item": "minecraft:stone"
     },
     "b": {
       "item": "minecraft:oak_planks"

@@ -57,6 +57,7 @@ public class PumpBlockEntityRender extends BlockEntityRenderer<PumpBlockEntity> 
     private static String getTimeString(int ticks) {
         int seconds = ticks / 20;
 
-        return (seconds % 3600) / 60 + "m " + (seconds % 3600) % 60 + "s";
+        int i = (seconds % 3600) / 60;
+        return (i > 0 ? i + "m " : "") + (seconds % 3600) % 60 + "s";
     }
 }

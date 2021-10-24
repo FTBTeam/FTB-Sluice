@@ -8,7 +8,6 @@ import dev.ftb.mods.sluice.block.pump.PumpBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.tags.SluiceTags;
-import dev.latvian.kubejs.text.Text;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
@@ -26,7 +25,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
@@ -178,14 +176,26 @@ public class SluiceDataGen {
                 }
             }
 
+            dirsRot = new int[]{90, 270, 0, 180};
             MultiPartBlockStateBuilder builder = this.getMultipartBuilder(SluiceBlocks.PUMP.get());
-            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_off"))).addModel().condition(PumpBlock.ON_OFF, false);
-            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_on"))).addModel().condition(PumpBlock.ON_OFF, true);
-            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_20"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.TWENTY);
-            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_40"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.FORTY);
-            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_60"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.SIXTY);
-            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_80"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.EIGHTY);
-            builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_100"))).addModel().condition(PumpBlock.ON_OFF, true).condition(PumpBlock.PROGRESS, PumpBlock.Progress.HUNDRED);
+            for (int d = 0; d < 4; d++) {
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_off"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, false).condition(HORIZONTAL_FACING, dirs[d]);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_on"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_20"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.TWENTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_40"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.FORTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_60"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.SIXTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_80"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.EIGHTY);
+            }
+
+//            getVariantBuilder(SluiceBlocks.PUMP.get())
+//                    .forAllStates(state -> {
+//                        Direction dir = state.getValue(BlockStateProperties.FACING);
+//                        return ConfiguredModel.builder()
+//                                .modelFile(modelFunc.apply(state))
+//                                .rotationX(dir == Direction.DOWN ? 180 : dir.getAxis().isHorizontal() ? 90 : 0)
+//                                .rotationY(dir.getAxis().isVertical() ? 0 : (((int) dir.toYRot()) + angleOffset) % 360)
+//                                .build();
+//                    });
 
             this.simpleBlock(SluiceBlocks.DUST_BLOCK.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_NETHERRACK.get());
@@ -277,6 +287,9 @@ public class SluiceDataGen {
                     SluiceModItems.GOLD_MESH.get(),
                     SluiceModItems.DIAMOND_MESH.get()
             );
+
+            this.tag(SluiceTags.Items.WATER_BUCKETS).add(Items.WATER_BUCKET, SluiceModItems.CLAY_WATER_BUCKET.get());
+            this.tag(SluiceTags.Items.EMPTY_BUCKETS).add(Items.BUCKET, SluiceModItems.CLAY_BUCKET.get());
         }
     }
 
@@ -343,8 +356,8 @@ public class SluiceDataGen {
                     .pattern("www")
                     .pattern("sss")
                     .pattern("bbb")
-                    .define('w', Items.WATER_BUCKET)
-                    .define('s', Items.SMOOTH_STONE)
+                    .define('w', SluiceTags.Items.WATER_BUCKETS)
+                    .define('s', Items.STONE)
                     .define('b', Items.OAK_PLANKS)
                     .save(consumer);
 

@@ -73,7 +73,7 @@ dependencies {
     modRuntime "curse.maven:mantle-74924:3439180"
     modRuntime "curse.maven:building-gadgets-298187:3205295"
     modRuntime "curse.maven:mekanism-268560:3206392"
-    modRuntime "curse.maven:tinkers-construct-74072:3439200"
+//    modRuntime "curse.maven:tinkers-construct-74072:3439200"
     modRuntime "curse.maven:ftb-jar-mod-forge-388285:3460409"
     modRuntime "curse.maven:ftb-library-forge-404465:3456644"
     modRuntime "curse.maven:architectury-forge-419699:3462013"

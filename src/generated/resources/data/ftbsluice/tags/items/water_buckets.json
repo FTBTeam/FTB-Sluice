@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:water_bucket",
+    "ftbsluice:clay_water_bucket"
+  ]
+}
