@@ -14,6 +14,14 @@ public class ItemWithWeight {
 		weight = w;
 	}
 
+	public ItemStack getItem() {
+		return item;
+	}
+
+	public double getWeight() {
+		return weight;
+	}
+
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)

@@ -53,6 +53,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
@@ -63,6 +64,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     public final LazyOptional<FluidCap> fluidOptional;
     private final SluiceProperties properties;
     private final boolean isNetherite;
+
+    private boolean isCreative = false;
 
     // Upgrade -> slot id
     private static final Object2IntMap<Upgrades> UPGRADE_SLOT_INDEX = new Object2IntOpenHashMap<>();
@@ -173,7 +176,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
      * Computes a list of resulting output items based on an input. We get the outputting items from the
      * custom recipe.
      */
-    public static List<ItemStack> getRandomResult(SluiceBlockEntity sluice, ItemStack input) {
+    public List<ItemStack> getRandomResult(SluiceBlockEntity sluice, ItemStack input) {
         List<ItemStack> outputResults = new ArrayList<>();
         if (sluice.level == null) {
             return outputResults;
@@ -181,13 +184,17 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         SluiceRecipeInfo recipe = FTBSluiceRecipes.getSluiceRecipes(sluice.tank.getFluid().getFluid(), sluice.level, sluice.getBlockState().getValue(SluiceBlock.MESH), input);
 
+        List<ItemWithWeight> items = recipe.getItems();
+        if (this.isCreative) {
+            return items.stream().map(e -> e.getItem().copy()).collect(Collectors.toList());
+        }
+
         // Luck calculation
         int additional = 0;
         if (sluice.upgradeCache.containsKey(Upgrades.LUCK)) {
             additional += Upgrades.LUCK.effectedChange * sluice.upgradeCache.getInt(Upgrades.LUCK);
         }
 
-        List<ItemWithWeight> items = recipe.getItems();
         Collections.shuffle(items); // Spin the wheel to make it a little less predictable
         for (ItemWithWeight result : items) {
             float number = sluice.level.getRandom().nextFloat();
@@ -215,6 +222,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         }
 
         ItemStack input = this.inventory.getStackInSlot(0);
+
         if (this.maxProcessed < 0) {
             this.startProcessing(this.level, input);
         } else {
@@ -224,6 +232,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
                     return;
                 }
                 this.processed++;
+
+                // Finish instantly
+                if (this.isCreative) {
+                    this.finishProcessing(this.level, state, input);
+                }
             } else {
                 this.finishProcessing(this.level, state, input);
             }
@@ -294,15 +307,18 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.processed = 0;
         this.maxProcessed = -1;
 
-        getRandomResult(this, itemStack)
+        this.getRandomResult(this, itemStack)
                 .forEach(e -> this.ejectItem(level, state.getValue(HORIZONTAL_FACING), e));
 
         this.inventory.setStackInSlot(0, ItemStack.EMPTY);
-        this.tank.internalDrain(this.fluidUsage, IFluidHandler.FluidAction.EXECUTE);
+
+        if (!this.isCreative) {
+            this.tank.internalDrain(this.fluidUsage, IFluidHandler.FluidAction.EXECUTE);
+        }
 
         this.fluidUsage = -1;
 
-        if (this.isNetherite) {
+        if (this.isNetherite && !this.isCreative) {
             this.energy.consumeEnergy(computePowerCost(), false);
         }
 
@@ -349,6 +365,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         compound.putInt("MaxProcessed", this.maxProcessed);
         compound.putInt("FluidUsage", this.fluidUsage);
         compound.putInt("LastPowerCost", this.lastPowerCost);
+
+        if (this.isCreative) {
+            compound.putBoolean("isCreative", true);
+        }
+
         if (this.isNetherite) {
             compound.put("Upgrades", upgradeInventory.serializeNBT());
             this.updateUpgradeCache(this.upgradeInventory);
@@ -367,6 +388,10 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.maxProcessed = compound.getInt("MaxProcessed");
         this.fluidUsage = compound.getInt("FluidUsage");
         this.lastPowerCost = compound.getInt("LastPowerCost");
+
+        if (compound.contains("isCreative")) {
+            this.isCreative = compound.getBoolean("isCreative");
+        }
 
         if (this.isNetherite) {
             this.energyOptional.ifPresent(e -> e.deserializeNBT(compound.getCompound("Energy")));
