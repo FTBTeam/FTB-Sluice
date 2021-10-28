@@ -61,7 +61,6 @@ dependencies {
     }
 
     modImplementation "curse.maven:jei-238222:${jei_file}"
-    modImplementation "me.shedaniel:architectury-forge:${arch_version}"
     modImplementation "dev.latvian.mods:kubejs-forge:${kubejs_version}"
     modImplementation "dev.latvian.mods:rhino-forge:${rhino_version}"
     modImplementation "mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api"
@@ -71,15 +70,7 @@ dependencies {
     modRuntime "curse.maven:lollipop-347954:3232534"
     modRuntime "curse.maven:pipez-443900:3273405"
     modRuntime "curse.maven:mantle-74924:3439180"
-    modRuntime "curse.maven:building-gadgets-298187:3205295"
     modRuntime "curse.maven:mekanism-268560:3206392"
-//    modRuntime "curse.maven:tinkers-construct-74072:3439200"
-    modRuntime "curse.maven:ftb-jar-mod-forge-388285:3460409"
-    modRuntime "curse.maven:ftb-library-forge-404465:3456644"
-    modRuntime "curse.maven:architectury-forge-419699:3462013"
-    modRuntime "curse.maven:miniutilities-460341:3457112"
-    modRuntime "curse.maven:lemon-lib-471136:3335288"
-    modRuntime "curse.maven:curios-309927:3456953"
 }
 
 processResources {
