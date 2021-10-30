@@ -35,6 +35,11 @@ public class SluiceModItems {
 
     public static final RegistryObject<BlockItem> PUMP = REGISTRY.register("pump", () -> new BlockItem(SluiceBlocks.PUMP.get(), new Item.Properties().tab(FTBSluice.group)));
 
+    public static final RegistryObject<BlockItem> IRON_AUTO_HAMMER = REGISTRY.register("iron_auto_hammer", () -> new BlockItem(SluiceBlocks.IRON_AUTO_HAMMER.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<BlockItem> GOLD_AUTO_HAMMER = REGISTRY.register("gold_auto_hammer", () -> new BlockItem(SluiceBlocks.GOLD_AUTO_HAMMER.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<BlockItem> DIAMOND_AUTO_HAMMER = REGISTRY.register("diamond_auto_hammer", () -> new BlockItem(SluiceBlocks.DIAMOND_AUTO_HAMMER.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<BlockItem> NETHERITE_AUTO_HAMMER = REGISTRY.register("netherite_auto_hammer", () -> new BlockItem(SluiceBlocks.NETHERITE_AUTO_HAMMER.get(), new Item.Properties().tab(FTBSluice.group)));
+
     // Upgrades
     public static final RegistryObject<Item> FORTUNE_UPGRADE = REGISTRY.register("sluice_fortune_upgrade", () -> new UpgradeItem(Upgrades.LUCK));
     public static final RegistryObject<Item> SPEED_UPGRADE = REGISTRY.register("sluice_speed_upgrade", () -> new UpgradeItem(Upgrades.SPEED));

@@ -100,6 +100,11 @@ public class SluiceDataGen {
             this.addBlock(SluiceBlocks.CRUSHED_BASALT, "Crushed Basalt");
             this.addBlock(SluiceBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
 
+            this.addBlock(SluiceBlocks.IRON_AUTO_HAMMER, "Iron Auto-hammer");
+            this.addBlock(SluiceBlocks.GOLD_AUTO_HAMMER, "Gold Auto-hammer");
+            this.addBlock(SluiceBlocks.DIAMOND_AUTO_HAMMER, "Diamond Auto-hammer");
+            this.addBlock(SluiceBlocks.NETHERITE_AUTO_HAMMER, "Netherite Auto-hammer");
+
             this.addItem(SluiceModItems.DAMAGED_CANTEEN, "Damaged Canteen");
 //            this.addItem(SluiceModItems.CANTEEN, "Canteen");
             this.addItem(SluiceModItems.CLAY_BUCKET, "Clay Bucket");
@@ -259,6 +264,20 @@ public class SluiceDataGen {
 
         @Override
         protected void addTags() {
+            this.tag(SluiceTags.Blocks.SLUICES).add(
+                    SluiceBlocks.OAK_SLUICE.get(),
+                    SluiceBlocks.IRON_SLUICE.get(),
+                    SluiceBlocks.DIAMOND_SLUICE.get(),
+                    SluiceBlocks.NETHERITE_SLUICE.get(),
+                    SluiceBlocks.EMPOWERED_SLUICE.get()
+            );
+
+            this.tag(SluiceTags.Blocks.AUTO_HAMMERS).add(
+                    SluiceBlocks.IRON_AUTO_HAMMER.get(),
+                    SluiceBlocks.GOLD_AUTO_HAMMER.get(),
+                    SluiceBlocks.DIAMOND_AUTO_HAMMER.get(),
+                    SluiceBlocks.NETHERITE_AUTO_HAMMER.get()
+            );
         }
     }
 
@@ -433,6 +452,35 @@ public class SluiceDataGen {
                     .define('I', Tags.Items.INGOTS_IRON)
                     .define('E', Tags.Items.GEMS_EMERALD)
                     .save(consumer);
+
+            ShapedRecipeBuilder.shaped(SluiceModItems.IRON_AUTO_HAMMER.get())
+                    .unlockedBy("has_item", has(SluiceModItems.IRON_HAMMER.get()))
+                    .pattern("IGI")
+                    .pattern("RHR")
+                    .pattern("IGI")
+                    .define('I', Tags.Items.INGOTS_IRON)
+                    .define('R', Tags.Items.DUSTS_REDSTONE)
+                    .define('G', Tags.Items.INGOTS_GOLD)
+                    .define('H', SluiceModItems.IRON_HAMMER.get())
+                    .save(consumer);
+
+            autoHammer(SluiceModItems.GOLD_AUTO_HAMMER.get(), SluiceModItems.IRON_AUTO_HAMMER.get(), SluiceModItems.GOLD_HAMMER.get(), consumer);
+            autoHammer(SluiceModItems.DIAMOND_AUTO_HAMMER.get(), SluiceModItems.GOLD_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_HAMMER.get(), consumer);
+            autoHammer(SluiceModItems.NETHERITE_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_HAMMER.get(), consumer);
+        }
+
+        private void autoHammer(ItemLike output, Item center, Item top, Consumer<FinishedRecipe> consumer) {
+            ShapedRecipeBuilder.shaped(output)
+                    .unlockedBy("has_item", has(center))
+                    .pattern("ITI")
+                    .pattern("RCR")
+                    .pattern("IGI")
+                    .define('I', Tags.Items.INGOTS_IRON)
+                    .define('R', Tags.Items.DUSTS_REDSTONE)
+                    .define('G', Tags.Items.INGOTS_GOLD)
+                    .define('T', top)
+                    .define('C', center)
+                    .save(consumer);
         }
 
         private void hammer(ItemLike output, Tag<Item> head, Consumer<FinishedRecipe> consumer) {
@@ -478,7 +526,14 @@ public class SluiceDataGen {
         protected void addTables() {
 //            this.dropSelf(SluiceBlocks.TANK.get());
             this.dropSelf(SluiceBlocks.DUST_BLOCK.get());
+            this.dropSelf(SluiceBlocks.CRUSHED_BASALT.get());
+            this.dropSelf(SluiceBlocks.CRUSHED_ENDSTONE.get());
+            this.dropSelf(SluiceBlocks.CRUSHED_NETHERRACK.get());
             this.dropSelf(SluiceBlocks.PUMP.get());
+            this.dropSelf(SluiceBlocks.IRON_AUTO_HAMMER.get());
+            this.dropSelf(SluiceBlocks.GOLD_AUTO_HAMMER.get());
+            this.dropSelf(SluiceBlocks.DIAMOND_AUTO_HAMMER.get());
+            this.dropSelf(SluiceBlocks.NETHERITE_AUTO_HAMMER.get());
             SluiceBlocks.SLUICES.forEach(e -> this.dropSelf(e.getKey().get()));
         }
 

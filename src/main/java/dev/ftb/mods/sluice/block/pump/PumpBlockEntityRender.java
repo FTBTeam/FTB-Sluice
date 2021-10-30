@@ -30,13 +30,13 @@ public class PumpBlockEntityRender extends BlockEntityRenderer<PumpBlockEntity> 
 
         Vec3 cameraPos = Minecraft.getInstance().getEntityRenderDispatcher().camera.getPosition();
         BlockPos blockPos = pump.getBlockPos();
-        double v = Mth.atan2(cameraPos.z() - (blockPos.getZ() + .5F), cameraPos.x() - (blockPos.getX() + .5F));
         double distance = cameraPos.distanceToSqr(new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
 
         if (distance > 30) {
             return;
         }
 
+        double v = Mth.atan2(cameraPos.z() - (blockPos.getZ() + .5F), cameraPos.x() - (blockPos.getX() + .5F));
         stack.pushPose();
         stack.translate(.5F, 1.4F, .5F);
         stack.scale(.020F, -.020F,.020F);

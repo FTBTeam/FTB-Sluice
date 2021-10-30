@@ -21,6 +21,8 @@ public class SluiceClient {
 
         ClientRegistry.bindTileEntityRenderer(SluiceBlockEntities.PUMP.get(), PumpBlockEntityRender::new);
 
+        ClientRegistry.bindTileEntityRenderer(SluiceBlockEntities.PUMP.get(), PumpBlockEntityRender::new);
+
         MenuScreens.register(FTBSluice.SLUICE_MENU.get(), SluiceScreen::new);
 
         ItemBlockRenderTypes.setRenderLayer(SluiceBlocks.PUMP.get(), RenderType.cutout());
