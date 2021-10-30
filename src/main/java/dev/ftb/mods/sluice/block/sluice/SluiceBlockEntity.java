@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -63,7 +62,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     public final FluidCap tank;
     public final LazyOptional<FluidCap> fluidOptional;
     private final SluiceProperties properties;
-    private final boolean isNetherite;
+    private final boolean isAdvanced;
 
     private boolean isCreative = false;
 
@@ -116,19 +115,19 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this(type, properties, false);
     }
 
-    public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties, boolean isNetherite) {
+    public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties, boolean isAdvanced) {
         super(type);
 
         // Finds the correct properties from the block for the specific sluice tier
         this.properties = properties;
-        this.isNetherite = isNetherite;
+        this.isAdvanced = isAdvanced;
 
-        this.energy = new Energy(!isNetherite
+        this.energy = new Energy(!isAdvanced
                 ? 0
                 : (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), SluiceConfig.GENERAL.maxUpgradeStackSize.get() * 3 + 1)
                 * SluiceConfig.SLUICES.NETHERITE.costPerUse.get(), Integer.MAX_VALUE), e -> {
             // Shouldn't be needed but it's better safe.
-            if (!this.isNetherite) {
+            if (!this.isAdvanced) {
                 return;
             }
             this.setChanged();
@@ -259,7 +258,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
      */
     private void startProcessing(@Nonnull Level level, ItemStack stack) {
         // No energy, no go.
-        if (this.isNetherite && this.energy.getEnergyStored() <= 0) {
+        if (this.isAdvanced && this.energy.getEnergyStored() <= 0) {
             return;
         }
 
@@ -274,7 +273,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         }
 
         // Reject if we don't have enough power to process the resource
-        if (this.tank.isEmpty() || this.isNetherite && this.energy.getEnergyStored() < computePowerCost()) {
+        if (this.tank.isEmpty() || this.isAdvanced && this.energy.getEnergyStored() < computePowerCost()) {
             return;
         }
 
@@ -318,7 +317,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         this.fluidUsage = -1;
 
-        if (this.isNetherite && !this.isCreative) {
+        if (this.isAdvanced && !this.isCreative) {
             this.energy.consumeEnergy(computePowerCost(), false);
         }
 
@@ -370,7 +369,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             compound.putBoolean("isCreative", true);
         }
 
-        if (this.isNetherite) {
+        if (this.isAdvanced) {
             compound.put("Upgrades", upgradeInventory.serializeNBT());
             this.updateUpgradeCache(this.upgradeInventory);
             this.energyOptional.ifPresent(e -> compound.put("Energy", e.serializeNBT()));
@@ -393,7 +392,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             this.isCreative = compound.getBoolean("isCreative");
         }
 
-        if (this.isNetherite) {
+        if (this.isAdvanced) {
             this.energyOptional.ifPresent(e -> e.deserializeNBT(compound.getCompound("Energy")));
             this.upgradeInventory.deserializeNBT(compound.getCompound("Upgrades"));
             this.updateUpgradeCache(this.upgradeInventory);
@@ -427,7 +426,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
             return this.fluidOptional.cast();
         }
 
-        if (cap == CapabilityEnergy.ENERGY && this.isNetherite) {
+        if (cap == CapabilityEnergy.ENERGY && this.isAdvanced) {
             return this.energyOptional.cast();
         }
 
@@ -533,6 +532,12 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     public static class NetheriteSluiceBlockEntity extends SluiceBlockEntity {
         public NetheriteSluiceBlockEntity() {
             super(SluiceBlockEntities.NETHERITE_SLUICE.get(), SluiceProperties.NETHERITE, true);
+        }
+    }
+
+    public static class EmpoweredSluiceBlockEntity extends SluiceBlockEntity {
+        public EmpoweredSluiceBlockEntity() {
+            super(SluiceBlockEntities.EMPOWERED_SLUICE.get(), SluiceProperties.EMPOWERED, true);
         }
     }
 }

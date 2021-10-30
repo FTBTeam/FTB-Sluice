@@ -36,6 +36,7 @@ public class SluiceConfig {
 
         public final CategorySluice OAK, IRON, DIAMOND;
         public final CategoryNetheriteSluice NETHERITE;
+        public final CategoryNetheriteSluice EMPOWERED;
 
         public CategorySluices() {
             COMMON_BUILDER.push("sluices");
@@ -43,7 +44,8 @@ public class SluiceConfig {
             OAK = new CategorySluice("oak", 1, 1, 12000);
             IRON = new CategorySluice("iron", .8, .6, 12000);
             DIAMOND = new CategorySluice("diamond", .6, .75, 12000);
-            NETHERITE = new CategoryNetheriteSluice("netherite", .4, .5, 12000);
+            NETHERITE = new CategoryNetheriteSluice("netherite", 40,.4, .5, 12000);
+            EMPOWERED = new CategoryNetheriteSluice("empowered", 80,.2, .2, 25000);
         }
     }
 
@@ -79,16 +81,18 @@ public class SluiceConfig {
 
     public static class CategoryNetheriteSluice extends CategorySluice {
         public ForgeConfigSpec.IntValue costPerUse;
+        public int energyCost;
 
-        public CategoryNetheriteSluice(String name, double timeMod, double fluidMod, int tankCap) {
+        public CategoryNetheriteSluice(String name, int energyCost, double timeMod, double fluidMod, int tankCap) {
             super(name, timeMod, fluidMod, tankCap);
+            this.energyCost = energyCost;
         }
 
         @Override
         public void addOtherValues() {
             this.costPerUse = COMMON_BUILDER
                     .comment("FE cost per use")
-                    .defineInRange("fe cost per use", 40, 0, 1000);
+                    .defineInRange("fe cost per use", energyCost, 0, Integer.MAX_VALUE);
         }
     }
 }

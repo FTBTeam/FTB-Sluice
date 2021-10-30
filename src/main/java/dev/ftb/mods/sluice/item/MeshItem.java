@@ -4,7 +4,6 @@ import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
 import net.minecraft.world.item.Item;
 
-
 public class MeshItem extends Item {
     public final MeshType mesh;
 

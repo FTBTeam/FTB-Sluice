@@ -7,6 +7,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.common.Tags;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,10 +19,11 @@ public enum MeshType implements StringRepresentable {
 	CLOTH("cloth", SluiceModItems.CLOTH_MESH, () -> ItemTags.bind("forge:string")),
 	IRON("iron", SluiceModItems.IRON_MESH, () -> ItemTags.bind("forge:ingots/iron")),
 	GOLD("gold", SluiceModItems.GOLD_MESH, () -> ItemTags.bind("forge:ingots/gold")),
-	DIAMOND("diamond", SluiceModItems.DIAMOND_MESH, () -> ItemTags.bind("forge:gems/diamond"));
+	DIAMOND("diamond", SluiceModItems.DIAMOND_MESH, () -> ItemTags.bind("forge:gems/diamond")),
+	BLAZING("blazing", SluiceModItems.BLAZING_MESH, () -> Tags.Items.INGOTS_NETHERITE);
 
 	public static MeshType[] VALUES = values();
-	public static MeshType[] REAL_VALUES = {CLOTH, IRON, GOLD, DIAMOND};
+	public static MeshType[] REAL_VALUES = {CLOTH, IRON, GOLD, DIAMOND, BLAZING};
 	public static Map<String, MeshType> MAP = new HashMap<>();
 
 	static {

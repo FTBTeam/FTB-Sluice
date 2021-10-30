@@ -1,9 +1,11 @@
 package dev.ftb.mods.sluice.block.sluice;
 
+import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
 import dev.ftb.mods.sluice.item.MeshItem;
+import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import dev.ftb.mods.sluice.util.TextUtil;
 import net.minecraft.ChatFormatting;
@@ -182,9 +184,18 @@ public class SluiceBlock extends Block {
 
             return InteractionResult.SUCCESS;
         } else if (itemStack.getItem() instanceof MeshItem) {
-            if (state.getValue(MESH) != ((MeshItem) itemStack.getItem()).mesh) {
+            MeshType type = ((MeshItem) itemStack.getItem()).mesh;
+            if (state.getValue(MESH) != type) {
+                if (type == MeshType.BLAZING && state.getBlock() != SluiceBlocks.EMPOWERED_SLUICE.get()) {
+                    if (world.isClientSide) {
+                        player.displayClientMessage(new TranslatableComponent(FTBSluice.MOD_ID + ".block.sluice.warning.wrong_sluice"), true);
+                    }
+
+                    return InteractionResult.FAIL;
+                }
+
                 ItemStack current = state.getValue(MESH).getItemStack();
-                world.setBlock(pos, state.setValue(MESH, ((MeshItem) itemStack.getItem()).mesh), 3);
+                world.setBlock(pos, state.setValue(MESH, type), 3);
                 if (!player.abilities.instabuild) {
                     itemStack.shrink(1);
 

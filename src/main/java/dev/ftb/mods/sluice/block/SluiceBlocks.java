@@ -28,6 +28,7 @@ public class SluiceBlocks {
     public static final RegistryObject<Block> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> new SluiceBlock(SluiceProperties.IRON));
     public static final RegistryObject<Block> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", () -> new SluiceBlock(SluiceProperties.DIAMOND));
     public static final RegistryObject<Block> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", () -> new SluiceBlock(SluiceProperties.NETHERITE));
+    public static final RegistryObject<Block> EMPOWERED_SLUICE = REGISTRY.register("empowered_sluice", () -> new SluiceBlock(SluiceProperties.EMPOWERED));
 
     public static final RegistryObject<Block> PUMP = REGISTRY.register("pump", PumpBlock::new);
 
@@ -44,6 +45,7 @@ public class SluiceBlocks {
             Pair.of(OAK_SLUICE, "oak"),
             Pair.of(IRON_SLUICE, "iron"),
             Pair.of(DIAMOND_SLUICE, "diamond"),
-            Pair.of(NETHERITE_SLUICE, "netherite")
+            Pair.of(NETHERITE_SLUICE, "netherite"),
+            Pair.of(EMPOWERED_SLUICE, "empowered")
     );
 }

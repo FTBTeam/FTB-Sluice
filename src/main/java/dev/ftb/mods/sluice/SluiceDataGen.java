@@ -25,6 +25,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
@@ -142,6 +143,7 @@ public class SluiceDataGen {
             this.add(MODID + ".properties.auto.item", "Items");
             this.add(MODID + ".properties.auto.fluid", "Fluids");
             this.add(MODID + ".properties.upgradeable", "Can be upgraded to further increase efficiency; requires RF to function");
+            this.add(MODID + ".block.sluice.warning.wrong_sluice", "You can not use the Blazing Mesh on this Sluice");
         }
     }
 
@@ -171,6 +173,11 @@ public class SluiceDataGen {
                     builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + p.getRight() + "_sluice_front"))).rotationY(dirsRot[d]).addModel().condition(HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.FUNNEL);
 
                     for (MeshType type : MeshType.REAL_VALUES) {
+                        // Don't create models for the blazing mesh on non-empowered sluices
+                        if (p.getKey() != SluiceBlocks.EMPOWERED_SLUICE && type == MeshType.BLAZING) {
+                            continue;
+                        }
+
                         builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + type.getSerializedName() + "_mesh"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.MESH, type).condition(HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.MAIN);
                     }
                 }
@@ -186,16 +193,6 @@ public class SluiceDataGen {
                 builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_60"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.SIXTY);
                 builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_80"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.EIGHTY);
             }
-
-//            getVariantBuilder(SluiceBlocks.PUMP.get())
-//                    .forAllStates(state -> {
-//                        Direction dir = state.getValue(BlockStateProperties.FACING);
-//                        return ConfiguredModel.builder()
-//                                .modelFile(modelFunc.apply(state))
-//                                .rotationX(dir == Direction.DOWN ? 180 : dir.getAxis().isHorizontal() ? 90 : 0)
-//                                .rotationY(dir.getAxis().isVertical() ? 0 : (((int) dir.toYRot()) + angleOffset) % 360)
-//                                .build();
-//                    });
 
             this.simpleBlock(SluiceBlocks.DUST_BLOCK.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_NETHERRACK.get());
@@ -285,7 +282,8 @@ public class SluiceDataGen {
                     SluiceModItems.CLOTH_MESH.get(),
                     SluiceModItems.IRON_MESH.get(),
                     SluiceModItems.GOLD_MESH.get(),
-                    SluiceModItems.DIAMOND_MESH.get()
+                    SluiceModItems.DIAMOND_MESH.get(),
+                    SluiceModItems.BLAZING_MESH.get()
             );
 
             this.tag(SluiceTags.Items.WATER_BUCKETS).add(Items.WATER_BUCKET, SluiceModItems.CLAY_WATER_BUCKET.get());
@@ -384,6 +382,17 @@ public class SluiceDataGen {
                     .pattern("SD")
                     .define('S', SluiceModItems.IRON_SLUICE.get())
                     .define('D', this.DIAMOND_GEM)
+                    .save(consumer);
+
+            ShapedRecipeBuilder.shaped(SluiceModItems.EMPOWERED_SLUICE.get())
+                    .unlockedBy("has_item", has(SluiceModItems.NETHERITE_SLUICE.get()))
+                    .pattern("DDX")
+                    .pattern("SDX")
+                    .pattern("AAA")
+                    .define('S', SluiceModItems.NETHERITE_SLUICE.get())
+                    .define('D', Tags.Items.INGOTS_NETHERITE)
+                    .define('X', Blocks.DIAMOND_BLOCK)
+                    .define('A', Blocks.GOLD_BLOCK)
                     .save(consumer);
 
             UpgradeRecipeBuilder.smithing(Ingredient.of(SluiceModItems.DIAMOND_SLUICE.get()), Ingredient.of(Items.NETHERITE_INGOT), SluiceModItems.NETHERITE_SLUICE.get())
