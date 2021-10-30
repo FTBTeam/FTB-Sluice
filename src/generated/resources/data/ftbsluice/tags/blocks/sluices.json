@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "ftbsluice:oak_sluice",
+    "ftbsluice:iron_sluice",
+    "ftbsluice:diamond_sluice",
+    "ftbsluice:netherite_sluice",
+    "ftbsluice:empowered_sluice"
+  ]
+}

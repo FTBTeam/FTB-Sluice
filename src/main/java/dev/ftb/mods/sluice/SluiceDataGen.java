@@ -9,6 +9,7 @@ import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.tags.SluiceTags;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -68,7 +69,7 @@ public class SluiceDataGen {
         }
 
         if (event.includeServer()) {
-            SMBlockTags blockTags = new SMBlockTags(gen);
+            SMBlockTags blockTags = new SMBlockTags(gen, event.getExistingFileHelper());
 
             gen.addProvider(blockTags);
             gen.addProvider(new SMItemTags(gen, blockTags, event.getExistingFileHelper()));
@@ -258,8 +259,8 @@ public class SluiceDataGen {
     }
 
     private static class SMBlockTags extends BlockTagsProvider {
-        public SMBlockTags(DataGenerator generatorIn) {
-            super(generatorIn);
+        public SMBlockTags(DataGenerator generatorIn, ExistingFileHelper helper) {
+            super(generatorIn, FTBSluice.MOD_ID, helper);
         }
 
         @Override
@@ -456,9 +457,10 @@ public class SluiceDataGen {
             ShapedRecipeBuilder.shaped(SluiceModItems.IRON_AUTO_HAMMER.get())
                     .unlockedBy("has_item", has(SluiceModItems.IRON_HAMMER.get()))
                     .pattern("IGI")
-                    .pattern("RHR")
-                    .pattern("IGI")
+                    .pattern("XHX")
+                    .pattern("RGR")
                     .define('I', Tags.Items.INGOTS_IRON)
+                    .define('X', Tags.Items.GLASS)
                     .define('R', Tags.Items.DUSTS_REDSTONE)
                     .define('G', Tags.Items.INGOTS_GOLD)
                     .define('H', SluiceModItems.IRON_HAMMER.get())
@@ -473,11 +475,12 @@ public class SluiceDataGen {
             ShapedRecipeBuilder.shaped(output)
                     .unlockedBy("has_item", has(center))
                     .pattern("ITI")
-                    .pattern("RCR")
-                    .pattern("IGI")
+                    .pattern("XCX")
+                    .pattern("RGR")
                     .define('I', Tags.Items.INGOTS_IRON)
                     .define('R', Tags.Items.DUSTS_REDSTONE)
                     .define('G', Tags.Items.INGOTS_GOLD)
+                    .define('X', Tags.Items.GLASS)
                     .define('T', top)
                     .define('C', center)
                     .save(consumer);

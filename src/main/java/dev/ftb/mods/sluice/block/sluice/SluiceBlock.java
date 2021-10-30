@@ -114,6 +114,8 @@ public class SluiceBlock extends Block {
             return SluiceBlockEntities.IRON_SLUICE.get().create();
         } else if (state.getBlock() == SluiceBlocks.DIAMOND_SLUICE.get()) {
             return SluiceBlockEntities.DIAMOND_SLUICE.get().create();
+        } else if (state.getBlock() == SluiceBlocks.EMPOWERED_SLUICE.get()) {
+            return SluiceBlockEntities.EMPOWERED_SLUICE.get().create();
         } else {
             return SluiceBlockEntities.NETHERITE_SLUICE.get().create();
         }

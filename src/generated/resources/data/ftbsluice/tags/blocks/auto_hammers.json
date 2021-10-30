@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "ftbsluice:iron_auto_hammer",
+    "ftbsluice:gold_auto_hammer",
+    "ftbsluice:diamond_auto_hammer",
+    "ftbsluice:netherite_auto_hammer"
+  ]
+}

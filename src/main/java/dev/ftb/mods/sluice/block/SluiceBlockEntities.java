@@ -21,7 +21,7 @@ public class SluiceBlockEntities {
     public static final RegistryObject<BlockEntityType<IronSluiceBlockEntity>> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> BlockEntityType.Builder.of(IronSluiceBlockEntity::new, SluiceBlocks.IRON_SLUICE.get()).build(null));
     public static final RegistryObject<BlockEntityType<DiamondSluiceBlockEntity>> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", () -> BlockEntityType.Builder.of(DiamondSluiceBlockEntity::new, SluiceBlocks.DIAMOND_SLUICE.get()).build(null));
     public static final RegistryObject<BlockEntityType<NetheriteSluiceBlockEntity>> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", () -> BlockEntityType.Builder.of(NetheriteSluiceBlockEntity::new, SluiceBlocks.NETHERITE_SLUICE.get()).build(null));
-    public static final RegistryObject<BlockEntityType<EmpoweredSluiceBlockEntity>> EMPOWERED_SLUICE = REGISTRY.register("empowered_sluice", () -> BlockEntityType.Builder.of(EmpoweredSluiceBlockEntity::new, SluiceBlocks.NETHERITE_SLUICE.get()).build(null));
+    public static final RegistryObject<BlockEntityType<EmpoweredSluiceBlockEntity>> EMPOWERED_SLUICE = REGISTRY.register("empowered_sluice", () -> BlockEntityType.Builder.of(EmpoweredSluiceBlockEntity::new, SluiceBlocks.EMPOWERED_SLUICE.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<PumpBlockEntity>> PUMP = REGISTRY.register("pump", () -> BlockEntityType.Builder.of(PumpBlockEntity::new, SluiceBlocks.PUMP.get()).build(null));
 
