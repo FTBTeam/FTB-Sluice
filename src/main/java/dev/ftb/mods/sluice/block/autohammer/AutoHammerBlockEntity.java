@@ -14,12 +14,16 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.EmptyHandler;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockEntity {
     public class InternalInsertableItemHandler extends ItemStackHandler {
@@ -36,6 +40,9 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         @NotNull
         public ItemStack internalInsert(int slot, @NotNull ItemStack stack, boolean simulate) {
             ItemStack itemStack = super.insertItem(slot, stack, simulate);
+            if (!simulate) {
+                AutoHammerBlockEntity.this.setChanged();
+            }
             return itemStack;
         }
 
@@ -77,6 +84,8 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         }
     };
 
+    private static final Triple<Integer, IItemHandler, ItemStack> EMPTY_INPUT = Triple.of(-1, EmptyHandler.INSTANCE, ItemStack.EMPTY);
+
     private final InternalInsertableItemHandler outputInventory = new InternalInsertableItemHandler(12);
 
     private final LazyOptional<ItemStackHandler> inputInvLazy = LazyOptional.of(() -> inputInventory);
@@ -103,52 +112,71 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
             return;
         }
 
+        // By default, lets try and insert and export items in and out of the internal buffers
+        pushPullInventories();
+
         if (!processing) {
-            ItemStack inputItem = inputInventory.getStackInSlot(0);
+            ItemStack inputStack = inputInventory.getStackInSlot(0);
 
-            if (hasItemAndIsHammerable(inputItem)) {
-                ItemStack outputItem = this.outputInventory.getStackInSlot(0);
-                if (outputItem.isEmpty()) {
-                    takeItemAndStartProcessing(inputItem);
+            if (!inputStack.isEmpty()) {
+                // Attempt to insert the items into the output, Time out and stop if any items would be lost
+                List<ItemStack> hammerDrops = FTBSluiceRecipes.getHammerDrops(level, inputStack);
+
+                // If we consumed all items, start processing
+                if (pushIntoInternalOutputInventory(hammerDrops, true) >= hammerDrops.size()) {
+                    heldItem = inputStack.copy();
+                    heldItem.setCount(1);
+
+                    inputInventory.extractItem(0, 1, false);
+                    processing = true;
+                    maxProgress = 10;
+                    progress = 0;
                 } else {
-                    // Attempt to insert the items into the output, Time out and stop if any items would be lost
-                    List<ItemStack> hammerDrops = FTBSluiceRecipes.getHammerDrops(level, inputItem);
-                    boolean consumedAllItems = true;
-                    for (ItemStack drop : hammerDrops) {
-                        for (int i = 0; i < outputInventory.getSlots(); i++) {
-                            ItemStack itemStack = outputInventory.internalInsert(i, drop.copy(), true);
-                            if (!itemStack.isEmpty()) {
-                                consumedAllItems = false;
-                                timeOut = 100; // Timeout for a while
-                                break;
-                            }
-                        }
-                    }
-
-                    // If we consumed all items, start processing
-                    if (consumedAllItems) {
-                        takeItemAndStartProcessing(inputItem);
-                    }
+                    timeOut = getTimeoutDuration(); // Timeout for a while
                 }
+            } else {
+                timeOut = getTimeoutDuration(); // Timeout for a while
             }
         } else {
             if (progress < maxProgress) {
+                // if we're running, tick the progress
                 progress++;
             } else {
+                // We're done, lets try to insert the items into the output
                 processing = false;
                 progress = 0;
                 maxProgress = 0;
 
-                // Find a target inventory to insert to
-                IItemHandler iItemHandler = Optional.ofNullable(level.getBlockEntity(worldPosition.east()))
-                        .map(e -> e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.EAST).orElse(outputInventory))
-                        .orElse(outputInventory);
-
-                FTBSluiceRecipes.getHammerDrops(level, heldItem).forEach(drop -> {
-                    insertItemsToInventory(iItemHandler, drop.copy());
-                });
-
+                pushIntoInternalOutputInventory(FTBSluiceRecipes.getHammerDrops(level, heldItem), false);
                 heldItem = ItemStack.EMPTY;
+            }
+        }
+    }
+
+    private void pushPullInventories() {
+        // First, try and push items out of the output if any exist
+        IItemHandler external = getExternalInventory(Direction.EAST);
+        if (!(external instanceof EmptyHandler)) {
+            for (int i = 0; i < outputInventory.getSlots(); i++) {
+                ItemStack stackInSlot = outputInventory.getStackInSlot(i);
+                ItemStack stack = ItemHandlerHelper.insertItem(external, stackInSlot, false);
+                if (stackInSlot.getCount() != stack.getCount()) {
+                    outputInventory.extractItem(i, stackInSlot.getCount() - stack.getCount(), false);
+                    break;
+                }
+            }
+        }
+
+        // Now try and insert items into the input inventory
+        ItemStack inputStack = inputInventory.getStackInSlot(0);
+        IItemHandler internal = getExternalInventory(Direction.WEST);
+        for (int i = 0; i < internal.getSlots(); i++) {
+            ItemStack stack = internal.getStackInSlot(i);
+            if ((inputStack.isEmpty() || inputStack.getItem() == stack.getItem()) && hasItemAndIsHammerable(stack)) {
+                ItemStack insertedItem = inputInventory.insertItem(0, stack.copy(), false);
+                if (insertedItem.getCount() != stack.getCount()) {
+                    internal.extractItem(i, stack.getCount() - insertedItem.getCount(), false);
+                }
             }
         }
     }
@@ -162,37 +190,29 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         return !stack.isEmpty() && FTBSluiceRecipes.hammerable(stack);
     }
 
-    /**
-     * Take the item and start processing
-     *
-     * @param stack The item to process
-     */
-    private void takeItemAndStartProcessing(ItemStack stack) {
-        heldItem = stack.copy();
-        heldItem.setCount(1);
+    private int pushIntoInternalOutputInventory(List<ItemStack> items, boolean simulate) {
+        int inserted = 0;
 
-        inputInventory.extractItem(0, 1, false);
-        processing = true;
-        maxProgress = 20;
-        progress = 0;
-    }
-
-    /**
-     * Inserts the item into the inventory, if possible.
-     *
-     * @param inventory The inventory to insert into
-     * @param stack The item to insert
-     */
-    private void insertItemsToInventory(IItemHandler inventory, ItemStack stack) {
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            ItemStack itemStack = inventory instanceof InternalInsertableItemHandler
-                    ? ((InternalInsertableItemHandler) inventory).internalInsert(i, stack, false)
-                    : inventory.insertItem(i, stack, false);
-
-            if (itemStack.isEmpty()) {
-                break;
+        for (ItemStack item : items) {
+            for (int i = 0; i < outputInventory.getSlots(); i++) {
+                ItemStack insert = outputInventory.internalInsert(i, item.copy(), simulate);
+                if (insert.isEmpty()) {
+                    inserted ++;
+                    break;
+                }
             }
         }
+
+        return inserted;
+    }
+
+    private IItemHandler getExternalInventory(Direction direction) {
+        BlockEntity blockEntity = level.getBlockEntity(worldPosition.relative(direction));
+        if (blockEntity != null) {
+            return blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).orElse(EmptyHandler.INSTANCE);
+        }
+
+        return EmptyHandler.INSTANCE;
     }
 
     @Override
@@ -231,6 +251,26 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         }
 
         return super.getCapability(cap, side);
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public int getMaxProgress() {
+        return maxProgress;
+    }
+
+    public int getTimeOut() {
+        return timeOut;
+    }
+
+    public int getTimeoutDuration() {
+        return 100;
+    }
+
+    public ItemStack getHeldItem() {
+        return heldItem;
     }
 
     public AutoHammerProperties getProps() {
