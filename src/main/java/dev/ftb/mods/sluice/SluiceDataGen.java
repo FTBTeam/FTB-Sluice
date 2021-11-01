@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
+import dev.ftb.mods.sluice.block.autohammer.AutoHammerBlock;
 import dev.ftb.mods.sluice.block.pump.PumpBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.item.SluiceModItems;
@@ -37,6 +38,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeLootTableProvider;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import org.apache.commons.lang3.tuple.Pair;
@@ -189,15 +191,32 @@ public class SluiceDataGen {
                 }
             }
 
-            dirsRot = new int[]{90, 270, 0, 180};
+            int[] dirsRot2 = new int[]{90, 270, 0, 180};
             MultiPartBlockStateBuilder builder = this.getMultipartBuilder(SluiceBlocks.PUMP.get());
             for (int d = 0; d < 4; d++) {
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_off"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, false).condition(HORIZONTAL_FACING, dirs[d]);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_on"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_20"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.TWENTY);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_40"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.FORTY);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_60"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.SIXTY);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_80"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.EIGHTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_off"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, false).condition(HORIZONTAL_FACING, dirs[d]);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_on"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_20"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.TWENTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_40"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.FORTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_60"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.SIXTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_80"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.EIGHTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_100"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.HUNDRED);
+            }
+
+            List<Pair<String, RegistryObject<Block>>> hammerTypes = new ArrayList<Pair<String, RegistryObject<Block>>>() {{
+                add(Pair.of("iron", SluiceBlocks.IRON_AUTO_HAMMER));
+                add(Pair.of("gold", SluiceBlocks.GOLD_AUTO_HAMMER));
+                add(Pair.of("diamond", SluiceBlocks.DIAMOND_AUTO_HAMMER));
+                add(Pair.of("netherite", SluiceBlocks.NETHERITE_AUTO_HAMMER));
+            }};
+
+            for (Pair<String, RegistryObject<Block>> hammerType : hammerTypes) {
+                MultiPartBlockStateBuilder b = this.getMultipartBuilder(hammerType.getRight().get());
+                String path = hammerType.getRight().get().getRegistryName().getPath();
+                for (int d = 0; d < 4; d++) {
+                    b.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + path))).rotationY(dirsRot[d]).addModel().condition(AutoHammerBlock.ACTIVE, false).condition(HORIZONTAL_FACING, dirs[d]);
+                    b.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + path + "_active"))).rotationY(dirsRot[d]).addModel().condition(AutoHammerBlock.ACTIVE, true).condition(HORIZONTAL_FACING, dirs[d]);
+                }
             }
 
             this.simpleBlock(SluiceBlocks.DUST_BLOCK.get());
@@ -226,6 +245,11 @@ public class SluiceDataGen {
         protected void registerModels() {
             String path = SluiceBlocks.PUMP.get().getRegistryName().getPath();
             this.getBuilder(path).parent(new ModelFile.UncheckedModelFile(this.modLoc("block/" + path + "_on")));
+
+            this.registerBlockModel(SluiceBlocks.IRON_AUTO_HAMMER.get());
+            this.registerBlockModel(SluiceBlocks.GOLD_AUTO_HAMMER.get());
+            this.registerBlockModel(SluiceBlocks.DIAMOND_AUTO_HAMMER.get());
+            this.registerBlockModel(SluiceBlocks.NETHERITE_AUTO_HAMMER.get());
 
             this.registerBlockModel(SluiceBlocks.DUST_BLOCK.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_NETHERRACK.get());

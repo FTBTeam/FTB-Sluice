@@ -2,12 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "IGI",
-    "RHR",
-    "IGI"
+    "XHX",
+    "RGR"
   ],
   "key": {
     "I": {
       "tag": "forge:ingots/iron"
+    },
+    "X": {
+      "tag": "forge:glass"
     },
     "R": {
       "tag": "forge:dusts/redstone"

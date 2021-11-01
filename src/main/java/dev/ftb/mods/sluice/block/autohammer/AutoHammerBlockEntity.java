@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -17,15 +18,20 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockEntity {
+    private static final int[][] IO_DIRECTIONAL_MATRIX = new int[][] {
+            {4, 5}, // 2 north -> input[west] -> output[east]
+            {5, 4}, // 3 south -> input[east] -> output[west]
+            {3, 2}, // 4 west  -> input[south] -> output[north]
+            {2, 3}, // 5 east  -> input[north] -> output[south]
+    };
+
     public class InternalInsertableItemHandler extends ItemStackHandler {
         public InternalInsertableItemHandler(int size) {
             super(size);
@@ -155,7 +161,8 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
     private void pushPullInventories() {
         // First, try and push items out of the output if any exist
-        IItemHandler external = getExternalInventory(Direction.EAST);
+        Direction facing = getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        IItemHandler external = getExternalInventory(getOutputDirection(facing));
         if (!(external instanceof EmptyHandler)) {
             for (int i = 0; i < outputInventory.getSlots(); i++) {
                 ItemStack stackInSlot = outputInventory.getStackInSlot(i);
@@ -169,7 +176,7 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
         // Now try and insert items into the input inventory
         ItemStack inputStack = inputInventory.getStackInSlot(0);
-        IItemHandler internal = getExternalInventory(Direction.WEST);
+        IItemHandler internal = getExternalInventory(getInputDirection(facing));
         for (int i = 0; i < internal.getSlots(); i++) {
             ItemStack stack = internal.getStackInSlot(i);
             if ((inputStack.isEmpty() || inputStack.getItem() == stack.getItem()) && hasItemAndIsHammerable(stack)) {
@@ -239,14 +246,24 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         outputInvLazy.ifPresent(e -> e.deserializeNBT(tag.getCompound("OutputInventory")));
     }
 
+    public static Direction getInputDirection(Direction facing) {
+        return Direction.from3DDataValue(IO_DIRECTIONAL_MATRIX[facing.get3DDataValue() - 2][0]);
+    }
+
+    public static Direction getOutputDirection(Direction facing) {
+        return Direction.from3DDataValue(IO_DIRECTIONAL_MATRIX[facing.get3DDataValue() - 2][1]);
+    }
+
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        Direction dir = this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (side == Direction.EAST) {
-                return outputInvLazy.cast();
-            } else if (side == Direction.WEST) {
+            if (side == getInputDirection(dir)) {
                 return inputInvLazy.cast();
+            } else if (side == getOutputDirection(dir)) {
+                return outputInvLazy.cast();
             }
         }
 

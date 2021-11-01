@@ -15,6 +15,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.swing.*;
@@ -61,7 +62,8 @@ public class TheOneProbeProvider implements IProbeInfoProvider, Function<ITheOne
             iProbeInfo.progress(entity.getProgress(), entity.getMaxProgress(), iProbeInfo.defaultProgressStyle().color(Color.rgb(60, 10, 0), Color.rgb(255, 20, 0), Color.rgb(150, 20, 0), Color.rgb(0, 0, 0)).prefix("Progress: ")).padding(0, 2);
         }
 
-        ItemStack itemStack = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.WEST)
+        Direction direction = blockState.getValue(BlockStateProperties.HORIZONTAL_FACING);
+        ItemStack itemStack = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, AutoHammerBlockEntity.getInputDirection(direction))
                 .map(h -> h.getStackInSlot(0))
                 .orElse(ItemStack.EMPTY);
 
@@ -69,7 +71,7 @@ public class TheOneProbeProvider implements IProbeInfoProvider, Function<ITheOne
             iProbeInfo.horizontal(iProbeInfo.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER)).text("Input: ").item(itemStack.isEmpty() ? entity.getHeldItem() : itemStack);
         }
 
-        entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.EAST).ifPresent(h -> {
+        entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, AutoHammerBlockEntity.getOutputDirection(direction)).ifPresent(h -> {
             List<ItemStack> stacks = new ArrayList<>(h.getSlots());
             for (int i = 0; i < h.getSlots(); i++) {
                 if (!h.getStackInSlot(i).isEmpty()) {
