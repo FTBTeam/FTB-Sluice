@@ -164,7 +164,7 @@ public class SluiceBlock extends Block {
 
         SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
 
-        if (itemStack.isEmpty() && !world.isClientSide() && !player.isCrouching() && sluice instanceof SluiceBlockEntity.NetheriteSluiceBlockEntity) {
+        if (itemStack.isEmpty() && !world.isClientSide() && !player.isCrouching() && (sluice instanceof SluiceBlockEntity.NetheriteSluiceBlockEntity || sluice instanceof SluiceBlockEntity.EmpoweredSluiceBlockEntity)) {
             NetworkHooks.openGui((ServerPlayer) player, sluice, pos);
             return InteractionResult.SUCCESS;
         } else if (player.isCrouching()) {

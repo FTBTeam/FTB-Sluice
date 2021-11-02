@@ -122,10 +122,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.properties = properties;
         this.isAdvanced = isAdvanced;
 
+        int powerCost = this instanceof EmpoweredSluiceBlockEntity ? SluiceConfig.SLUICES.EMPOWERED.costPerUse.get() : SluiceConfig.SLUICES.NETHERITE.costPerUse.get();
         this.energy = new Energy(!isAdvanced
                 ? 0
                 : (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), SluiceConfig.GENERAL.maxUpgradeStackSize.get() * 3 + 1)
-                * SluiceConfig.SLUICES.NETHERITE.costPerUse.get(), Integer.MAX_VALUE), e -> {
+                * powerCost, Integer.MAX_VALUE), e -> {
             // Shouldn't be needed but it's better safe.
             if (!this.isAdvanced) {
                 return;
@@ -336,7 +337,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     }
 
     private int computePowerCost() {
-        int cost = SluiceConfig.SLUICES.NETHERITE.costPerUse.get();
+        int cost = this instanceof NetheriteSluiceBlockEntity ? SluiceConfig.SLUICES.NETHERITE.costPerUse.get() : SluiceConfig.SLUICES.EMPOWERED.costPerUse.get();
         if (!upgradeCache.isEmpty()) {
             int sum = 0;
             for (int i : upgradeCache.values()) {
@@ -508,7 +509,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory arg, Player arg2) {
-        return !(this instanceof NetheriteSluiceBlockEntity) ? null : new SluiceBlockContainer(i, arg, this);
+        return (!(this instanceof NetheriteSluiceBlockEntity) && !(this instanceof EmpoweredSluiceBlockEntity)) ? null : new SluiceBlockContainer(i, arg, this);
     }
 
     public static class OakSluiceBlockEntity extends SluiceBlockEntity {
