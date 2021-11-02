@@ -46,6 +46,8 @@ public class SluiceConfig {
             DIAMOND = new CategorySluice("diamond", .6, .75, 12000);
             NETHERITE = new CategoryNetheriteSluice("netherite", 40,.4, .5, 12000);
             EMPOWERED = new CategoryNetheriteSluice("empowered", 80,.2, .2, 25000);
+
+            COMMON_BUILDER.pop();
         }
     }
 

@@ -5,7 +5,9 @@ import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FurnaceBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
@@ -90,8 +92,6 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         }
     };
 
-    private static final Triple<Integer, IItemHandler, ItemStack> EMPTY_INPUT = Triple.of(-1, EmptyHandler.INSTANCE, ItemStack.EMPTY);
-
     private final InternalInsertableItemHandler outputInventory = new InternalInsertableItemHandler(12);
 
     private final LazyOptional<ItemStackHandler> inputInvLazy = LazyOptional.of(() -> inputInventory);
@@ -121,6 +121,16 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         // By default, lets try and insert and export items in and out of the internal buffers
         pushPullInventories();
 
+        BlockState blockState = this.level.getBlockState(this.worldPosition);
+
+        boolean isActive = blockState.getValue(AutoHammerBlock.ACTIVE);
+        boolean shouldBeActive = inputHasItemsAndOutputIsClear();
+        if (shouldBeActive && !isActive) {
+            this.level.setBlock(this.worldPosition, blockState.setValue(AutoHammerBlock.ACTIVE, true), 3);
+        } else if(!shouldBeActive && isActive) {
+            this.level.setBlock(this.worldPosition, blockState.setValue(AutoHammerBlock.ACTIVE, false), 3);
+        }
+
         if (!processing) {
             ItemStack inputStack = inputInventory.getStackInSlot(0);
 
@@ -135,7 +145,7 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
                     inputInventory.extractItem(0, 1, false);
                     processing = true;
-                    maxProgress = 10;
+                    maxProgress = 25 - Math.round(new ItemStack(AutoHammerProperties.NETHERITE.hammerItem.get()).getDestroySpeed(Block.byItem(heldItem.getItem()).defaultBlockState()));
                     progress = 0;
                 } else {
                     timeOut = getTimeoutDuration(); // Timeout for a while
@@ -220,6 +230,23 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         }
 
         return EmptyHandler.INSTANCE;
+    }
+
+    public boolean inputHasItemsAndOutputIsClear() {
+        if (inputInventory.getStackInSlot(0).isEmpty()) {
+            return false;
+        }
+
+        boolean hasSpace = false;
+        for (int i = 0; i < outputInventory.getSlots(); i++) {
+            ItemStack stackInSlot = outputInventory.getStackInSlot(i);
+            if (stackInSlot.isEmpty() || (stackInSlot.getCount() != stackInSlot.getMaxStackSize() && stackInSlot.getItem() == inputInventory.getStackInSlot(0).getItem())) {
+                hasSpace = true;
+                break;
+            }
+        }
+
+        return hasSpace;
     }
 
     @Override
