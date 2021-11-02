@@ -28,7 +28,7 @@ public class FTBSluiceRecipes {
 
     public static final RegistryObject<RecipeSerializer<?>> HAMMER = REGISTRY.register("hammer", HammerRecipeSerializer::new);
     public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(FTBSluice.MOD_ID + ":hammer");
-    public static final List<Ingredient> hammerableCache = new ArrayList<>();
+    public static final Set<Ingredient> hammerableCache = new HashSet<>();
 
     private static final Map<Triple<Fluid, Item, MeshType>, SluiceRecipeInfo> sluiceCache = new HashMap<>();
 
@@ -137,5 +137,9 @@ public class FTBSluiceRecipes {
             ItemStack stack = new ItemStack(state.getBlock());
             return e.test(stack);
         });
+    }
+
+    public static boolean hammerable(ItemStack stack) {
+        return hammerableCache.stream().anyMatch(e -> e.test(stack));
     }
 }

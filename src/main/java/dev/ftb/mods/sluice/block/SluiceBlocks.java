@@ -1,9 +1,15 @@
 package dev.ftb.mods.sluice.block;
 
 import dev.ftb.mods.sluice.FTBSluice;
+import dev.ftb.mods.sluice.block.autohammer.AutoHammerBlock;
+import dev.ftb.mods.sluice.block.autohammer.AutoHammerProperties;
 import dev.ftb.mods.sluice.block.pump.PumpBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceProperties;
+import dev.ftb.mods.sluice.item.HammerItem;
+import dev.ftb.mods.sluice.item.SluiceModItems;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -28,6 +34,12 @@ public class SluiceBlocks {
     public static final RegistryObject<Block> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> new SluiceBlock(SluiceProperties.IRON));
     public static final RegistryObject<Block> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", () -> new SluiceBlock(SluiceProperties.DIAMOND));
     public static final RegistryObject<Block> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", () -> new SluiceBlock(SluiceProperties.NETHERITE));
+    public static final RegistryObject<Block> EMPOWERED_SLUICE = REGISTRY.register("empowered_sluice", () -> new SluiceBlock(SluiceProperties.EMPOWERED));
+
+    public static final RegistryObject<Block> IRON_AUTO_HAMMER = REGISTRY.register("iron_auto_hammer", () -> new AutoHammerBlock(SluiceModItems.IRON_HAMMER, AutoHammerProperties.IRON));
+    public static final RegistryObject<Block> GOLD_AUTO_HAMMER = REGISTRY.register("gold_auto_hammer", () -> new AutoHammerBlock(SluiceModItems.GOLD_HAMMER, AutoHammerProperties.GOLD));
+    public static final RegistryObject<Block> DIAMOND_AUTO_HAMMER = REGISTRY.register("diamond_auto_hammer", () -> new AutoHammerBlock(SluiceModItems.DIAMOND_HAMMER, AutoHammerProperties.DIAMOND));
+    public static final RegistryObject<Block> NETHERITE_AUTO_HAMMER = REGISTRY.register("netherite_auto_hammer", () -> new AutoHammerBlock(SluiceModItems.NETHERITE_HAMMER, AutoHammerProperties.NETHERITE));
 
     public static final RegistryObject<Block> PUMP = REGISTRY.register("pump", PumpBlock::new);
 
@@ -44,6 +56,7 @@ public class SluiceBlocks {
             Pair.of(OAK_SLUICE, "oak"),
             Pair.of(IRON_SLUICE, "iron"),
             Pair.of(DIAMOND_SLUICE, "diamond"),
-            Pair.of(NETHERITE_SLUICE, "netherite")
+            Pair.of(NETHERITE_SLUICE, "netherite"),
+            Pair.of(EMPOWERED_SLUICE, "empowered")
     );
 }

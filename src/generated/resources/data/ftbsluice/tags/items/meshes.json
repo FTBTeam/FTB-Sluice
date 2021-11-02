@@ -4,6 +4,7 @@
     "ftbsluice:cloth_mesh",
     "ftbsluice:iron_mesh",
     "ftbsluice:gold_mesh",
-    "ftbsluice:diamond_mesh"
+    "ftbsluice:diamond_mesh",
+    "ftbsluice:blazing_mesh"
   ]
 }

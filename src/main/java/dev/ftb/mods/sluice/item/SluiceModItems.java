@@ -19,6 +19,7 @@ public class SluiceModItems {
     public static final RegistryObject<Item> IRON_MESH = REGISTRY.register("iron_mesh", () -> new MeshItem(MeshType.IRON));
     public static final RegistryObject<Item> GOLD_MESH = REGISTRY.register("gold_mesh", () -> new MeshItem(MeshType.GOLD));
     public static final RegistryObject<Item> DIAMOND_MESH = REGISTRY.register("diamond_mesh", () -> new MeshItem(MeshType.DIAMOND));
+    public static final RegistryObject<Item> BLAZING_MESH = REGISTRY.register("blazing_mesh", () -> new MeshItem(MeshType.BLAZING));
 
     public static final RegistryObject<Item> DAMAGED_CANTEEN = REGISTRY.register("damaged_canteen", () -> new CanteenItem(false));
 //    public static final RegistryObject<Item> CANTEEN = REGISTRY.register("canteen", () -> new CanteenItem(true));
@@ -30,8 +31,14 @@ public class SluiceModItems {
     public static final RegistryObject<BlockItem> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> new BlockItem(SluiceBlocks.IRON_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
     public static final RegistryObject<BlockItem> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", () -> new BlockItem(SluiceBlocks.DIAMOND_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
     public static final RegistryObject<BlockItem> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", () -> new BlockItem(SluiceBlocks.NETHERITE_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<BlockItem> EMPOWERED_SLUICE = REGISTRY.register("empowered_sluice", () -> new BlockItem(SluiceBlocks.EMPOWERED_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
 
     public static final RegistryObject<BlockItem> PUMP = REGISTRY.register("pump", () -> new BlockItem(SluiceBlocks.PUMP.get(), new Item.Properties().tab(FTBSluice.group)));
+
+    public static final RegistryObject<BlockItem> IRON_AUTO_HAMMER = REGISTRY.register("iron_auto_hammer", () -> new BlockItem(SluiceBlocks.IRON_AUTO_HAMMER.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<BlockItem> GOLD_AUTO_HAMMER = REGISTRY.register("gold_auto_hammer", () -> new BlockItem(SluiceBlocks.GOLD_AUTO_HAMMER.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<BlockItem> DIAMOND_AUTO_HAMMER = REGISTRY.register("diamond_auto_hammer", () -> new BlockItem(SluiceBlocks.DIAMOND_AUTO_HAMMER.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<BlockItem> NETHERITE_AUTO_HAMMER = REGISTRY.register("netherite_auto_hammer", () -> new BlockItem(SluiceBlocks.NETHERITE_AUTO_HAMMER.get(), new Item.Properties().tab(FTBSluice.group)));
 
     // Upgrades
     public static final RegistryObject<Item> FORTUNE_UPGRADE = REGISTRY.register("sluice_fortune_upgrade", () -> new UpgradeItem(Upgrades.LUCK));

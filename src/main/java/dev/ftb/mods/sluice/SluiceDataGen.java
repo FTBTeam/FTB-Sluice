@@ -4,11 +4,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
+import dev.ftb.mods.sluice.block.autohammer.AutoHammerBlock;
 import dev.ftb.mods.sluice.block.pump.PumpBlock;
 import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.tags.SluiceTags;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -25,6 +27,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
@@ -35,6 +38,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeLootTableProvider;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import org.apache.commons.lang3.tuple.Pair;
@@ -67,7 +71,7 @@ public class SluiceDataGen {
         }
 
         if (event.includeServer()) {
-            SMBlockTags blockTags = new SMBlockTags(gen);
+            SMBlockTags blockTags = new SMBlockTags(gen, event.getExistingFileHelper());
 
             gen.addProvider(blockTags);
             gen.addProvider(new SMItemTags(gen, blockTags, event.getExistingFileHelper()));
@@ -99,6 +103,11 @@ public class SluiceDataGen {
             this.addBlock(SluiceBlocks.CRUSHED_BASALT, "Crushed Basalt");
             this.addBlock(SluiceBlocks.CRUSHED_ENDSTONE, "Crushed Endstone");
 
+            this.addBlock(SluiceBlocks.IRON_AUTO_HAMMER, "Iron Auto-hammer");
+            this.addBlock(SluiceBlocks.GOLD_AUTO_HAMMER, "Gold Auto-hammer");
+            this.addBlock(SluiceBlocks.DIAMOND_AUTO_HAMMER, "Diamond Auto-hammer");
+            this.addBlock(SluiceBlocks.NETHERITE_AUTO_HAMMER, "Netherite Auto-hammer");
+
             this.addItem(SluiceModItems.DAMAGED_CANTEEN, "Damaged Canteen");
 //            this.addItem(SluiceModItems.CANTEEN, "Canteen");
             this.addItem(SluiceModItems.CLAY_BUCKET, "Clay Bucket");
@@ -122,6 +131,7 @@ public class SluiceDataGen {
             this.add("ftbsluice.tooltip.sluice_iron", "A bit on the slow side still, but it seems to use a lot less fluid than before.");
             this.add("ftbsluice.tooltip.sluice_diamond", "Significantly faster than the iron one, but also a bit less fluid-efficient.");
             this.add("ftbsluice.tooltip.sluice_netherite", "Forged from Netherite, this sluice proves itself to be both efficient and modular.");
+            this.add("ftbsluice.tooltip.sluice_empowered", "A lot like the netherite sluice but quicker, holds more fluid and can accept the blazing mesh!");
 
             this.add("ftbsluice.tooltip.upgrade_fortune", "Increases drop chance by 3% per upgrade");
             this.add("ftbsluice.tooltip.upgrade_speed", "Increases the speed of the sluice by 5% per upgrade");
@@ -142,6 +152,7 @@ public class SluiceDataGen {
             this.add(MODID + ".properties.auto.item", "Items");
             this.add(MODID + ".properties.auto.fluid", "Fluids");
             this.add(MODID + ".properties.upgradeable", "Can be upgraded to further increase efficiency; requires RF to function");
+            this.add(MODID + ".block.sluice.warning.wrong_sluice", "You can not use the Blazing Mesh on this Sluice");
         }
     }
 
@@ -171,31 +182,44 @@ public class SluiceDataGen {
                     builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + p.getRight() + "_sluice_front"))).rotationY(dirsRot[d]).addModel().condition(HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.FUNNEL);
 
                     for (MeshType type : MeshType.REAL_VALUES) {
+                        // Don't create models for the blazing mesh on non-empowered sluices
+                        if (p.getKey() != SluiceBlocks.EMPOWERED_SLUICE && type == MeshType.BLAZING) {
+                            continue;
+                        }
+
                         builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + type.getSerializedName() + "_mesh"))).rotationY(dirsRot[d]).addModel().condition(SluiceBlock.MESH, type).condition(HORIZONTAL_FACING, dirs[d]).condition(SluiceBlock.PART, SluiceBlock.Part.MAIN);
                     }
                 }
             }
 
-            dirsRot = new int[]{90, 270, 0, 180};
+            int[] dirsRot2 = new int[]{90, 270, 0, 180};
             MultiPartBlockStateBuilder builder = this.getMultipartBuilder(SluiceBlocks.PUMP.get());
             for (int d = 0; d < 4; d++) {
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_off"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, false).condition(HORIZONTAL_FACING, dirs[d]);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_on"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_20"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.TWENTY);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_40"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.FORTY);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_60"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.SIXTY);
-                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_80"))).rotationY(dirsRot[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.EIGHTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_off"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, false).condition(HORIZONTAL_FACING, dirs[d]);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_on"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_20"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.TWENTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_40"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.FORTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_60"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.SIXTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_80"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.EIGHTY);
+                builder.part().modelFile(this.models().getExistingFile(this.modLoc("block/pump_100"))).rotationY(dirsRot2[d]).addModel().condition(PumpBlock.ON_OFF, true).condition(HORIZONTAL_FACING, dirs[d]).condition(PumpBlock.PROGRESS, PumpBlock.Progress.HUNDRED);
             }
 
-//            getVariantBuilder(SluiceBlocks.PUMP.get())
-//                    .forAllStates(state -> {
-//                        Direction dir = state.getValue(BlockStateProperties.FACING);
-//                        return ConfiguredModel.builder()
-//                                .modelFile(modelFunc.apply(state))
-//                                .rotationX(dir == Direction.DOWN ? 180 : dir.getAxis().isHorizontal() ? 90 : 0)
-//                                .rotationY(dir.getAxis().isVertical() ? 0 : (((int) dir.toYRot()) + angleOffset) % 360)
-//                                .build();
-//                    });
+            List<Pair<String, RegistryObject<Block>>> hammerTypes = new ArrayList<Pair<String, RegistryObject<Block>>>() {{
+                add(Pair.of("iron", SluiceBlocks.IRON_AUTO_HAMMER));
+                add(Pair.of("gold", SluiceBlocks.GOLD_AUTO_HAMMER));
+                add(Pair.of("diamond", SluiceBlocks.DIAMOND_AUTO_HAMMER));
+                add(Pair.of("netherite", SluiceBlocks.NETHERITE_AUTO_HAMMER));
+            }};
+
+            int[] dirsRot3 = new int[]{180, 0, 270, 90};//90, 270, 0, 180};
+            for (Pair<String, RegistryObject<Block>> hammerType : hammerTypes) {
+                MultiPartBlockStateBuilder b = this.getMultipartBuilder(hammerType.getRight().get());
+                String path = hammerType.getRight().get().getRegistryName().getPath();
+                for (int d = 0; d < 4; d++) {
+                    b.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + path))).rotationY(dirsRot3[d]).addModel().condition(AutoHammerBlock.ACTIVE, false).condition(HORIZONTAL_FACING, dirs[d]);
+                    b.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + path + "_active"))).rotationY(dirsRot3[d]).addModel().condition(AutoHammerBlock.ACTIVE, true).condition(HORIZONTAL_FACING, dirs[d]);
+                }
+            }
 
             this.simpleBlock(SluiceBlocks.DUST_BLOCK.get());
             this.simpleBlock(SluiceBlocks.CRUSHED_NETHERRACK.get());
@@ -223,6 +247,11 @@ public class SluiceDataGen {
         protected void registerModels() {
             String path = SluiceBlocks.PUMP.get().getRegistryName().getPath();
             this.getBuilder(path).parent(new ModelFile.UncheckedModelFile(this.modLoc("block/" + path + "_on")));
+
+            this.registerBlockModel(SluiceBlocks.IRON_AUTO_HAMMER.get());
+            this.registerBlockModel(SluiceBlocks.GOLD_AUTO_HAMMER.get());
+            this.registerBlockModel(SluiceBlocks.DIAMOND_AUTO_HAMMER.get());
+            this.registerBlockModel(SluiceBlocks.NETHERITE_AUTO_HAMMER.get());
 
             this.registerBlockModel(SluiceBlocks.DUST_BLOCK.get());
             this.registerBlockModel(SluiceBlocks.CRUSHED_NETHERRACK.get());
@@ -256,12 +285,26 @@ public class SluiceDataGen {
     }
 
     private static class SMBlockTags extends BlockTagsProvider {
-        public SMBlockTags(DataGenerator generatorIn) {
-            super(generatorIn);
+        public SMBlockTags(DataGenerator generatorIn, ExistingFileHelper helper) {
+            super(generatorIn, FTBSluice.MOD_ID, helper);
         }
 
         @Override
         protected void addTags() {
+            this.tag(SluiceTags.Blocks.SLUICES).add(
+                    SluiceBlocks.OAK_SLUICE.get(),
+                    SluiceBlocks.IRON_SLUICE.get(),
+                    SluiceBlocks.DIAMOND_SLUICE.get(),
+                    SluiceBlocks.NETHERITE_SLUICE.get(),
+                    SluiceBlocks.EMPOWERED_SLUICE.get()
+            );
+
+            this.tag(SluiceTags.Blocks.AUTO_HAMMERS).add(
+                    SluiceBlocks.IRON_AUTO_HAMMER.get(),
+                    SluiceBlocks.GOLD_AUTO_HAMMER.get(),
+                    SluiceBlocks.DIAMOND_AUTO_HAMMER.get(),
+                    SluiceBlocks.NETHERITE_AUTO_HAMMER.get()
+            );
         }
     }
 
@@ -285,7 +328,8 @@ public class SluiceDataGen {
                     SluiceModItems.CLOTH_MESH.get(),
                     SluiceModItems.IRON_MESH.get(),
                     SluiceModItems.GOLD_MESH.get(),
-                    SluiceModItems.DIAMOND_MESH.get()
+                    SluiceModItems.DIAMOND_MESH.get(),
+                    SluiceModItems.BLAZING_MESH.get()
             );
 
             this.tag(SluiceTags.Items.WATER_BUCKETS).add(Items.WATER_BUCKET, SluiceModItems.CLAY_WATER_BUCKET.get());
@@ -386,6 +430,17 @@ public class SluiceDataGen {
                     .define('D', this.DIAMOND_GEM)
                     .save(consumer);
 
+            ShapedRecipeBuilder.shaped(SluiceModItems.EMPOWERED_SLUICE.get())
+                    .unlockedBy("has_item", has(SluiceModItems.NETHERITE_SLUICE.get()))
+                    .pattern("DDX")
+                    .pattern("SDX")
+                    .pattern("AAA")
+                    .define('S', SluiceModItems.NETHERITE_SLUICE.get())
+                    .define('D', Tags.Items.INGOTS_NETHERITE)
+                    .define('X', Blocks.DIAMOND_BLOCK)
+                    .define('A', Blocks.GOLD_BLOCK)
+                    .save(consumer);
+
             UpgradeRecipeBuilder.smithing(Ingredient.of(SluiceModItems.DIAMOND_SLUICE.get()), Ingredient.of(Items.NETHERITE_INGOT), SluiceModItems.NETHERITE_SLUICE.get())
                     .unlocks("has_item", has(Items.NETHERITE_INGOT))
                     .save(consumer, FTBSluice.MOD_ID + ":netherite_sluice");
@@ -423,6 +478,37 @@ public class SluiceDataGen {
                     .pattern("III")
                     .define('I', Tags.Items.INGOTS_IRON)
                     .define('E', Tags.Items.GEMS_EMERALD)
+                    .save(consumer);
+
+            ShapedRecipeBuilder.shaped(SluiceModItems.IRON_AUTO_HAMMER.get())
+                    .unlockedBy("has_item", has(SluiceModItems.IRON_HAMMER.get()))
+                    .pattern("IGI")
+                    .pattern("XHX")
+                    .pattern("RGR")
+                    .define('I', Tags.Items.INGOTS_IRON)
+                    .define('X', Tags.Items.GLASS)
+                    .define('R', Tags.Items.DUSTS_REDSTONE)
+                    .define('G', Tags.Items.INGOTS_GOLD)
+                    .define('H', SluiceModItems.IRON_HAMMER.get())
+                    .save(consumer);
+
+            autoHammer(SluiceModItems.GOLD_AUTO_HAMMER.get(), SluiceModItems.IRON_AUTO_HAMMER.get(), SluiceModItems.GOLD_HAMMER.get(), consumer);
+            autoHammer(SluiceModItems.DIAMOND_AUTO_HAMMER.get(), SluiceModItems.GOLD_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_HAMMER.get(), consumer);
+            autoHammer(SluiceModItems.NETHERITE_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_HAMMER.get(), consumer);
+        }
+
+        private void autoHammer(ItemLike output, Item center, Item top, Consumer<FinishedRecipe> consumer) {
+            ShapedRecipeBuilder.shaped(output)
+                    .unlockedBy("has_item", has(center))
+                    .pattern("ITI")
+                    .pattern("XCX")
+                    .pattern("RGR")
+                    .define('I', Tags.Items.INGOTS_IRON)
+                    .define('R', Tags.Items.DUSTS_REDSTONE)
+                    .define('G', Tags.Items.INGOTS_GOLD)
+                    .define('X', Tags.Items.GLASS)
+                    .define('T', top)
+                    .define('C', center)
                     .save(consumer);
         }
 
@@ -469,7 +555,14 @@ public class SluiceDataGen {
         protected void addTables() {
 //            this.dropSelf(SluiceBlocks.TANK.get());
             this.dropSelf(SluiceBlocks.DUST_BLOCK.get());
+            this.dropSelf(SluiceBlocks.CRUSHED_BASALT.get());
+            this.dropSelf(SluiceBlocks.CRUSHED_ENDSTONE.get());
+            this.dropSelf(SluiceBlocks.CRUSHED_NETHERRACK.get());
             this.dropSelf(SluiceBlocks.PUMP.get());
+            this.dropSelf(SluiceBlocks.IRON_AUTO_HAMMER.get());
+            this.dropSelf(SluiceBlocks.GOLD_AUTO_HAMMER.get());
+            this.dropSelf(SluiceBlocks.DIAMOND_AUTO_HAMMER.get());
+            this.dropSelf(SluiceBlocks.NETHERITE_AUTO_HAMMER.get());
             SluiceBlocks.SLUICES.forEach(e -> this.dropSelf(e.getKey().get()));
         }
 

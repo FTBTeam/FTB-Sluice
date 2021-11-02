@@ -8,7 +8,8 @@ public enum SluiceProperties {
     OAK(false, false, false, SLUICES.OAK),
     IRON(true, false, false, SLUICES.IRON),
     DIAMOND(true, true, false, SLUICES.DIAMOND),
-    NETHERITE(true, true, true, SLUICES.NETHERITE);
+    NETHERITE(true, true, true, SLUICES.NETHERITE),
+    EMPOWERED(true, true, true, SLUICES.EMPOWERED),;
 
     final boolean allowsIO;
     final boolean allowsTank;

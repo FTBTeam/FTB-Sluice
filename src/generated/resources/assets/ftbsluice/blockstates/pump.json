@@ -66,6 +66,17 @@
     },
     {
       "when": {
+        "on_off": "true",
+        "facing": "north",
+        "progress": "hundred"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_100",
+        "y": 90
+      }
+    },
+    {
+      "when": {
         "on_off": "false",
         "facing": "south"
       },
@@ -125,6 +136,17 @@
       },
       "apply": {
         "model": "ftbsluice:block/pump_80",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "on_off": "true",
+        "facing": "south",
+        "progress": "hundred"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_100",
         "y": 270
       }
     },
@@ -188,6 +210,16 @@
     },
     {
       "when": {
+        "on_off": "true",
+        "facing": "west",
+        "progress": "hundred"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_100"
+      }
+    },
+    {
+      "when": {
         "on_off": "false",
         "facing": "east"
       },
@@ -247,6 +279,17 @@
       },
       "apply": {
         "model": "ftbsluice:block/pump_80",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "on_off": "true",
+        "facing": "east",
+        "progress": "hundred"
+      },
+      "apply": {
+        "model": "ftbsluice:block/pump_100",
         "y": 180
       }
     }

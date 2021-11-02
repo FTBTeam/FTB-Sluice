@@ -10,6 +10,4 @@ public class QuickDropItemEntity extends ItemEntity {
 
         this.lifespan = lifespan;
     }
-
-
 }

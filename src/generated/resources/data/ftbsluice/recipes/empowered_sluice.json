@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDX",
+    "SDX",
+    "AAA"
+  ],
+  "key": {
+    "S": {
+      "item": "ftbsluice:netherite_sluice"
+    },
+    "D": {
+      "tag": "forge:ingots/netherite"
+    },
+    "X": {
+      "item": "minecraft:diamond_block"
+    },
+    "A": {
+      "item": "minecraft:gold_block"
+    }
+  },
+  "result": {
+    "item": "ftbsluice:empowered_sluice"
+  }
+}

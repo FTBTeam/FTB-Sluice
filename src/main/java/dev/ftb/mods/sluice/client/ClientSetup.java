@@ -18,6 +18,7 @@ public class ClientSetup {
         ItemBlockRenderTypes.setRenderLayer(SluiceBlocks.IRON_SLUICE.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(SluiceBlocks.DIAMOND_SLUICE.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(SluiceBlocks.NETHERITE_SLUICE.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(SluiceBlocks.EMPOWERED_SLUICE.get(), RenderType.cutout());
 
         // ClientRegistry.bindTileEntityRenderer(JarModBlockEntities.SLUICE.get(), SluiceBlockEntityRenderer::new);
     }

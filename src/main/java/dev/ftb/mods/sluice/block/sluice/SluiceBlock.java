@@ -1,5 +1,6 @@
 package dev.ftb.mods.sluice.block.sluice;
 
+import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
@@ -27,13 +28,10 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -54,7 +52,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
@@ -112,6 +109,8 @@ public class SluiceBlock extends Block {
             return SluiceBlockEntities.IRON_SLUICE.get().create();
         } else if (state.getBlock() == SluiceBlocks.DIAMOND_SLUICE.get()) {
             return SluiceBlockEntities.DIAMOND_SLUICE.get().create();
+        } else if (state.getBlock() == SluiceBlocks.EMPOWERED_SLUICE.get()) {
+            return SluiceBlockEntities.EMPOWERED_SLUICE.get().create();
         } else {
             return SluiceBlockEntities.NETHERITE_SLUICE.get().create();
         }
@@ -165,7 +164,7 @@ public class SluiceBlock extends Block {
 
         SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
 
-        if (itemStack.isEmpty() && !world.isClientSide() && !player.isCrouching() && sluice instanceof SluiceBlockEntity.NetheriteSluiceBlockEntity) {
+        if (itemStack.isEmpty() && !world.isClientSide() && !player.isCrouching() && (sluice instanceof SluiceBlockEntity.NetheriteSluiceBlockEntity || sluice instanceof SluiceBlockEntity.EmpoweredSluiceBlockEntity)) {
             NetworkHooks.openGui((ServerPlayer) player, sluice, pos);
             return InteractionResult.SUCCESS;
         } else if (player.isCrouching()) {
@@ -182,9 +181,18 @@ public class SluiceBlock extends Block {
 
             return InteractionResult.SUCCESS;
         } else if (itemStack.getItem() instanceof MeshItem) {
-            if (state.getValue(MESH) != ((MeshItem) itemStack.getItem()).mesh) {
+            MeshType type = ((MeshItem) itemStack.getItem()).mesh;
+            if (state.getValue(MESH) != type) {
+                if (type == MeshType.BLAZING && state.getBlock() != SluiceBlocks.EMPOWERED_SLUICE.get()) {
+                    if (world.isClientSide) {
+                        player.displayClientMessage(new TranslatableComponent(FTBSluice.MOD_ID + ".block.sluice.warning.wrong_sluice"), true);
+                    }
+
+                    return InteractionResult.FAIL;
+                }
+
                 ItemStack current = state.getValue(MESH).getItemStack();
-                world.setBlock(pos, state.setValue(MESH, ((MeshItem) itemStack.getItem()).mesh), 3);
+                world.setBlock(pos, state.setValue(MESH, type), 3);
                 if (!player.abilities.instabuild) {
                     itemStack.shrink(1);
 

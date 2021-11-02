@@ -30,17 +30,17 @@ public class PumpBlockEntityRender extends BlockEntityRenderer<PumpBlockEntity> 
 
         Vec3 cameraPos = Minecraft.getInstance().getEntityRenderDispatcher().camera.getPosition();
         BlockPos blockPos = pump.getBlockPos();
-        double v = Mth.atan2(cameraPos.z() - (blockPos.getZ() + .5F), cameraPos.x() - (blockPos.getX() + .5F));
-        double v1 = cameraPos.distanceToSqr(new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+        double distance = cameraPos.distanceToSqr(new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
 
+        if (distance > 30) {
+            return;
+        }
+
+        double v = Mth.atan2(cameraPos.z() - (blockPos.getZ() + .5F), cameraPos.x() - (blockPos.getX() + .5F));
         stack.pushPose();
-        stack.translate(.5F, v1 > 30 ? 1.009F : 1.4F, .5F);
+        stack.translate(.5F, 1.4F, .5F);
         stack.scale(.020F, -.020F,.020F);
         stack.mulPose(Vector3f.YP.rotation((float) ((Math.PI / 2) - (float) v)));
-
-        if (v1 > 30) {
-            stack.mulPose(Vector3f.XP.rotationDegrees(90));
-        }
 
         Screen.drawCenteredString(stack, Minecraft.getInstance().font, pump.creative ? "∞" : "Time left", 0, (pump.creativeItem != null && pump.creative) ? -10 : -5, 0xFFFFFFFF);
         ResourceLocation registryName = pump.creativeFluid.getRegistryName();
