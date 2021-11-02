@@ -145,7 +145,7 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
                     inputInventory.extractItem(0, 1, false);
                     processing = true;
-                    maxProgress = 25 - Math.round(new ItemStack(AutoHammerProperties.NETHERITE.hammerItem.get()).getDestroySpeed(Block.byItem(heldItem.getItem()).defaultBlockState()));
+                    maxProgress = getProps().getHammerSpeed().get();
                     progress = 0;
                 } else {
                     timeOut = getTimeoutDuration(); // Timeout for a while

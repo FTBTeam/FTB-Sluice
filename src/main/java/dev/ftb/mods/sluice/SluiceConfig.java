@@ -8,6 +8,7 @@ public class SluiceConfig {
 
     public static final CategoryGeneral GENERAL = new CategoryGeneral();
     public static final CategorySluices SLUICES = new CategorySluices();
+    public static final CategoryHammers HAMMERS = new CategoryHammers();
 
     static {
         COMMON_CONFIG = COMMON_BUILDER.build();
@@ -95,6 +96,35 @@ public class SluiceConfig {
             this.costPerUse = COMMON_BUILDER
                     .comment("FE cost per use")
                     .defineInRange("fe cost per use", energyCost, 0, Integer.MAX_VALUE);
+        }
+    }
+
+    public static class CategoryHammers {
+        public final ForgeConfigSpec.IntValue speedIron;
+        public final ForgeConfigSpec.IntValue speedGold;
+        public final ForgeConfigSpec.IntValue speedDiamond;
+        public final ForgeConfigSpec.IntValue speedNetherite;
+
+        private CategoryHammers() {
+            COMMON_BUILDER.push("hammers");
+
+            this.speedIron = COMMON_BUILDER
+                    .comment("Speed of the iron auto-hammer as ticks taken to process the block")
+                    .defineInRange("ironSpeed", 50, 1, 100000);
+
+            this.speedGold = COMMON_BUILDER
+                    .comment("Speed of the gold auto-hammer as ticks taken to process the block")
+                    .defineInRange("goldSpeed", 40, 1, 100000);
+
+            this.speedDiamond = COMMON_BUILDER
+                    .comment("Speed of the diamond auto-hammer as ticks taken to process the block")
+                    .defineInRange("diamondSpeed", 30, 1, 100000);
+
+            this.speedNetherite = COMMON_BUILDER
+                    .comment("Speed of the netherite auto-hammer as ticks taken to process the block")
+                    .defineInRange("netheriteSpeed", 15, 1, 100000);
+
+            COMMON_BUILDER.pop();
         }
     }
 }

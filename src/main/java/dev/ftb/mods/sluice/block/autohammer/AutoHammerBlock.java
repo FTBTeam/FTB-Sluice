@@ -2,11 +2,16 @@ package dev.ftb.mods.sluice.block.autohammer;
 
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
+import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
+import dev.ftb.mods.sluice.block.sluice.SluiceBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,11 +23,15 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 import static net.minecraft.world.phys.shapes.BooleanOp.OR;
 
 public class AutoHammerBlock extends Block {
@@ -72,6 +81,30 @@ public class AutoHammerBlock extends Block {
             return NORTH_SOUTH;
         } else {
             return EAST_WEST;
+        }
+    }
+
+    @Override
+    @Deprecated
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity tileEntity = world.getBlockEntity(pos);
+
+            if (tileEntity instanceof AutoHammerBlockEntity) {
+                Direction dir = state.getValue(HORIZONTAL_FACING);
+                AutoHammerBlockEntity autoHammer = (AutoHammerBlockEntity) tileEntity;
+
+                autoHammer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, AutoHammerBlockEntity.getInputDirection(dir)).ifPresent(e -> popResource(world, pos, e.getStackInSlot(0)));
+                autoHammer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, AutoHammerBlockEntity.getOutputDirection(dir)).ifPresent(e -> {
+                    for (int i = 0; i < e.getSlots(); i++) {
+                        popResource(world, pos, e.getStackInSlot(i));
+                    }
+                });
+
+                world.updateNeighbourForOutputSignal(pos, this);
+            }
+
+            super.onRemove(state, world, pos, newState, isMoving);
         }
     }
 
