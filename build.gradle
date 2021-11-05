@@ -71,6 +71,10 @@ dependencies {
     modRuntime "curse.maven:pipez-443900:3273405"
     modRuntime "curse.maven:mantle-74924:3439180"
     modRuntime "curse.maven:mekanism-268560:3206392"
+
+    modRuntime "curse.maven:rftools-base-326041:3380271"
+    modRuntime "curse.maven:mcjtylib-233105:3486621"
+    modRuntime "curse.maven:rftools-utility-342466:3486653"
 }
 
 processResources {

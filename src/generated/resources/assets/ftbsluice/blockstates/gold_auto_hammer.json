@@ -6,8 +6,7 @@
         "facing": "north"
       },
       "apply": {
-        "model": "ftbsluice:block/gold_auto_hammer",
-        "y": 180
+        "model": "ftbsluice:block/gold_auto_hammer"
       }
     },
     {
@@ -16,8 +15,7 @@
         "facing": "north"
       },
       "apply": {
-        "model": "ftbsluice:block/gold_auto_hammer_active",
-        "y": 180
+        "model": "ftbsluice:block/gold_auto_hammer_active"
       }
     },
     {
@@ -26,7 +24,8 @@
         "facing": "south"
       },
       "apply": {
-        "model": "ftbsluice:block/gold_auto_hammer"
+        "model": "ftbsluice:block/gold_auto_hammer",
+        "y": 180
       }
     },
     {
@@ -35,7 +34,8 @@
         "facing": "south"
       },
       "apply": {
-        "model": "ftbsluice:block/gold_auto_hammer_active"
+        "model": "ftbsluice:block/gold_auto_hammer_active",
+        "y": 180
       }
     },
     {
