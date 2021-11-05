@@ -175,9 +175,9 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         IItemHandler external = getExternalInventory(getOutputDirection(facing));
         if (!(external instanceof EmptyHandler)) {
             for (int i = 0; i < outputInventory.getSlots(); i++) {
-                ItemStack stackInSlot = outputInventory.getStackInSlot(i);
-                ItemStack stack = ItemHandlerHelper.insertItem(external, stackInSlot, false);
-                if (stackInSlot.getCount() != stack.getCount()) {
+                ItemStack stackInSlot = outputInventory.extractItem(i, 64, true);
+                if (!stackInSlot.isEmpty()) {
+                    ItemStack stack = ItemHandlerHelper.insertItem(external, stackInSlot, false);
                     outputInventory.extractItem(i, stackInSlot.getCount() - stack.getCount(), false);
                     break;
                 }
@@ -185,15 +185,12 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         }
 
         // Now try and insert items into the input inventory
-        ItemStack inputStack = inputInventory.getStackInSlot(0);
-        IItemHandler internal = getExternalInventory(getInputDirection(facing));
-        for (int i = 0; i < internal.getSlots(); i++) {
-            ItemStack stack = internal.getStackInSlot(i);
-            if ((inputStack.isEmpty() || inputStack.getItem() == stack.getItem()) && hasItemAndIsHammerable(stack)) {
-                ItemStack insertedItem = inputInventory.insertItem(0, stack.copy(), false);
-                if (insertedItem.getCount() != stack.getCount()) {
-                    internal.extractItem(i, stack.getCount() - insertedItem.getCount(), false);
-                }
+        IItemHandler pullSource = getExternalInventory(getInputDirection(facing));
+        for (int i = 0; i < pullSource.getSlots(); i++) {
+            ItemStack stack = pullSource.extractItem(i, 64, true);
+            if (!stack.isEmpty() && hasItemAndIsHammerable(stack)) {
+                ItemStack insertedStack = ItemHandlerHelper.insertItemStacked(inputInventory, stack, false);
+                pullSource.extractItem(i, stack.getCount() - insertedStack.getCount(), false);
             }
         }
     }
