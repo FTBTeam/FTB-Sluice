@@ -280,6 +280,12 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
         SluiceRecipeInfo recipe = FTBSluiceRecipes.getSluiceRecipes(this.tank.getFluid().getFluid(), level, this.getBlockState().getValue(SluiceBlock.MESH), stack);
 
+        double baseFluidUsage = recipe.getFluidUsed() * this.properties.config.fluidMod.get();
+        int fluidRequirement = Math.max(40, (int) Math.round(baseFluidUsage - (baseFluidUsage * (computeEffectModifier(Upgrades.CONSUMPTION) / 100f))));
+        if (this.tank.getFluidAmount() < fluidRequirement) {
+            return;
+        }
+
         // Throw items out if we don't have a recipe from them. It's simpler than giving the cap a world and mesh.
         if (recipe.getItems().isEmpty()) {
             cancelProcessing(level, stack);
@@ -289,10 +295,8 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.processed = 0;
 
         double baseProcessingTime = recipe.getProcessingTime() * this.properties.config.timeMod.get();
-        double baseFluidUsage = recipe.getFluidUsed() * this.properties.config.fluidMod.get();
-
         this.maxProcessed = Math.max(1, (int) Math.round(baseProcessingTime - (baseProcessingTime * (computeEffectModifier(Upgrades.SPEED) / 100f))));
-        this.fluidUsage = Math.max(40, (int) Math.round(baseFluidUsage - (baseFluidUsage * (computeEffectModifier(Upgrades.CONSUMPTION) / 100f))));
+        this.fluidUsage = fluidRequirement;
 
         this.setChanged();
         level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);

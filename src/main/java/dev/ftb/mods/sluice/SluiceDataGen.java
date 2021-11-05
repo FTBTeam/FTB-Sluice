@@ -211,13 +211,12 @@ public class SluiceDataGen {
                 add(Pair.of("netherite", SluiceBlocks.NETHERITE_AUTO_HAMMER));
             }};
 
-            int[] dirsRot3 = new int[]{180, 0, 270, 90};//90, 270, 0, 180};
             for (Pair<String, RegistryObject<Block>> hammerType : hammerTypes) {
                 MultiPartBlockStateBuilder b = this.getMultipartBuilder(hammerType.getRight().get());
                 String path = hammerType.getRight().get().getRegistryName().getPath();
                 for (int d = 0; d < 4; d++) {
-                    b.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + path))).rotationY(dirsRot3[d]).addModel().condition(AutoHammerBlock.ACTIVE, false).condition(HORIZONTAL_FACING, dirs[d]);
-                    b.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + path + "_active"))).rotationY(dirsRot3[d]).addModel().condition(AutoHammerBlock.ACTIVE, true).condition(HORIZONTAL_FACING, dirs[d]);
+                    b.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + path))).rotationY(dirsRot[d]).addModel().condition(AutoHammerBlock.ACTIVE, false).condition(HORIZONTAL_FACING, dirs[d]);
+                    b.part().modelFile(this.models().getExistingFile(this.modLoc("block/" + path + "_active"))).rotationY(dirsRot[d]).addModel().condition(AutoHammerBlock.ACTIVE, true).condition(HORIZONTAL_FACING, dirs[d]);
                 }
             }
 
