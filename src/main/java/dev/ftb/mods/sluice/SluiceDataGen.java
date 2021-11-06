@@ -32,6 +32,7 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -493,7 +494,7 @@ public class SluiceDataGen {
 
             autoHammer(SluiceModItems.GOLD_AUTO_HAMMER.get(), SluiceModItems.IRON_AUTO_HAMMER.get(), SluiceModItems.GOLD_HAMMER.get(), consumer);
             autoHammer(SluiceModItems.DIAMOND_AUTO_HAMMER.get(), SluiceModItems.GOLD_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_HAMMER.get(), consumer);
-            autoHammer(SluiceModItems.NETHERITE_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_HAMMER.get(), consumer);
+            autoHammer(SluiceModItems.NETHERITE_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_AUTO_HAMMER.get(), SluiceModItems.NETHERITE_HAMMER.get(), consumer);
         }
 
         private void autoHammer(ItemLike output, Item center, Item top, Consumer<FinishedRecipe> consumer) {

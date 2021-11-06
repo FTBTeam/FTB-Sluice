@@ -445,7 +445,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
             // Empty handler does not have slots and is thus very simple to check against.
             if (handler.getSlots() != 0) {
-                stack = ItemHandlerHelper.insertItem(handler, stack, false);
+                stack = ItemHandlerHelper.insertItemStacked(handler, stack, false);
             }
         }
 
