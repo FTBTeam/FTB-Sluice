@@ -88,7 +88,7 @@ public class TheOneProbeProvider implements IProbeInfoProvider, Function<ITheOne
             int rows = 0;
             int idx = 0;
             for (ItemStack stack : stacks) {
-                if (idx % 10 == 0) {
+                if (idx % 6 == 0) {
                     horizontal = vertical.horizontal(iProbeInfo.defaultLayoutStyle().spacing(0));
                     rows++;
                     if (rows > 4) {

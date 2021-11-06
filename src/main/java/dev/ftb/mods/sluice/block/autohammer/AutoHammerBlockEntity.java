@@ -92,7 +92,7 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         }
     };
 
-    private final InternalInsertableItemHandler outputInventory = new InternalInsertableItemHandler(12);
+    private final InternalInsertableItemHandler outputInventory = new InternalInsertableItemHandler(8);
 
     private final LazyOptional<ItemStackHandler> inputInvLazy = LazyOptional.of(() -> inputInventory);
     private final LazyOptional<InternalInsertableItemHandler> outputInvLazy = LazyOptional.of(() -> outputInventory);
@@ -175,7 +175,7 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         IItemHandler external = getExternalInventory(getOutputDirection(facing));
         if (!(external instanceof EmptyHandler)) {
             for (int i = 0; i < outputInventory.getSlots(); i++) {
-                ItemStack stackInSlot = outputInventory.extractItem(i, 64, true);
+                ItemStack stackInSlot = outputInventory.extractItem(i, outputInventory.getStackInSlot(i).getCount(), true);
                 if (!stackInSlot.isEmpty()) {
                     ItemStack stack = ItemHandlerHelper.insertItem(external, stackInSlot, false);
                     outputInventory.extractItem(i, stackInSlot.getCount() - stack.getCount(), false);
