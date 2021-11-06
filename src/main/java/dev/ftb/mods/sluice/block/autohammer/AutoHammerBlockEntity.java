@@ -5,9 +5,7 @@ import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.FurnaceBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
@@ -20,7 +18,6 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
-import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,42 +30,6 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
             {3, 2}, // 4 west  -> input[south] -> output[north]
             {2, 3}, // 5 east  -> input[north] -> output[south]
     };
-
-    public class InternalInsertableItemHandler extends ItemStackHandler {
-        public InternalInsertableItemHandler(int size) {
-            super(size);
-        }
-
-        @NotNull
-        @Override
-        public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            return stack;
-        }
-
-        @NotNull
-        public ItemStack internalInsert(int slot, @NotNull ItemStack stack, boolean simulate) {
-            ItemStack itemStack = super.insertItem(slot, stack, simulate);
-            if (!simulate) {
-                AutoHammerBlockEntity.this.setChanged();
-            }
-            return itemStack;
-        }
-
-        @NotNull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            ItemStack itemStack = super.extractItem(slot, amount, simulate);
-            if (!simulate) {
-                AutoHammerBlockEntity.this.setChanged();
-            }
-            return itemStack;
-        }
-
-        @Override
-        protected int getStackLimit(int slot, @NotNull ItemStack stack) {
-            return 46656;
-        }
-    }
 
     private final ItemStackHandler inputInventory = new ItemStackHandler(1) {
         @Override
@@ -92,10 +53,10 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
         }
     };
 
-    private final InternalInsertableItemHandler outputInventory = new InternalInsertableItemHandler(8);
+    private final AutoHammerOutputItemHandler outputInventory = new AutoHammerOutputItemHandler(this, 8);
 
     private final LazyOptional<ItemStackHandler> inputInvLazy = LazyOptional.of(() -> inputInventory);
-    private final LazyOptional<InternalInsertableItemHandler> outputInvLazy = LazyOptional.of(() -> outputInventory);
+    private final LazyOptional<AutoHammerOutputItemHandler> outputInvLazy = LazyOptional.of(() -> outputInventory);
 
     private int progress = 0;
     private int maxProgress = 0;
@@ -260,14 +221,14 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
     @Override
     public void load(BlockState state, CompoundTag tag) {
-        super.load(state, tag);
-
         progress = tag.getInt("Progress");
         maxProgress = tag.getInt("MaxProgress");
         processing = tag.getBoolean("Processing");
 
         inputInvLazy.ifPresent(e -> e.deserializeNBT(tag.getCompound("InputInventory")));
         outputInvLazy.ifPresent(e -> e.deserializeNBT(tag.getCompound("OutputInventory")));
+
+        super.load(state, tag);
     }
 
     public static Direction getInputDirection(Direction facing) {
