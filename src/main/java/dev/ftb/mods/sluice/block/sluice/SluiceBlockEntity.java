@@ -61,7 +61,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     public final LazyOptional<ItemsHandler> inventoryOptional;
     public final FluidCap tank;
     public final LazyOptional<FluidCap> fluidOptional;
-    private final SluiceProperties properties;
+    public final SluiceProperties properties;
     private final boolean isAdvanced;
 
     private boolean isCreative = false;
@@ -112,17 +112,14 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     public int lastPowerCost = 0;
 
     public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties) {
-        this(type, properties, false);
-    }
-
-    public SluiceBlockEntity(BlockEntityType<?> type, SluiceProperties properties, boolean isAdvanced) {
         super(type);
 
         // Finds the correct properties from the block for the specific sluice tier
         this.properties = properties;
-        this.isAdvanced = isAdvanced;
 
-        int powerCost = this instanceof EmpoweredSluiceBlockEntity ? SluiceConfig.SLUICES.EMPOWERED.costPerUse.get() : SluiceConfig.SLUICES.NETHERITE.costPerUse.get();
+        int powerCost = this.properties.config.costPerUse.get();
+        this.isAdvanced = powerCost > 0;
+
         this.energy = new Energy(!isAdvanced
                 ? 0
                 : (int) Math.min(Math.pow(SluiceConfig.GENERAL.exponentialCostBaseN.get(), SluiceConfig.GENERAL.maxUpgradeStackSize.get() * 3 + 1)
@@ -142,7 +139,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
         this.tank = new FluidCap(true, properties.config.tankCap.get(), e -> true);
         this.fluidOptional = LazyOptional.of(() -> this.tank);
 
-        this.inventory = new ItemsHandler(!properties.allowsIO, 1) {
+        this.inventory = new ItemsHandler(!properties.config.allowsIO.get(), 1) {
             @Override
             protected void onContentsChanged(int slot) {
                 SluiceBlockEntity.this.setChanged();
@@ -341,7 +338,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     }
 
     private int computePowerCost() {
-        int cost = this instanceof NetheriteSluiceBlockEntity ? SluiceConfig.SLUICES.NETHERITE.costPerUse.get() : SluiceConfig.SLUICES.EMPOWERED.costPerUse.get();
+        int cost = this.properties.config.costPerUse.get();
         if (!upgradeCache.isEmpty()) {
             int sum = 0;
             for (int i : upgradeCache.values()) {
@@ -423,11 +420,11 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.properties.allowsIO) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && this.properties.config.allowsIO.get()) {
             return this.inventoryOptional.cast();
         }
 
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.properties.allowsTank) {
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.properties.config.allowsTank.get()) {
             return this.fluidOptional.cast();
         }
 
@@ -439,7 +436,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
     }
 
     private void ejectItem(Level w, Direction direction, ItemStack stack) {
-        if (this.properties.allowsIO) {
+        if (this.properties.config.allowsIO.get()) {
             // Find the closest inventory to the block.
             IItemHandler handler = this.seekNearestInventory(w).orElseGet(EmptyHandler::new);
 
@@ -513,7 +510,7 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory arg, Player arg2) {
-        return (!(this instanceof NetheriteSluiceBlockEntity) && !(this instanceof EmpoweredSluiceBlockEntity)) ? null : new SluiceBlockContainer(i, arg, this);
+        return !this.isAdvanced ? null : new SluiceBlockContainer(i, arg, this);
     }
 
     public static class OakSluiceBlockEntity extends SluiceBlockEntity {
@@ -536,13 +533,13 @@ public class SluiceBlockEntity extends BlockEntity implements TickableBlockEntit
 
     public static class NetheriteSluiceBlockEntity extends SluiceBlockEntity {
         public NetheriteSluiceBlockEntity() {
-            super(SluiceBlockEntities.NETHERITE_SLUICE.get(), SluiceProperties.NETHERITE, true);
+            super(SluiceBlockEntities.NETHERITE_SLUICE.get(), SluiceProperties.NETHERITE);
         }
     }
 
     public static class EmpoweredSluiceBlockEntity extends SluiceBlockEntity {
         public EmpoweredSluiceBlockEntity() {
-            super(SluiceBlockEntities.EMPOWERED_SLUICE.get(), SluiceProperties.EMPOWERED, true);
+            super(SluiceBlockEntities.EMPOWERED_SLUICE.get(), SluiceProperties.EMPOWERED);
         }
     }
 }

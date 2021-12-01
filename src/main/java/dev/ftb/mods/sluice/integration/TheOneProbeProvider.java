@@ -117,7 +117,7 @@ public class TheOneProbeProvider implements IProbeInfoProvider, Function<ITheOne
             iProbeInfo.horizontal().item(itemStack).vertical().padding(0, 5).itemLabel(itemStack);
         }
 
-        if (entity instanceof SluiceBlockEntity.OakSluiceBlockEntity || entity instanceof SluiceBlockEntity.IronSluiceBlockEntity) {
+        if (entity.properties.config.allowsTank.get()) {
             iProbeInfo.tankSimple(entity.tank.getCapacity(), entity.tank.getFluid(), iProbeInfo.defaultProgressStyle()
                     .numberFormat(NumberFormat.COMPACT)
                     .prefix(entity.tank.getFluid().getDisplayName().getString() + ": ")

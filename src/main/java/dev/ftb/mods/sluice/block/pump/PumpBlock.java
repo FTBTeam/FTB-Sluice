@@ -36,7 +36,6 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
 import org.jetbrains.annotations.Nullable;
-import sun.security.provider.SHA;
 
 import java.util.stream.Stream;
 
