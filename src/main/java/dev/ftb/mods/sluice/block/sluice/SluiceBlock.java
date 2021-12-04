@@ -1,6 +1,7 @@
 package dev.ftb.mods.sluice.block.sluice;
 
 import dev.ftb.mods.sluice.FTBSluice;
+import dev.ftb.mods.sluice.SluiceConfig;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
@@ -80,9 +81,9 @@ public class SluiceBlock extends Block {
         SHAPES.put(Direction.WEST, Pair.of(WEST_BODY_SHAPE, WEST_FRONT_SHAPE));
     }
 
-    private final SluiceProperties props;
+    private final SluiceConfig.CategorySluice props;
 
-    public SluiceBlock(SluiceProperties props) {
+    public SluiceBlock(SluiceConfig.CategorySluice props) {
         super(Properties.of(Material.METAL).sound(SoundType.METAL).strength(0.9F));
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(MESH, MeshType.NONE)
@@ -164,7 +165,7 @@ public class SluiceBlock extends Block {
 
         SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
 
-        if (itemStack.isEmpty() && !world.isClientSide() && !player.isCrouching() && sluice.properties.config.upgradeable.get()) {
+        if (itemStack.isEmpty() && !world.isClientSide() && !player.isCrouching() && sluice.sluiceConfig.upgradeable.get()) {
             NetworkHooks.openGui((ServerPlayer) player, sluice, pos);
             return InteractionResult.SUCCESS;
         } else if (player.isCrouching()) {
@@ -315,22 +316,22 @@ public class SluiceBlock extends Block {
 
         if (isShift) {
             tooltip.add(new TranslatableComponent("ftbsluice.properties.processing_time",
-                    new TextComponent(props.config.timeMod.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+                    new TextComponent(props.timeMod.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
             tooltip.add(new TranslatableComponent("ftbsluice.properties.fluid_usage",
-                    new TextComponent(props.config.fluidMod.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+                    new TextComponent(props.fluidMod.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
             tooltip.add(new TranslatableComponent("ftbsluice.properties.tank",
-                    new TextComponent(props.config.tankCap.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
+                    new TextComponent(props.tankCap.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
 
             tooltip.add(new TranslatableComponent("ftbsluice.properties.auto",
-                    new TranslatableComponent("ftbsluice.properties.auto.item").withStyle(props.config.allowsIO.get() ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE),
-                    new TranslatableComponent("ftbsluice.properties.auto.fluid").withStyle(props.config.allowsTank.get() ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE)
+                    new TranslatableComponent("ftbsluice.properties.auto.item").withStyle(props.allowsIO.get() ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE),
+                    new TranslatableComponent("ftbsluice.properties.auto.fluid").withStyle(props.allowsTank.get() ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE)
             ).withStyle(ChatFormatting.GRAY));
 
-            if (props.config.upgradeable.get()) {
+            if (props.upgradeable.get()) {
                 tooltip.add(new TranslatableComponent("ftbsluice.properties.upgradeable").withStyle(TextUtil.COLOUR_INFO));
             }
         } else {
-            tooltip.add(new TranslatableComponent("ftbsluice.tooltip.sluice_" + this.props.name().toLowerCase()).withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent("ftbsluice.tooltip." + this.getRegistryName().getPath()).withStyle(ChatFormatting.GRAY));
         }
     }
 
