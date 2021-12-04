@@ -164,7 +164,7 @@ public class SluiceBlock extends Block {
 
         SluiceBlockEntity sluice = (SluiceBlockEntity) tileEntity;
 
-        if (itemStack.isEmpty() && !world.isClientSide() && !player.isCrouching() && (sluice instanceof SluiceBlockEntity.NetheriteSluiceBlockEntity || sluice instanceof SluiceBlockEntity.EmpoweredSluiceBlockEntity)) {
+        if (itemStack.isEmpty() && !world.isClientSide() && !player.isCrouching() && sluice.properties.config.upgradeable.get()) {
             NetworkHooks.openGui((ServerPlayer) player, sluice, pos);
             return InteractionResult.SUCCESS;
         } else if (player.isCrouching()) {
@@ -322,11 +322,11 @@ public class SluiceBlock extends Block {
                     new TextComponent(props.config.tankCap.get() + "").withStyle(TextUtil.COLOUR_HIGHLIGHT)).withStyle(ChatFormatting.GRAY));
 
             tooltip.add(new TranslatableComponent("ftbsluice.properties.auto",
-                    new TranslatableComponent("ftbsluice.properties.auto.item").withStyle(props.allowsIO ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE),
-                    new TranslatableComponent("ftbsluice.properties.auto.fluid").withStyle(props.allowsTank ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE)
+                    new TranslatableComponent("ftbsluice.properties.auto.item").withStyle(props.config.allowsIO.get() ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE),
+                    new TranslatableComponent("ftbsluice.properties.auto.fluid").withStyle(props.config.allowsTank.get() ? TextUtil.COLOUR_TRUE : TextUtil.COLOUR_FALSE)
             ).withStyle(ChatFormatting.GRAY));
 
-            if (props.upgradeable) {
+            if (props.config.upgradeable.get()) {
                 tooltip.add(new TranslatableComponent("ftbsluice.properties.upgradeable").withStyle(TextUtil.COLOUR_INFO));
             }
         } else {
