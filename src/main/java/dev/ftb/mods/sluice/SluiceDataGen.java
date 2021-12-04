@@ -128,11 +128,11 @@ public class SluiceDataGen {
             this.add("fluid.ftbsluice.lava", "Lava");
             this.add("fluid.ftbsluice.water", "Water");
 
-            this.add("ftbsluice.tooltip.sluice_oak", "Rather basic, but it gets the job done.");
-            this.add("ftbsluice.tooltip.sluice_iron", "A bit on the slow side still, but it seems to use a lot less fluid than before.");
-            this.add("ftbsluice.tooltip.sluice_diamond", "Significantly faster than the iron one, but also a bit less fluid-efficient.");
-            this.add("ftbsluice.tooltip.sluice_netherite", "Forged from Netherite, this sluice proves itself to be both efficient and modular.");
-            this.add("ftbsluice.tooltip.sluice_empowered", "A lot like the netherite sluice but quicker, holds more fluid and can accept the blazing mesh!");
+            this.add("ftbsluice.tooltip.oak_sluice", "Rather basic, but it gets the job done.");
+            this.add("ftbsluice.tooltip.iron_sluice", "A bit on the slow side still, but it seems to use a lot less fluid than before.");
+            this.add("ftbsluice.tooltip.diamond_sluice", "Significantly faster than the iron one, but also a bit less fluid-efficient.");
+            this.add("ftbsluice.tooltip.netherite_sluice", "Forged from Netherite, this sluice proves itself to be both efficient and modular.");
+            this.add("ftbsluice.tooltip.empowered_sluice", "A lot like the netherite sluice but quicker, holds more fluid and can accept the blazing mesh!");
 
             this.add("ftbsluice.tooltip.upgrade_fortune", "Increases drop chance by 3% per upgrade");
             this.add("ftbsluice.tooltip.upgrade_speed", "Increases the speed of the sluice by 5% per upgrade");

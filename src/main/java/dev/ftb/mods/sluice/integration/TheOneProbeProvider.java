@@ -18,10 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -117,7 +114,7 @@ public class TheOneProbeProvider implements IProbeInfoProvider, Function<ITheOne
             iProbeInfo.horizontal().item(itemStack).vertical().padding(0, 5).itemLabel(itemStack);
         }
 
-        if (entity instanceof SluiceBlockEntity.OakSluiceBlockEntity || entity instanceof SluiceBlockEntity.IronSluiceBlockEntity) {
+        if (entity.sluiceConfig.allowsTank.get()) {
             iProbeInfo.tankSimple(entity.tank.getCapacity(), entity.tank.getFluid(), iProbeInfo.defaultProgressStyle()
                     .numberFormat(NumberFormat.COMPACT)
                     .prefix(entity.tank.getFluid().getDisplayName().getString() + ": ")
