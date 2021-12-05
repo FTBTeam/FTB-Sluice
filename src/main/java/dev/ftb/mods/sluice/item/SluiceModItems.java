@@ -3,6 +3,7 @@ package dev.ftb.mods.sluice.item;
 import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
+import dev.ftb.mods.sluice.block.sluice.SluiceBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Tiers;
@@ -27,11 +28,11 @@ public class SluiceModItems {
 //    public static final RegistryObject<Item> TANK = REGISTRY.register("tank", () -> new BlockItem(SluiceBlocks.TANK.get(), new Item.Properties().tab(FTBSluice.group)));
 //    public static final RegistryObject<Item> TANK_CREATIVE = REGISTRY.register("creative_tank", () -> new BlockItem(SluiceBlocks.TANK_CREATIVE.get(), new Item.Properties().tab(FTBSluice.group)));
 
-    public static final RegistryObject<BlockItem> OAK_SLUICE = REGISTRY.register("oak_sluice", () -> new BlockItem(SluiceBlocks.OAK_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
-    public static final RegistryObject<BlockItem> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> new BlockItem(SluiceBlocks.IRON_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
-    public static final RegistryObject<BlockItem> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", () -> new BlockItem(SluiceBlocks.DIAMOND_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
-    public static final RegistryObject<BlockItem> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", () -> new BlockItem(SluiceBlocks.NETHERITE_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
-    public static final RegistryObject<BlockItem> EMPOWERED_SLUICE = REGISTRY.register("empowered_sluice", () -> new BlockItem(SluiceBlocks.EMPOWERED_SLUICE.get(), new Item.Properties().tab(FTBSluice.group)));
+    public static final RegistryObject<BlockItem> OAK_SLUICE = REGISTRY.register("oak_sluice", () -> new SluiceBlock.SluiceBlockItem(SluiceBlocks.OAK_SLUICE.get()));
+    public static final RegistryObject<BlockItem> IRON_SLUICE = REGISTRY.register("iron_sluice", () -> new SluiceBlock.SluiceBlockItem(SluiceBlocks.IRON_SLUICE.get()));
+    public static final RegistryObject<BlockItem> DIAMOND_SLUICE = REGISTRY.register("diamond_sluice", () -> new SluiceBlock.SluiceBlockItem(SluiceBlocks.DIAMOND_SLUICE.get()));
+    public static final RegistryObject<BlockItem> NETHERITE_SLUICE = REGISTRY.register("netherite_sluice", () -> new SluiceBlock.SluiceBlockItem(SluiceBlocks.NETHERITE_SLUICE.get()));
+    public static final RegistryObject<BlockItem> EMPOWERED_SLUICE = REGISTRY.register("empowered_sluice", () -> new SluiceBlock.SluiceBlockItem(SluiceBlocks.EMPOWERED_SLUICE.get()));
 
     public static final RegistryObject<BlockItem> PUMP = REGISTRY.register("pump", () -> new BlockItem(SluiceBlocks.PUMP.get(), new Item.Properties().tab(FTBSluice.group)));
 

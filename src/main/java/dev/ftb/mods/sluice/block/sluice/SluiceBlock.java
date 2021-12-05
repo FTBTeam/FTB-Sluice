@@ -12,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -20,11 +21,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -92,7 +93,11 @@ public class SluiceBlock extends Block {
 
         this.props = props;
     }
-    
+
+    public SluiceConfig.CategorySluice getProps() {
+        return props;
+    }
+
     @Override
     public boolean hasTileEntity(BlockState state) {
         return state.getValue(PART) != Part.FUNNEL;
@@ -262,6 +267,21 @@ public class SluiceBlock extends Block {
         return p_185471_1_;
     }
 
+
+    @Override
+    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        Direction direction = state.getValue(HORIZONTAL_FACING);
+
+        // If you break the funnel, reject and break the main block for the player
+        if (state.getValue(PART) == Part.FUNNEL) {
+            BlockPos endPos = pos.relative(direction.getOpposite());
+            world.destroyBlock(endPos, !world.isClientSide);
+            return false;
+        }
+
+        return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
+    }
+
     @Override
     @Deprecated
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
@@ -273,15 +293,7 @@ public class SluiceBlock extends Block {
             BlockState endState = world.getBlockState(endPos);
 
             // Don't act on the funnel
-            if (state.getValue(PART) == Part.FUNNEL) {
-                if (endState.getBlock() instanceof SluiceBlock && endState.getValue(PART) == Part.MAIN) {
-                    world.removeBlock(endPos, false);
-                    if (world instanceof ServerLevel) {
-                        List<ItemStack> drops = getDrops(state.setValue(PART, Part.MAIN), (ServerLevel) world, pos, null);
-                        drops.forEach(e -> popResource(world, pos, e));
-                    }
-                }
-            } else {
+            if (state.getValue(PART) != Part.FUNNEL) {
                 BlockEntity tileEntity = world.getBlockEntity(pos);
 
                 if (tileEntity instanceof SluiceBlockEntity) {
@@ -343,6 +355,27 @@ public class SluiceBlock extends Block {
             level.setBlock(lv, state.setValue(PART, Part.FUNNEL), 3);
             level.blockUpdated(pos, Blocks.AIR);
             state.updateNeighbourShapes(level, pos, 3);
+        }
+    }
+
+    public static class SluiceBlockItem extends BlockItem {
+        public SluiceBlockItem(Block block) {
+            super(block, new Item.Properties().tab(FTBSluice.group));
+        }
+
+        @Override
+        public CompoundTag getShareTag(ItemStack stack) {
+            if (getBlock() == SluiceBlocks.NETHERITE_SLUICE.get() || getBlock() == SluiceBlocks.EMPOWERED_SLUICE.get()) {
+                if (!stack.getOrCreateTag().contains("BlockEntityTag")) {
+                    CompoundTag tag = new CompoundTag();
+                    CompoundTag energy = new CompoundTag();
+                    energy.putInt("energy", 0);
+                    tag.put("Energy", energy);
+
+                    stack.getOrCreateTag().put("BlockEntityTag", tag);
+                }
+            }
+            return super.getShareTag(stack);
         }
     }
 
