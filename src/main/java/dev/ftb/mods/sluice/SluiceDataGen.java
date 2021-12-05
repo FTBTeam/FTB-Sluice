@@ -2,6 +2,8 @@ package dev.ftb.mods.sluice;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
 import dev.ftb.mods.sluice.block.MeshType;
 import dev.ftb.mods.sluice.block.SluiceBlocks;
 import dev.ftb.mods.sluice.block.autohammer.AutoHammerBlock;
@@ -23,15 +25,21 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.storage.loot.*;
+import net.minecraft.world.level.storage.loot.entries.*;
+import net.minecraft.world.level.storage.loot.functions.*;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.Tags;
@@ -94,7 +102,7 @@ public class SluiceDataGen {
                 this.addItem(type.meshItem, type.getSerializedName().substring(0, 1).toUpperCase() + type.getSerializedName().substring(1) + " Mesh");
             }
 
-            for (Pair<Supplier<Block>, String> p : SluiceBlocks.SLUICES) {
+            for (Pair<Supplier<Block>, String> p : SluiceBlocks.ALL_SLUICES) {
                 this.addBlock(p.getLeft(), p.getRight().substring(0, 1).toUpperCase() + p.getRight().substring(1) + " Sluice");
             }
 
@@ -175,7 +183,7 @@ public class SluiceDataGen {
             Direction[] dirs = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
             int[] dirsRot = {0, 180, 270, 90};
 
-            for (Pair<Supplier<Block>, String> p : SluiceBlocks.SLUICES) {
+            for (Pair<Supplier<Block>, String> p : SluiceBlocks.ALL_SLUICES) {
                 MultiPartBlockStateBuilder builder = this.getMultipartBuilder(p.getLeft().get());
 
                 for (int d = 0; d < 4; d++) {
@@ -563,7 +571,26 @@ public class SluiceDataGen {
             this.dropSelf(SluiceBlocks.GOLD_AUTO_HAMMER.get());
             this.dropSelf(SluiceBlocks.DIAMOND_AUTO_HAMMER.get());
             this.dropSelf(SluiceBlocks.NETHERITE_AUTO_HAMMER.get());
-            SluiceBlocks.SLUICES.forEach(e -> this.dropSelf(e.getKey().get()));
+
+            SluiceBlocks.SLUICES.stream()
+                    .map(e -> e.getKey().get())
+                    .forEach(this::dropSelf);
+
+            SluiceBlocks.POWERED_SLUICES.stream()
+                    .map(e -> e.getKey().get())
+                    .forEach(this::sluiceTable);
+        }
+
+        public void sluiceTable(Block block) {
+            this.add(block, LootTable.lootTable().withPool(
+                    applyExplosionCondition(block, LootPool.lootPool()
+                        .setRolls(ConstantIntValue.exactly(1))
+                        .add(LootItem.lootTableItem(block)
+                            .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))
+                            .apply(CopyNbtFunction.copyData(CopyNbtFunction.DataSource.BLOCK_ENTITY).copy("Energy", "BlockEntityTag.Energy"))
+                        )
+                    )
+            ));
         }
 
         @Override

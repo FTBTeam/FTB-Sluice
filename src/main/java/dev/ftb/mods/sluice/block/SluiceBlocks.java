@@ -1,5 +1,6 @@
 package dev.ftb.mods.sluice.block;
 
+import com.google.common.collect.ImmutableList;
 import dev.ftb.mods.sluice.FTBSluice;
 import dev.ftb.mods.sluice.SluiceConfig;
 import dev.ftb.mods.sluice.block.autohammer.AutoHammerBlock;
@@ -19,9 +20,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 
 public class SluiceBlocks {
@@ -49,11 +49,16 @@ public class SluiceBlocks {
     public static final RegistryObject<Block> CRUSHED_BASALT = REGISTRY.register("crushed_basalt", () -> new FallingBlock(Properties.of(Material.SAND, MaterialColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(0.8F, 2.75F).sound(SoundType.BASALT)));
     public static final RegistryObject<Block> CRUSHED_ENDSTONE = REGISTRY.register("crushed_endstone", () -> new FallingBlock(Properties.of(Material.SAND, MaterialColor.SAND).requiresCorrectToolForDrops().strength(2.0F, 6.0F)));
 
-    public static final List<Pair<Supplier<Block>, String>> SLUICES = Arrays.asList(
+    public static final ImmutableList<Pair<Supplier<Block>, String>> SLUICES = ImmutableList.of(
             Pair.of(OAK_SLUICE, "oak"),
             Pair.of(IRON_SLUICE, "iron"),
-            Pair.of(DIAMOND_SLUICE, "diamond"),
+            Pair.of(DIAMOND_SLUICE, "diamond")
+    );
+
+    public static final ImmutableList<Pair<Supplier<Block>, String>> POWERED_SLUICES = ImmutableList.of(
             Pair.of(NETHERITE_SLUICE, "netherite"),
             Pair.of(EMPOWERED_SLUICE, "empowered")
     );
+
+    public static final ImmutableList<Pair<Supplier<Block>, String>> ALL_SLUICES = Stream.concat(SLUICES.stream(), POWERED_SLUICES.stream()).collect(ImmutableList.toImmutableList());
 }

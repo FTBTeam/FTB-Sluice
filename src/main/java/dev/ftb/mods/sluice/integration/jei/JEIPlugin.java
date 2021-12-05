@@ -52,6 +52,6 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration r) {
         HAMMERS.forEach(hammer -> r.addRecipeCatalyst(new ItemStack(hammer.get()), SluiceHammerCategory.ID));
-        SluiceBlocks.SLUICES.forEach(e -> r.addRecipeCatalyst(new ItemStack(e.getKey().get()), SluiceMeshCategory.ID));
+        SluiceBlocks.ALL_SLUICES.forEach(e -> r.addRecipeCatalyst(new ItemStack(e.getKey().get()), SluiceMeshCategory.ID));
     }
 }
