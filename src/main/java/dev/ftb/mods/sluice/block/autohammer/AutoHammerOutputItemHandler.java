@@ -42,7 +42,7 @@ public class AutoHammerOutputItemHandler extends ItemStackHandler {
 
     @Override
     protected int getStackLimit(int slot, @NotNull ItemStack stack) {
-        return 46656;
+        return 7290;
     }
 
     @Override
