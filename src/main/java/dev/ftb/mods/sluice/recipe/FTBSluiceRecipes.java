@@ -30,6 +30,7 @@ public class FTBSluiceRecipes {
     public static final RecipeType<HammerRecipe> HAMMER_TYPE = RecipeType.register(FTBSluice.MOD_ID + ":hammer");
     public static final Set<Ingredient> hammerableCache = new HashSet<>();
 
+
     private static final Map<Triple<Fluid, Item, MeshType>, SluiceRecipeInfo> sluiceCache = new HashMap<>();
 
     // Ignores the fluid requirement to check for valid insert actions
@@ -133,13 +134,16 @@ public class FTBSluiceRecipes {
     }
 
     public static boolean hammerable(BlockState state) {
-        return hammerableCache.stream().anyMatch(e -> {
-            ItemStack stack = new ItemStack(state.getBlock());
-            return e.test(stack);
-        });
+        return hammerable(new ItemStack(state.getBlock()));
     }
 
     public static boolean hammerable(ItemStack stack) {
-        return hammerableCache.stream().anyMatch(e -> e.test(stack));
+        for (Ingredient e : hammerableCache) {
+            if (e.test(stack)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
