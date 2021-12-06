@@ -1,9 +1,11 @@
 package dev.ftb.mods.sluice.block.autohammer;
 
 import dev.ftb.mods.sluice.block.SluiceBlockEntities;
+import dev.ftb.mods.sluice.item.SluiceModItems;
 import dev.ftb.mods.sluice.recipe.FTBSluiceRecipes;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -11,6 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -22,6 +25,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockEntity {
     private static final int[][] IO_DIRECTIONAL_MATRIX = new int[][] {
@@ -57,6 +62,7 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
     private final LazyOptional<ItemStackHandler> inputInvLazy = LazyOptional.of(() -> inputInventory);
     private final LazyOptional<AutoHammerOutputItemHandler> outputInvLazy = LazyOptional.of(() -> outputInventory);
+    private final Supplier<Item> hammerItem;
 
     private int progress = 0;
     private int maxProgress = 0;
@@ -64,8 +70,9 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
     private boolean processing = false;
     private ItemStack heldItem = ItemStack.EMPTY;
 
-    public AutoHammerBlockEntity(BlockEntityType<?> blockEntityType) {
+    public AutoHammerBlockEntity(BlockEntityType<?> blockEntityType, Supplier<Item> hammerItem) {
         super(blockEntityType);
+        this.hammerItem = hammerItem;
     }
 
     @Override
@@ -94,13 +101,12 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
         if (!processing) {
             ItemStack inputStack = inputInventory.getStackInSlot(0);
-
             if (!inputStack.isEmpty()) {
                 // Attempt to insert the items into the output, Time out and stop if any items would be lost
                 List<ItemStack> hammerDrops = FTBSluiceRecipes.getHammerDrops(level, inputStack);
 
                 // If we consumed all items, start processing
-                if (pushIntoInternalOutputInventory(hammerDrops, true) >= hammerDrops.size()) {
+                if (hammerDrops.size() > 0 && pushIntoInternalOutputInventory(hammerDrops, true) >= hammerDrops.size()) {
                     heldItem = inputStack.copy();
                     heldItem.setCount(1);
 
@@ -162,6 +168,20 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
      * @param stack The item to insert
      */
     private boolean hasItemAndIsHammerable(ItemStack stack) {
+        BlockState blockState = Block.byItem(stack.getItem()).defaultBlockState();
+
+        boolean toolEffective = blockState.isToolEffective(ToolType.PICKAXE);
+        boolean toolEffective2 = blockState.isToolEffective(ToolType.SHOVEL);
+        int requiredLevel = blockState.getHarvestLevel();
+
+        ItemStack stack1 = new ItemStack(hammerItem.get());
+        int harvestLevel1 = hammerItem.get().getHarvestLevel(stack1, ToolType.PICKAXE, null, null);
+        int harvestLevel2 = hammerItem.get().getHarvestLevel(stack1, ToolType.SHOVEL, null, null);
+
+        if ((toolEffective && harvestLevel1 < requiredLevel) || (toolEffective2 && harvestLevel2 < requiredLevel)) {
+            return false;
+        }
+
         return !stack.isEmpty() && FTBSluiceRecipes.hammerable(stack);
     }
 
@@ -281,13 +301,13 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
     public static class Iron extends AutoHammerBlockEntity {
         public Iron() {
-            super(SluiceBlockEntities.IRON_AUTO_HAMMER.get());
+            super(SluiceBlockEntities.IRON_AUTO_HAMMER.get(), SluiceModItems.IRON_HAMMER);
         }
     }
 
     public static class Gold extends AutoHammerBlockEntity {
         public Gold() {
-            super(SluiceBlockEntities.GOLD_AUTO_HAMMER.get());
+            super(SluiceBlockEntities.GOLD_AUTO_HAMMER.get(), SluiceModItems.GOLD_HAMMER);
         }
 
         @Override
@@ -298,7 +318,7 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
     public static class Diamond extends AutoHammerBlockEntity {
         public Diamond() {
-            super(SluiceBlockEntities.DIAMOND_AUTO_HAMMER.get());
+            super(SluiceBlockEntities.DIAMOND_AUTO_HAMMER.get(), SluiceModItems.DIAMOND_HAMMER);
         }
 
         @Override
@@ -309,7 +329,7 @@ public class AutoHammerBlockEntity extends BlockEntity implements TickableBlockE
 
     public static class Netherite extends AutoHammerBlockEntity {
         public Netherite() {
-            super(SluiceBlockEntities.NETHERITE_AUTO_HAMMER.get());
+            super(SluiceBlockEntities.NETHERITE_AUTO_HAMMER.get(), SluiceModItems.NETHERITE_HAMMER);
         }
 
         @Override
