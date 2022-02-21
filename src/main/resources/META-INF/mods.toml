@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[36,)"
-issueTrackerURL = "https://github.com/LatvianModder/Sluice/issues"
+issueTrackerURL = "https://github.com/FTBTeam/FTB-Mods-Issues/issues"
 license = "GNU LGPLv3"
 
 [[mods]]
