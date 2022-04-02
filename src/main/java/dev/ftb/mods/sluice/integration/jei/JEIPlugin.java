@@ -12,6 +12,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -29,6 +30,12 @@ public class JEIPlugin implements IModPlugin {
         this.add(SluiceModItems.GOLD_HAMMER);
         this.add(SluiceModItems.DIAMOND_HAMMER);
         this.add(SluiceModItems.NETHERITE_HAMMER);
+    }};
+    public static HashSet<RegistryObject<BlockItem>> AUTO_HAMMERS = new HashSet<RegistryObject<BlockItem>>() {{
+        this.add(SluiceModItems.IRON_AUTO_HAMMER);
+        this.add(SluiceModItems.GOLD_AUTO_HAMMER);
+        this.add(SluiceModItems.DIAMOND_AUTO_HAMMER);
+        this.add(SluiceModItems.NETHERITE_AUTO_HAMMER);
     }};
 
     @Override
@@ -52,6 +59,7 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration r) {
         HAMMERS.forEach(hammer -> r.addRecipeCatalyst(new ItemStack(hammer.get()), SluiceHammerCategory.ID));
+        AUTO_HAMMERS.forEach(hammer -> r.addRecipeCatalyst(new ItemStack(hammer.get()), SluiceHammerCategory.ID));
         SluiceBlocks.ALL_SLUICES.forEach(e -> r.addRecipeCatalyst(new ItemStack(e.getKey().get()), SluiceMeshCategory.ID));
     }
 }
