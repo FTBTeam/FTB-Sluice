@@ -18,25 +18,26 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.RegistryObject;
 
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.List;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
     public static final ResourceLocation SLUICE_JEI = new ResourceLocation(FTBSluice.MOD_ID, "jei");
-    public static HashSet<RegistryObject<Item>> HAMMERS = new HashSet<RegistryObject<Item>>() {{
-        this.add(SluiceModItems.WOODEN_HAMMER);
-        this.add(SluiceModItems.STONE_HAMMER);
-        this.add(SluiceModItems.IRON_HAMMER);
-        this.add(SluiceModItems.GOLD_HAMMER);
-        this.add(SluiceModItems.DIAMOND_HAMMER);
-        this.add(SluiceModItems.NETHERITE_HAMMER);
-    }};
-    public static HashSet<RegistryObject<BlockItem>> AUTO_HAMMERS = new HashSet<RegistryObject<BlockItem>>() {{
-        this.add(SluiceModItems.IRON_AUTO_HAMMER);
-        this.add(SluiceModItems.GOLD_AUTO_HAMMER);
-        this.add(SluiceModItems.DIAMOND_AUTO_HAMMER);
-        this.add(SluiceModItems.NETHERITE_AUTO_HAMMER);
-    }};
+    public static List<RegistryObject<Item>> HAMMERS = Arrays.asList(
+        SluiceModItems.WOODEN_HAMMER,
+        SluiceModItems.STONE_HAMMER,
+        SluiceModItems.IRON_HAMMER,
+        SluiceModItems.GOLD_HAMMER,
+        SluiceModItems.DIAMOND_HAMMER,
+        SluiceModItems.NETHERITE_HAMMER
+    );
+    public static List<RegistryObject<BlockItem>> AUTO_HAMMERS = Arrays.asList(
+        SluiceModItems.IRON_AUTO_HAMMER,
+        SluiceModItems.GOLD_AUTO_HAMMER,
+        SluiceModItems.DIAMOND_AUTO_HAMMER,
+        SluiceModItems.NETHERITE_AUTO_HAMMER
+    );
 
     @Override
     public ResourceLocation getPluginUid() {
